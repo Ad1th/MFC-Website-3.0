@@ -1,0 +1,35 @@
+.still {
+  position: relative;
+}
+
+.main:focus {
+  outline: none;
+}
+
+.play {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--gutter);
+  z-index: var(--z-chrome);
+  padding: var(--space-2) 0;
+  color: var(--ash);
+  border-bottom: 1px solid rgb(232 222 213 / 0.4);
+  mix-blend-mode: difference;
+}
+
+.play:hover {
+  color: var(--fire);
+  border-bottom-color: var(--fire);
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .main :global([data-region]) > * {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-film);
+  }
+
+  .main :global([data-region][data-seen="true"]) > * {
+    opacity: 1;
+  }
+}
