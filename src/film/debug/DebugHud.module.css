@@ -1,7 +1,7 @@
 .hud {
   position: fixed;
-  left: var(--space-4);
-  top: var(--space-16);
+  right: calc(var(--gutter) + 2.5rem);
+  bottom: calc(var(--gutter) + 3.5rem);
   z-index: var(--z-debug);
   margin: 0;
   padding: var(--space-3) var(--space-4);
