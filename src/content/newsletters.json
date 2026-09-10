@@ -1,0 +1,4 @@
+{
+  "todo": "TODO_CONTENT: fallback newsletters used when the backend is unreachable. Each item needs title, uploadDate (ISO), cover_url and pdf_link. See director/CONTENT_NEEDED.md.",
+  "items": []
+}
