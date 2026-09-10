@@ -5,3 +5,6 @@ director/
 .DS_Store
 graphify-out/
 dist
+.env.production
+.env.local
+.env.*.local
