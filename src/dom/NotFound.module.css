@@ -1,0 +1,20 @@
+.page {
+  min-height: 100dvh;
+  display: grid;
+  align-content: center;
+  gap: var(--space-8);
+  padding-inline: var(--gutter);
+  padding-block: var(--space-24);
+}
+
+.line {
+  font-size: var(--text-title);
+  max-width: 16ch;
+}
+
+.home {
+  justify-self: start;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--ash);
+  text-decoration: none;
+}
