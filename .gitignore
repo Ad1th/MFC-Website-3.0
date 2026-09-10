@@ -1,0 +1,6 @@
+node_modules
+
+# creative direction + build brief (local only)
+director/
+.DS_Store
+graphify-out/
