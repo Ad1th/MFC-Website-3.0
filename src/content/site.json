@@ -1,0 +1,25 @@
+{
+  "name": "Mozilla Firefox Club",
+  "short": "MFC",
+  "institution": "VIT Vellore",
+  "email": "mozillafirefox@vit.ac.in",
+  "recruitmentUrl": "https://enrollments.mfcvit.in/",
+  "campus": { "lat": 12.9692, "lon": 79.1559, "label": "vellore" },
+  "socials": [
+    { "label": "github", "url": "https://github.com/MFC-VIT" },
+    { "label": "instagram", "url": "https://www.instagram.com/mfc_vit/" },
+    { "label": "linkedin", "url": "https://www.linkedin.com/company/mfcvit/" },
+    { "label": "youtube", "url": "https://www.youtube.com/c/MozillaFirefoxClubVIT" },
+    { "label": "medium", "url": "https://medium.com/mozilla-firefox-club" },
+    { "label": "x", "url": "https://x.com/mfc_vit" },
+    { "label": "facebook", "url": "https://www.facebook.com/mfcvit/" }
+  ],
+  "about": [
+    "A club of builders at VIT.",
+    "We write code in the open,",
+    "ship it to real people,",
+    "and teach whoever shows up next."
+  ],
+  "taglines": ["open minds.", "open ideas.", "OPEN SOURCE."],
+  "description": "The Mozilla Firefox Club at VIT Vellore. Students who build in the open, run campus events and teach whoever shows up next."
+}
