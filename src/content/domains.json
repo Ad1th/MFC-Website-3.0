@@ -1,0 +1,20 @@
+[
+  {
+    "key": "technical",
+    "title": "TECHNICAL",
+    "room": "THE SOURCE",
+    "subs": ["AI / ML", "BACKEND", "FRONTEND", "FULL STACK", "COMPETITIVE PROGRAMMING"]
+  },
+  {
+    "key": "design",
+    "title": "DESIGN",
+    "room": "THE PRISM",
+    "subs": ["UI / UX", "GRAPHIC DESIGN", "VIDEO"]
+  },
+  {
+    "key": "management",
+    "title": "MANAGEMENT",
+    "room": "THE WEB",
+    "subs": ["EDITORIAL", "PUBLICITY", "OUTREACH", "PR", "FINANCE"]
+  }
+]
