@@ -1,0 +1,130 @@
+.skip {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: var(--z-skip);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background: var(--ash);
+  color: var(--night);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--dur-quick) var(--ease-film);
+}
+
+.skip:focus-visible {
+  transform: translateY(0);
+  outline-color: var(--fire);
+}
+
+.contact {
+  position: fixed;
+  top: var(--space-6);
+  right: calc(var(--gutter) + 1.5rem);
+  z-index: var(--z-chrome);
+  color: var(--ash);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid rgb(232 222 213 / 0.4);
+  transition: color var(--dur-quick) var(--ease-film), border-color var(--dur-quick) var(--ease-film);
+}
+
+.contact:hover {
+  color: var(--fire);
+  border-bottom-color: var(--fire);
+}
+
+.rail {
+  position: fixed;
+  right: var(--space-4);
+  top: 50%;
+  translate: 0 -50%;
+  z-index: var(--z-chrome);
+}
+
+.rail ol {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.chapter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-height: 1.5rem;
+  padding-left: var(--space-3);
+  color: var(--ash-dim);
+}
+
+.chapterLabel {
+  opacity: 0;
+  translate: 0.25rem 0;
+  transition: opacity var(--dur-quick) var(--ease-film), translate var(--dur-quick) var(--ease-film);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tick {
+  display: block;
+  width: 0.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--dur-quick) var(--ease-film), background-color var(--dur-quick) var(--ease-film);
+}
+
+.rail:hover .chapterLabel,
+.chapter:focus-visible .chapterLabel {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.chapter:hover {
+  color: var(--ash);
+}
+
+.chapter[aria-current="step"] {
+  color: var(--fire);
+}
+
+.chapter[aria-current="step"] .tick {
+  width: 1.5rem;
+}
+
+.fuse {
+  --progress: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: var(--z-chrome);
+  pointer-events: none;
+}
+
+.burnt {
+  position: absolute;
+  inset: 0;
+  background: var(--fire);
+  transform-origin: top center;
+  transform: scaleY(var(--progress));
+}
+
+.ember {
+  position: absolute;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 6px 1px rgb(255 109 0 / 0.8);
+  top: calc(var(--progress) * 100% - 3px);
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .rail {
+    display: none;
+  }
+}
