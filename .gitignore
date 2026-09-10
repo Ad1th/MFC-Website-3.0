@@ -4,3 +4,4 @@ node_modules
 director/
 .DS_Store
 graphify-out/
+dist
