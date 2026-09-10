@@ -1,0 +1,112 @@
+[
+  {
+    "slug": "webwise",
+    "name": "WebWise",
+    "date": "2024-11-09",
+    "flagship": false,
+    "summary": "A web development session at Williams School: students built websites with HTML, CSS and JavaScript.",
+    "description": "MFC members ran an interactive session at Williams School. Students built websites with HTML, CSS and JavaScript and learned basic ways to protect a site from common online threats.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "arena-exe",
+    "name": "Arena.exe",
+    "date": "2024-11-08",
+    "flagship": false,
+    "summary": "A gaming event on a game portal, with strategy and skill-based challenges.",
+    "description": "Participants played through a game portal of strategy and skill-based games and competed for the top of the leaderboard.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "queue-rious-coders",
+    "name": "Queue-rious Coders",
+    "date": "2024-10-24",
+    "flagship": false,
+    "summary": "A coding event built around stack and queue data structures, open to every level.",
+    "description": "A coding event for participants of all levels, with problems built around stack and queue data structures.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "techwars",
+    "name": "TechWars",
+    "date": "2024-09-28",
+    "flagship": true,
+    "summary": "A campus-wide team game: solve coding questions to capture territory, win offline mini-games for power-ups.",
+    "description": "Teams solve coding questions to conquer territories on a shared map and play offline mini-games that grant power-ups.",
+    "link": "https://github.com/MFC-VIT/TechWars-Frontend",
+    "image": null
+  },
+  {
+    "slug": "code-to-survive",
+    "name": "Code to Survive",
+    "date": "2024-09-27",
+    "flagship": true,
+    "summary": "Three rounds that mix an escape room, a murder mystery and a criminal hunt, solved with code.",
+    "description": "A three-round event that combines an escape room, a murder mystery and a criminal hunt. Participants write and read code to move from one round to the next.",
+    "link": "https://github.com/MFC-VIT/CTS-BE-24",
+    "image": null
+  },
+  {
+    "slug": "cloudforage",
+    "name": "CloudForage",
+    "date": "2024-08-13",
+    "flagship": false,
+    "summary": "An offline AWS cloud computing session led by Mr. Balamurugan G.",
+    "description": "An offline session on AWS cloud computing led by Mr. Balamurugan G, covering AWS fundamentals, cloud architecture and practices for building scalable, secure projects.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "webwhiz",
+    "name": "WebWhiz",
+    "date": "2024-04-18",
+    "flagship": false,
+    "summary": "A hands-on HTML and CSS workshop where participants built their own portfolio websites.",
+    "description": "A hands-on HTML and CSS workshop. Participants learned the essentials of web development by building their own portfolio websites.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "innovationx",
+    "name": "InnovationX",
+    "date": "2024-03-18",
+    "flagship": true,
+    "summary": "A 36-hour hackathon with the Advertisement and Marketing Club, ending in presentations from the top five teams.",
+    "description": "A 36-hour hackathon run with the Advertisement and Marketing Club: ideation, mentorship sessions and project work, closing with presentations from the top five teams.",
+    "link": "https://github.com/MFC-VIT/InnovationX-24",
+    "image": null
+  },
+  {
+    "slug": "cyber-security-and-ethical-hacking",
+    "name": "Cyber Security and Ethical Hacking",
+    "date": "2024-03-13",
+    "flagship": false,
+    "summary": "A speaker session with Mrs. Pooja V Joshi from EC-Council on privacy and cybersecurity.",
+    "description": "A speaker session with Mrs. Pooja V Joshi from EC-Council on privacy and cybersecurity.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "codecraft",
+    "name": "CodeCraft",
+    "date": "2024-03-07",
+    "flagship": false,
+    "summary": "A beginner workshop on JavaScript fundamentals and the Document Object Model.",
+    "description": "A workshop for beginners on the fundamentals of JavaScript and the Document Object Model.",
+    "link": "https://www.instagram.com/mfc_vit/",
+    "image": null
+  },
+  {
+    "slug": "scavenger-of-the-year",
+    "name": "Scavenger of the Year",
+    "date": "2024-03-03",
+    "flagship": true,
+    "summary": "A scavenger hunt of tasks and riddles against the clock, with side games that unlock powers.",
+    "description": "Teams race against time through a list of tasks, objectives and riddles. Side games unlock powers that can swing the result.",
+    "link": "https://github.com/MFC-VIT/SOTY-Backend-24",
+    "image": null
+  }
+]
