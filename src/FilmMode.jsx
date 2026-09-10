@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
 import { film } from './film/store.js';
 import { initScroll, jumpToScene } from './film/scroll.js';
 import { flags } from './live/flags.js';
+import { isKeyboardFocus } from './live/inputModality.js';
 import Film from './film/Film.jsx';
 import Chrome from './dom/Chrome.jsx';
 import Semantic from './dom/Semantic.jsx';
@@ -34,7 +35,8 @@ export default function FilmMode({ onSkip }) {
     return film.subscribe(listener);
   }, []);
 
-  const onRegionFocus = useCallback((index) => {
+  const onRegionFocus = useCallback((index, target) => {
+    if (!isKeyboardFocus(target)) return;
     if (film.getState().activeScene !== index) jumpToScene(index, { immediate: true });
   }, []);
 

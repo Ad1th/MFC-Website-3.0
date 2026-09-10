@@ -356,7 +356,7 @@ function useIsMobile() {
 }
 
 /**
- * @param {{ variant: 'film'|'still', onRegionFocus?: (sceneIndex: number) => void, subscribe?: (fn: (activeScene: number) => void) => () => void }} props
+ * @param {{ variant: 'film'|'still', onRegionFocus?: (sceneIndex: number, target: EventTarget) => void, subscribe?: (fn: (activeScene: number) => void) => () => void }} props
  */
 export default function Semantic({ variant, onRegionFocus, subscribe }) {
   if (variant === 'still') {
@@ -400,7 +400,7 @@ function FilmRegions({ onRegionFocus, subscribe }) {
             data-scene-index={scene.index}
             data-active="false"
             style={{ top: `${(scene.start / total) * 100}%`, height: `${(scene.length / total) * 100}%` }}
-            onFocusCapture={() => onRegionFocus?.(scene.index)}
+            onFocusCapture={(event) => onRegionFocus?.(scene.index, event.target)}
           >
             {Region ? (
               <div className={styles.panel} data-region={scene.region}>
