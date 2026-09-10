@@ -1,0 +1,13 @@
+.main {
+  position: relative;
+  z-index: var(--z-dom);
+}
+
+.main:focus {
+  outline: none;
+}
+
+.track {
+  position: relative;
+  width: 100%;
+}
