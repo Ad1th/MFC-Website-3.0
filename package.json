@@ -1,0 +1,44 @@
+{
+  "name": "mfc-website2.0",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "npm run fetch:medium && npm run fetch:github && npm run check:content",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:content": "node scripts/check-content.mjs",
+    "fetch:medium": "node scripts/fetch-medium.mjs",
+    "fetch:github": "node scripts/fetch-github.mjs",
+    "images": "node scripts/optimize-images.mjs --clean",
+    "lint": "eslint .",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.8",
+    "@react-three/fiber": "9.7.0",
+    "@react-three/postprocessing": "3.1.1",
+    "gsap": "3.15.0",
+    "howler": "2.2.4",
+    "lenis": "1.3.26",
+    "postprocessing": "6.39.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "suncalc": "2.0.2",
+    "three": "0.186.0",
+    "zustand": "5.0.15"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "eslint": "10.10.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "fast-xml-parser": "5.11.1",
+    "globals": "17.12.0",
+    "sharp": "0.35.4",
+    "vite": "8.3.0",
+    "zod": "4.6.2"
+  }
+}
