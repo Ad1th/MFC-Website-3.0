@@ -1,6 +1,7 @@
 /**
  * URL flags for testing every branch of live behaviour.
  *   ?debug                      debug HUD and window.__film.stats()
+ *   ?tier=0|1|2|3               force a quality tier (tests, benchmarks)
  *   ?still=1                    force still (graphic novel) mode
  *   ?sandbox=fox                fox sandbox (Phase 2)
  *   ?weather=rain|storm|clear|fog|cloudy|drizzle
@@ -21,6 +22,7 @@ const numberOrNull = (value) => {
 
 export const flags = Object.freeze({
   debug: params.has('debug'),
+  tier: numberOrNull(params.get('tier')),
   still: params.get('still') === '1',
   sandbox: params.get('sandbox'),
   weather: params.get('weather'),

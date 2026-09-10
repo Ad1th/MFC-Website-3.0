@@ -16,7 +16,8 @@ function prefersReducedMotion() {
 /** Decide the starting mode once, before first paint of the real UI. */
 function decideMode() {
   if (!HOME_PATHS.has(window.location.pathname)) return { mode: 'notFound', tier: 0 };
-  const tier = initialTier();
+  const forced = flags.tier;
+  const tier = forced !== null && forced >= 0 && forced <= 3 ? forced : initialTier();
   if (flags.still || prefersReducedMotion() || tier === 0) return { mode: 'still', tier };
   return { mode: 'film', tier };
 }
