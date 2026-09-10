@@ -21,7 +21,7 @@
   overscroll-behavior: contain;
   scrollbar-width: none;
   display: grid;
-  align-content: center;
+  align-content: safe center;
   padding-block: calc(var(--space-16) + var(--space-4)) var(--space-16);
   padding-inline: var(--gutter) calc(var(--gutter) + 3rem);
   opacity: 0;
