@@ -1,0 +1,15 @@
+.hud {
+  position: fixed;
+  left: var(--space-4);
+  top: var(--space-16);
+  z-index: var(--z-debug);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--spark);
+  background: rgb(10 8 7 / 0.72);
+  pointer-events: none;
+  white-space: pre;
+}
