@@ -1,0 +1,68 @@
+:root {
+  /* colour: orange is only for things that are alive */
+  --night: #0a0807;       /* void, room, space */
+  --fire: #ff6d00;        /* live things only */
+  --ember: #ffb36b;       /* flame core, highlights */
+  --ash: #e8ded5;         /* text on dark, paper base */
+  --ash-dim: #a39e9a;     /* secondary text */
+  --spark: #dfe8ff;       /* "you" and other visitors */
+  --paper: #efe6da;       /* scene 8 */
+  --ink: #1b1512;         /* scene 8 text */
+
+  /* theme roles, swapped by [data-theme="paper"] */
+  --bg: var(--night);
+  --fg: var(--ash);
+  --fg-dim: var(--ash-dim);
+  --line: rgb(232 222 213 / 0.14);
+
+  /* type */
+  --font-display: "Mozilla Headline", "Zilla Slab", Georgia, serif;
+  --font-text: "Mozilla Text", "Fira Sans", system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+  --font-mark: "apex", "Mozilla Headline", sans-serif;
+
+  --text-display: clamp(3.5rem, 11vw, 12rem);
+  --text-title: clamp(2.25rem, 1.4rem + 3.6vw, 5rem);
+  --text-lead: clamp(1.3125rem, 1.05rem + 1vw, 1.875rem);
+  --text-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --text-small: 0.9375rem;
+  --hud-size: 12px;       /* mono labels, letter-spacing 0.12em */
+
+  --tracking-display: -0.03em;
+  --tracking-hud: 0.12em;
+  --leading-display: 0.9;
+  --leading-body: 1.55;
+  --measure: 62ch;
+
+  /* space */
+  --gutter: clamp(1rem, 0.4rem + 3vw, 3.5rem);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* motion */
+  --ease-film: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-quick: 160ms;
+  --dur-move: 480ms;
+
+  /* layers */
+  --z-film: 0;
+  --z-dom: 10;
+  --z-chrome: 40;
+  --z-debug: 90;
+  --z-skip: 100;
+}
+
+[data-theme="paper"] {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --fg-dim: #5c514a;
+  --line: rgb(27 21 18 / 0.16);
+}
