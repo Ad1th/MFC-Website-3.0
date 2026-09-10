@@ -1,0 +1,866 @@
+{
+  "faculty": {
+    "name": "Dr. Jayakumar Sadhasivam",
+    "role": "Faculty Coordinator",
+    "bio": "Associate Professor, School of Computer Science and Engineering (SCOPE), VIT, and Assistant Director of the Career Development Centre. PhD in Information Technology from VIT. Works on open source programming, network security, storage technologies and machine learning.",
+    "photo": "/media/team/faculty/jayakumar-sadhasivam.webp",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/iamjayakumars/",
+      "github": "https://github.com/iamjayakumars",
+      "website": "https://jayakumars.in/"
+    }
+  },
+  "years": {
+    "2026-27": [
+      {
+        "name": "Ansh Jerath",
+        "role": "Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2026-27/ansh-jerath.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/ansh-jerath-a25412214",
+          "github": "https://github.com/darkhorse0204",
+          "instagram": "https://www.instagram.com/ansh.jerath/"
+        }
+      },
+      {
+        "name": "Bihan Banerjee",
+        "role": "General Secretary",
+        "domain": "core",
+        "photo": "/media/team/2026-27/bihan-banerjee.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/bihan-banerjee-70905228b",
+          "github": "https://github.com/Bihan-Banerjee",
+          "instagram": "https://www.instagram.com/banerjee.bihan/"
+        }
+      },
+      {
+        "name": "Aayush Keshwani",
+        "role": "Vice Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2026-27/aayush-keshwani.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/aayush-keshwani",
+          "github": "https://github.com/Aayush-Keshwani",
+          "instagram": "https://www.instagram.com/aayush_keshwani"
+        }
+      },
+      {
+        "name": "Adithya Nachiyappan",
+        "role": "Co-Secretary",
+        "domain": "core",
+        "photo": "/media/team/2026-27/adithya-nachiyappan.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/adithya-nachiyappan",
+          "github": "https://github.com/Nachi2006",
+          "instagram": "https://www.instagram.com/illumi_nachi"
+        }
+      },
+      {
+        "name": "Adith Manikonda",
+        "role": "Technical Head",
+        "domain": "technical",
+        "photo": "/media/team/2026-27/adith-manikonda.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/adith-manikonda/",
+          "github": "https://github.com/Ad1th",
+          "instagram": "https://www.instagram.com/byteryder_/"
+        }
+      },
+      {
+        "name": "Yuvraj Bansal",
+        "role": "Web Development Lead",
+        "domain": "technical",
+        "photo": "/media/team/2026-27/yuvraj-bansal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/yuvraj-bansal30",
+          "github": "https://github.com/codewithyuvi",
+          "instagram": "https://www.instagram.com/bansalyuvrajdec30"
+        }
+      },
+      {
+        "name": "Riyan Johnson",
+        "role": "Open Source Software Lead",
+        "domain": "technical",
+        "photo": "/media/team/2026-27/riyan-johnson.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/riyanjohnson",
+          "github": "https://github.com/Riyanjohnson",
+          "instagram": "https://www.instagram.com/riyan.johnson16"
+        }
+      },
+      {
+        "name": "Dakshata Abhyankar",
+        "role": "UI/UX Lead",
+        "domain": "design",
+        "photo": "/media/team/2026-27/dakshata-abhyankar.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/dakshata-abhyankar-5aab57330",
+          "github": "https://github.com/auradude01-arch"
+        }
+      },
+      {
+        "name": "Rishita Khetan",
+        "role": "Design Head",
+        "domain": "design",
+        "photo": "/media/team/2026-27/rishita-khetan.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/rishita-khetan-0b3a3734b/",
+          "github": "https://github.com/RishitaKhetan",
+          "instagram": "https://www.instagram.com/rissytaaa/"
+        }
+      },
+      {
+        "name": "Arshia Ghosh",
+        "role": "Events Head",
+        "domain": "management",
+        "photo": "/media/team/2026-27/arshia-ghosh.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/arshia-ghosh-93421a316/",
+          "github": "https://github.com/arshia-2010",
+          "instagram": "https://www.instagram.com/arshia_ghoshh"
+        }
+      },
+      {
+        "name": "Pranjal Sahay",
+        "role": "General Operations Lead",
+        "domain": "management",
+        "photo": "/media/team/2026-27/pranjal-sahay.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/pranjal-sahay-1a995a318",
+          "github": "https://github.com/pranjalsahay",
+          "instagram": "https://www.instagram.com/ipranjalsahay/"
+        }
+      },
+      {
+        "name": "Neha Damani",
+        "role": "Publicity Head",
+        "domain": "management",
+        "photo": "/media/team/2026-27/neha-damani.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/neha-damani-727973316",
+          "github": "https://github.com/nehadamani0909",
+          "instagram": "https://www.instagram.com/neha_damani0909/"
+        }
+      },
+      {
+        "name": "Traya Jawahar",
+        "role": "Outreach Head",
+        "domain": "management",
+        "photo": "/media/team/2026-27/traya-jawahar.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/traya-jawahar-2a13bb373",
+          "github": "https://github.com/TrayaJawahar",
+          "instagram": "https://www.instagram.com/traya_jawahar"
+        }
+      },
+      {
+        "name": "Pooja Goel",
+        "role": "HR Head",
+        "domain": "management",
+        "photo": "/media/team/2026-27/pooja-goel.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/pooja-goel-b16397329",
+          "github": "https://github.com/Pooja-Goel07",
+          "instagram": "https://www.instagram.com/pooja._goel07"
+        }
+      },
+      {
+        "name": "Aadya Agrawal",
+        "role": "Content Lead",
+        "domain": "management",
+        "photo": "/media/team/2026-27/aadya-agrawal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/aadya-agarwal-4a8362314/",
+          "github": "https://github.com/aadya-agarwal",
+          "instagram": "https://www.instagram.com/__a_adya_"
+        }
+      },
+      {
+        "name": "Manya Singh",
+        "role": "Public Relations Head",
+        "domain": "management",
+        "photo": "/media/team/2026-27/manya-singh.webp",
+        "links": {}
+      }
+    ],
+    "2025-26": [
+      {
+        "name": "Harshvardhan Singh",
+        "role": "Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2025-26/harshvardhan-singh.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/harshvardhan-singh-b66728250/",
+          "github": "https://github.com/harshvar36",
+          "instagram": "https://www.instagram.com/harshvar_0036/"
+        }
+      },
+      {
+        "name": "Kanha Khantaal",
+        "role": "General Secretary",
+        "domain": "core",
+        "photo": "/media/team/2025-26/kanha-khantaal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/kanha-khantaal-829302258",
+          "github": "https://github.com/Kanha02052002",
+          "instagram": "https://www.instagram.com/k2g_02/"
+        }
+      },
+      {
+        "name": "Samriddhi Sharma",
+        "role": "Vice Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2025-26/samriddhi-sharma.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/samriddhi-s-",
+          "github": "https://github.com/ck-ss",
+          "instagram": "https://www.instagram.com/samriddhi__sharma__/"
+        }
+      },
+      {
+        "name": "Keshav Gujrathi",
+        "role": "Co-Secretary",
+        "domain": "core",
+        "photo": "/media/team/2025-26/keshav-gujrathi.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/keshavgujrathi",
+          "github": "https://github.com/keshavgujrathi",
+          "instagram": "https://www.instagram.com/keshavgujrathi/"
+        }
+      },
+      {
+        "name": "Abhinav Garg",
+        "role": "Technical Head",
+        "domain": "technical",
+        "photo": "/media/team/2025-26/abhinav-garg.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/abhinav-garg05",
+          "github": "https://github.com/ABHINAVGARG05"
+        }
+      },
+      {
+        "name": "Suvidh Jain",
+        "role": "Projects Head",
+        "domain": "technical",
+        "photo": "/media/team/2025-26/suvidh-jain.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/suvidh-jain-72a88728a/",
+          "github": "https://github.com/SuvidhJ",
+          "instagram": "https://www.instagram.com/harshitpg/"
+        }
+      },
+      {
+        "name": "Bihan Banerjee",
+        "role": "Events Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/bihan-banerjee.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/bihan-banerjee-70905228b",
+          "github": "https://github.com/Bihan-Banerjee",
+          "instagram": "https://www.instagram.com/banerjee.bihan"
+        }
+      },
+      {
+        "name": "Prateek Batra",
+        "role": "Research and Development Head",
+        "domain": "technical",
+        "photo": "/media/team/2025-26/prateek-batra.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/prateekbatradel",
+          "github": "https://github.com/PrateekBatra23",
+          "instagram": "https://www.instagram.com/prateekbatra23/"
+        }
+      },
+      {
+        "name": "Mahima Gupta",
+        "role": "Publicity Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/mahima-gupta.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/mahima-gupta-a51b1728a",
+          "github": "https://github.com/mahimag07",
+          "instagram": "https://www.instagram.com/mahimaaagupta/"
+        }
+      },
+      {
+        "name": "Linga Nikhil Arya",
+        "role": "Design Head",
+        "domain": "design",
+        "photo": "/media/team/2025-26/linga-nikhil-arya.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/nikhil-arya-linga-941a3028a/",
+          "github": "https://github.com/nikhillinga",
+          "instagram": "https://www.instagram.com/nikhil_linga?igsh=NDh3ZzNzaG1wcnJn&utm_source=qr"
+        }
+      },
+      {
+        "name": "Rishi Chalana",
+        "role": "Management Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/rishi-chalana.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/rishi-chalana-08654520a",
+          "github": "https://github.com/RishiChalana",
+          "instagram": "https://www.instagram.com/rishi__chalana"
+        }
+      },
+      {
+        "name": "Somil Gupta",
+        "role": "Outreach Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/somil-gupta.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/somil-gupta-040479285/",
+          "github": "https://github.com/Somil1109",
+          "instagram": "https://www.instagram.com/somil_1542/"
+        }
+      },
+      {
+        "name": "Nandini Khantaal",
+        "role": "HR Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/nandini-khantaal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/nandini-khantaal-69719628b",
+          "github": "https://github.com/NandiniKhantaal",
+          "instagram": "https://www.instagram.com/_nkhantaal_"
+        }
+      },
+      {
+        "name": "Ansh Jerath",
+        "role": "Finance Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/ansh-jerath.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/ansh-jerath-a25412214",
+          "github": "https://github.com/darkhorse0204",
+          "instagram": "https://www.instagram.com/ansh.jerath/"
+        }
+      },
+      {
+        "name": "Kokil Agarwal",
+        "role": "Creative Head",
+        "domain": "design",
+        "photo": "/media/team/2025-26/kokil-agarwal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/kokil-agarwal",
+          "github": "https://github.com/KokilAgarwal",
+          "instagram": "https://www.instagram.com/kokil__agarwal"
+        }
+      },
+      {
+        "name": "Saanvi Sharma",
+        "role": "Public Relations Head",
+        "domain": "management",
+        "photo": "/media/team/2025-26/saanvi-sharma.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/saanvi-sharma-254b782a5/",
+          "github": "https://github.com/saanvi3605",
+          "instagram": "https://www.instagram.com/_saanvi_0306"
+        }
+      }
+    ],
+    "2024-25": [
+      {
+        "name": "Utkarsh Tyagi",
+        "role": "Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2024-25/utkarsh-tyagi.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/utkarsh-tyagi-/",
+          "github": "https://github.com/utkarsh-creator",
+          "instagram": "https://www.instagram.com/utkarshtyagi07/"
+        }
+      },
+      {
+        "name": "Namah Singhal",
+        "role": "General Secretary",
+        "domain": "core",
+        "photo": "/media/team/2024-25/namah-singhal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/namah-singhal-983446217/",
+          "github": "https://github.com/NAMAH942",
+          "instagram": "https://www.instagram.com/nam.ahhh28_/"
+        }
+      },
+      {
+        "name": "Chaitanay Kapoor",
+        "role": "Vice Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2024-25/chaitanay-kapoor.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/chaitanay-kapoor-717bb8299/",
+          "github": "https://github.com/chaitanay2004",
+          "instagram": "https://www.instagram.com/chaitanaykapoor/"
+        }
+      },
+      {
+        "name": "Vinayak Raina",
+        "role": "Co-Secretary",
+        "domain": "core",
+        "photo": "/media/team/2024-25/vinayak-raina.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/vinayak-raina-08a71a253",
+          "github": "https://github.com/RAINAVINAYAK16",
+          "instagram": "https://www.instagram.com/raina.vinayak/"
+        }
+      },
+      {
+        "name": "Keshav Aneja",
+        "role": "Technical Head",
+        "domain": "technical",
+        "photo": "/media/team/2024-25/keshav-aneja.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/keshav-aneja",
+          "github": "https://github.com/Keshav-Aneja",
+          "instagram": "https://www.instagram.com/k.aneja09/"
+        }
+      },
+      {
+        "name": "Harshit PG",
+        "role": "Projects Head",
+        "domain": "technical",
+        "photo": "/media/team/2024-25/harshit-pg.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/harshit-p-g-a87623272/",
+          "github": "https://github.com/HarshitPG",
+          "instagram": "https://www.instagram.com/harshitpg/"
+        }
+      },
+      {
+        "name": "Sameer Mahindru",
+        "role": "Events Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/sameer-mahindru.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/sameer-mahindru-39ba91248/",
+          "github": "https://github.com/CodesBySammy",
+          "instagram": "https://www.instagram.com/spammyyy._._/"
+        }
+      },
+      {
+        "name": "Kandarp Chandra",
+        "role": "Research and Development Head",
+        "domain": "technical",
+        "photo": "/media/team/2024-25/kandarp-chandra.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/kandarp-chandra-b32ba4251/",
+          "github": "https://github.com/kandarpchandra",
+          "instagram": "https://www.instagram.com/kandarp._._/"
+        }
+      },
+      {
+        "name": "Kanishka Viswanathan",
+        "role": "Publicity Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/kanishka-viswanathan.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/kanishka-viswanathan",
+          "github": "https://github.com/KanishkaViswanathan",
+          "instagram": "https://www.instagram.com/_kxnishhh/"
+        }
+      },
+      {
+        "name": "Divyansh Gautam",
+        "role": "Design Head",
+        "domain": "design",
+        "photo": "/media/team/2024-25/divyansh-gautam.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/divyansh-gautam-323b47266",
+          "github": "https://github.com/i-divyansh",
+          "instagram": "https://www.instagram.com/i._divyansh/"
+        }
+      },
+      {
+        "name": "Himika Bansal",
+        "role": "HR Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/himika-bansal.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/himika-bansal",
+          "github": "https://github.com/himika-bansal",
+          "instagram": "https://www.instagram.com/himika.bansal/"
+        }
+      },
+      {
+        "name": "Harshvardhan Singh",
+        "role": "Management Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/harshvardhan-singh.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/harshvardhan-singh-b66728250/",
+          "github": "https://github.com/harshvar36",
+          "instagram": "https://www.instagram.com/harshvar_0036/"
+        }
+      },
+      {
+        "name": "Anshul Kedia",
+        "role": "Finance Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/anshul-kedia.webp",
+        "links": {
+          "linkedin": "http://www.linkedin.com/in/anshul-kedia-78965b245",
+          "github": "https://github.com/anshulkedia",
+          "instagram": "https://www.instagram.com/anshul.kediaaa/"
+        }
+      },
+      {
+        "name": "Akshat Kumar Jha",
+        "role": "Editorial Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/akshat-kumar-jha.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/akshat-jha-bbb861254",
+          "github": "https://github.com/axe-hat",
+          "instagram": "https://www.instagram.com/axe.hat/"
+        }
+      },
+      {
+        "name": "Kanha Khantaal",
+        "role": "Outreach Head",
+        "domain": "management",
+        "photo": "/media/team/2024-25/kanha-khantaal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/kanha-khantaal-829302258",
+          "github": "https://github.com/Kanha02052002",
+          "instagram": "https://www.instagram.com/k2g_02/"
+        }
+      },
+      {
+        "name": "Samaksh Arjani",
+        "role": "Creative Head",
+        "domain": "design",
+        "photo": "/media/team/2024-25/samaksh-arjani.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/samaksh-arjani-262a12253/",
+          "github": "https://github.com/samaksharjani2004",
+          "instagram": "https://www.instagram.com/chiiinuu._6/"
+        }
+      }
+    ],
+    "2023-24": [
+      {
+        "name": "Prateek Balaji",
+        "role": "Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2023-24/prateek-balaji.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/prateek-balaji/",
+          "instagram": "https://www.instagram.com/prateek_balaji/"
+        }
+      },
+      {
+        "name": "Kartikey Bhatnagar",
+        "role": "Vice Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2023-24/kartikey-bhatnagar.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/kartikey-bhatnagar",
+          "instagram": "https://www.instagram.com/kartickeyy/"
+        }
+      },
+      {
+        "name": "Naisa Gupta",
+        "role": "General Secretary",
+        "domain": "core",
+        "photo": "/media/team/2023-24/naisa-gupta.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/naisa-gupta-1b020a1b9",
+          "instagram": "https://www.instagram.com/nxisagupta/"
+        }
+      },
+      {
+        "name": "Trisha Paul",
+        "role": "Co-Secretary",
+        "domain": "core",
+        "photo": "/media/team/2023-24/trisha-paul.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/trisha-paul-929964235?trk=people-guest_people_search-card",
+          "instagram": "https://www.instagram.com/trishapaul._/"
+        }
+      },
+      {
+        "name": "Vedik Agarwal",
+        "role": "Technical Chair",
+        "domain": "technical",
+        "photo": "/media/team/2023-24/vedik-agarwal.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/vedik-agarwal",
+          "instagram": "https://www.instagram.com/vedik_agarwal/"
+        }
+      },
+      {
+        "name": "Aditya Aren",
+        "role": "Project Head",
+        "domain": "technical",
+        "photo": "/media/team/2023-24/aditya-aren.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/aditya-aren-913893235?trk=public_post_feed-actor-name",
+          "instagram": "https://www.instagram.com/aditya_aren/"
+        }
+      },
+      {
+        "name": "Siddhesh Fuladi",
+        "role": "Management Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/siddhesh-fuladi.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/siddhesh-fuladi",
+          "instagram": "https://www.instagram.com/siddheshfuladi/"
+        }
+      },
+      {
+        "name": "Ayush Patil",
+        "role": "Design Head",
+        "domain": "design",
+        "photo": "/media/team/2023-24/ayush-patil.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/ayushp2948/",
+          "instagram": "https://www.instagram.com/ayush.patil_17/"
+        }
+      },
+      {
+        "name": "Vaishali Singh",
+        "role": "Events Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/vaishali-singh.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/vaishali-singh25?trk=public_profile_browsemap",
+          "instagram": "https://www.instagram.com/vaishaaaaliiiii/"
+        }
+      },
+      {
+        "name": "Stuti Chaudhury",
+        "role": "Editorial Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/stuti-chaudhury.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/stuti-chaudhury-8419a3235?trk=public_profile_browsemap",
+          "instagram": "https://www.instagram.com/radiantstuti/"
+        }
+      },
+      {
+        "name": "Utkarsh Tyagi",
+        "role": "Research and Development Head",
+        "domain": "technical",
+        "photo": "/media/team/2023-24/utkarsh-tyagi.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/utkarsh-tyagi-/",
+          "github": "https://github.com/utkarsh-creator",
+          "instagram": "https://www.instagram.com/utkarshtyagi07/"
+        }
+      },
+      {
+        "name": "Nirbhay Tiwari",
+        "role": "Publicity Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/nirbhay-tiwari.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/nirbhay-tiwari-b09817219",
+          "instagram": "https://www.instagram.com/_nirbhayt/"
+        }
+      },
+      {
+        "name": "Hemant Modi",
+        "role": "Finance Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/hemant-modi.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/modih",
+          "instagram": "https://www.instagram.com/notthegujratimodi/"
+        }
+      },
+      {
+        "name": "Soumyadeep Roy Chowdhury",
+        "role": "Outreach Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/soumyadeep-roy-chowdhury.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/sdroyc",
+          "instagram": "https://www.instagram.com/soumyadeep_rc/"
+        }
+      },
+      {
+        "name": "Aditya Prasad",
+        "role": "Creative Head",
+        "domain": "design",
+        "photo": "/media/team/2023-24/aditya-prasad.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/adityaprasad1143",
+          "instagram": "https://www.instagram.com/adiitya_74/"
+        }
+      },
+      {
+        "name": "Tanisha Ambastha",
+        "role": "HR Head",
+        "domain": "management",
+        "photo": "/media/team/2023-24/tanisha-ambastha.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/tanisha-ambastha-545318237?trk=public_profile_browsemap",
+          "instagram": "https://www.instagram.com/tanisha_ambastha/"
+        }
+      },
+      {
+        "name": "Namah Singhal",
+        "role": "UI/UX Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2023-24/namah-singhal.webp",
+        "links": {
+          "linkedin": "https://www.linkedin.com/in/namah-singhal-983446217/",
+          "github": "https://github.com/NAMAH942",
+          "instagram": "https://www.instagram.com/nam.ahhh28_/"
+        }
+      },
+      {
+        "name": "Himakshi Chaturvedi",
+        "role": "Media Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2023-24/himakshi-chaturvedi.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/himakshi-chaturvedi",
+          "instagram": "https://www.instagram.com/himakshiiii_/"
+        }
+      },
+      {
+        "name": "Ashutosh Prabhudesai",
+        "role": "AI/ML Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2023-24/ashutosh-prabhudesai.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/prabhudesaiashutosh02",
+          "instagram": "https://www.instagram.com/ashutosh02_/"
+        }
+      },
+      {
+        "name": "Sushant Saurav",
+        "role": "Web Development Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2023-24/sushant-saurav.webp",
+        "links": {
+          "linkedin": "https://in.linkedin.com/in/sushant-saurav-baa17b220",
+          "instagram": "https://www.instagram.com/sushant_g04/"
+        }
+      }
+    ],
+    "2022-23": [
+      {
+        "name": "Amit Priyadharshi",
+        "role": "Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2022-23/amit-priyadharshi.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/myth.tiff/"
+        }
+      },
+      {
+        "name": "Ishaan Rejra",
+        "role": "Vice Chairperson",
+        "domain": "core",
+        "photo": "/media/team/2022-23/ishaan-rejra.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/ishaanrejra/"
+        }
+      },
+      {
+        "name": "Animesh Verma",
+        "role": "General Secretary",
+        "domain": "core",
+        "photo": "/media/team/2022-23/animesh-verma.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/ianimeshverma/"
+        }
+      },
+      {
+        "name": "Yash Sinha",
+        "role": "Co-Secretary",
+        "domain": "core",
+        "photo": "/media/team/2022-23/yash-sinha.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/yashsinha_02/"
+        }
+      },
+      {
+        "name": "Vanshika Nehra",
+        "role": "Technical Chair",
+        "domain": "technical",
+        "photo": "/media/team/2022-23/vanshika-nehra.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/nehra.vanshika/"
+        }
+      },
+      {
+        "name": "Reovwin John",
+        "role": "Creative Chair",
+        "domain": "design",
+        "photo": "/media/team/2022-23/reovwin-john.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/_.reoo._/"
+        }
+      },
+      {
+        "name": "Sayak Mukherjee",
+        "role": "Editorial Chair",
+        "domain": "management",
+        "photo": "/media/team/2022-23/sayak-mukherjee.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/saint_sayak/"
+        }
+      },
+      {
+        "name": "Aryavardhan Modi",
+        "role": "Projects Chair",
+        "domain": "technical",
+        "photo": "/media/team/2022-23/aryavardhan-modi.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/__anonymous_aayu__/"
+        }
+      },
+      {
+        "name": "Yash Raj Mani",
+        "role": "Research and Development Chair",
+        "domain": "technical",
+        "photo": "/media/team/2022-23/yash-raj-mani.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/yashrajmani_/"
+        }
+      },
+      {
+        "name": "Ann Mary John",
+        "role": "Outreach Chair",
+        "domain": "management",
+        "photo": "/media/team/2022-23/ann-mary-john.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/ann_marry_john/"
+        }
+      },
+      {
+        "name": "Priyanka Kumari",
+        "role": "ML Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2022-23/priyanka-kumari.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/it_is_priyankakumari/"
+        }
+      },
+      {
+        "name": "Kartikey Srivastava",
+        "role": "Media Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2022-23/kartikey-srivastava.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/kartikey25._/"
+        }
+      },
+      {
+        "name": "Manya Garg",
+        "role": "UI/UX Mentor",
+        "domain": "mentor",
+        "photo": "/media/team/2022-23/manya-garg.webp",
+        "links": {
+          "instagram": "https://www.instagram.com/manyaa.12/"
+        }
+      }
+    ]
+  }
+}
