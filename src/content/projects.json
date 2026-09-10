@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "roommate-dhoondo",
+    "number": "01",
+    "name": "ROOMMATE DHOONDO",
+    "tagline": "Find your next roommate at VIT.",
+    "description": "A roommate matching site for VIT students. Browse rooms by configuration with search filters, then connect through the built-in chat or shared contact details.",
+    "stack": ["React", "Node.js", "Express", "MongoDB"],
+    "link": "https://roommatedhoondo.mozillavit.in/",
+    "linkType": "visit",
+    "image": "/media/projects/roommate-dhoondo.webp",
+    "imageAlt": "Roommate Dhoondo sign-in screen: an illustrated student surrounded by profile pictures, beside the email and password form."
+  },
+  {
+    "slug": "enrollment-portal",
+    "number": "02",
+    "name": "ENROLLMENT PORTAL",
+    "tagline": "Where every MFC member starts.",
+    "description": "MFC's enrollment portal. Applicants pick their domains, complete tasks and answer questions to reach the interview rounds.",
+    "stack": ["Next.js", "Node.js", "Express", "MongoDB", "Tailwind"],
+    "link": "https://enrollments.mfcvit.in/",
+    "linkType": "visit",
+    "image": "/media/projects/enrollment-portal.webp",
+    "imageAlt": "Enrollment Portal sign-in page in orange pixel type reading Mozilla Firefox is recruiting, with a pixel dinosaur running along the bottom."
+  },
+  {
+    "slug": "tech-wars",
+    "number": "03",
+    "name": "TECH WARS",
+    "tagline": "Gravitas flagship. Capture territory. Hold it.",
+    "description": "The Gravitas team game built by MFC's dev team. Teams solve riddles, then capture and defend territory points on a battlefield map.",
+    "stack": ["Next.js", "Vite", "Node.js", "Express", "MongoDB"],
+    "link": "https://github.com/MFC-VIT/TechWars-Frontend",
+    "linkType": "source",
+    "image": "/media/projects/tech-wars.webp",
+    "imageAlt": "Tech Wars login screen: team name, lobby ID and password fields inside a neon blue frame over a starfield with planets."
+  },
+  {
+    "slug": "soty",
+    "number": "04",
+    "name": "SOTY",
+    "tagline": "A campus-wide treasure hunt, run from a phone.",
+    "description": "MFC's annual treasure hunt. Teams scan QR codes across campus, solve clues and play bonus games, all inside the website.",
+    "stack": ["React", "GSAP", "Node.js", "Express", "MongoDB"],
+    "link": "https://github.com/SuvidhJ/SOTY",
+    "linkType": "source",
+    "image": "/media/projects/soty.webp",
+    "imageAlt": "Scavenger of the Year sign-in page with the raccoon logo and username and password fields on a purple gradient."
+  },
+  {
+    "slug": "code-to-survive",
+    "number": "05",
+    "name": "CODE TO SURVIVE",
+    "tagline": "An escape room written in code.",
+    "description": "A Gravitas event that turns quizzes into an interactive trail of clues, played as a virtual escape room.",
+    "stack": ["Next.js", "Golang", "MongoDB"],
+    "link": "https://github.com/MFC-VIT/CTS-Frontend",
+    "linkType": "source",
+    "image": "/media/projects/code-to-survive.webp",
+    "imageAlt": "Code To Survive entry screen: a corkboard of case files tied with red string, a welcome note and an Enter button."
+  }
+]
