@@ -1,0 +1,82 @@
+[
+  {
+    "title": "The Science Behind Running LLMs Locally",
+    "url": "https://medium.com/mozilla-firefox-club/the-science-behind-running-llms-locally-e19cbbfdfb38",
+    "date": "2026-07-28",
+    "author": "Kaavya Dekhane",
+    "excerpt": "From Data Centers to Dorm Rooms You know that one guy in your DSA class who still aura farms by mentioning that AI model he ran on Ollama three months...",
+    "image": "https://cdn-images-1.medium.com/max/1024/1*S84VnQI7jlRsdGHQj4R4lA.jpeg"
+  },
+  {
+    "title": "Stop Storing JWTs in LocalStorage!",
+    "url": "https://medium.com/mozilla-firefox-club/stop-storing-jwts-in-localstorage-46c3649c72c5",
+    "date": "2026-06-15",
+    "author": "Yuvraj bansal",
+    "excerpt": "Why your favorite MERN stack tutorial might be setting you up for a massive security breach on deployment. You just spent your entire weekend grinding through a 4-hour YouTube tutorial...",
+    "image": "https://cdn-images-1.medium.com/max/1024/1*SvL6TGfFaPmEOtw1dzPDFg.jpeg"
+  },
+  {
+    "title": "What Happens Every Time When you Search on Google",
+    "url": "https://medium.com/mozilla-firefox-club/what-happens-every-time-when-you-search-on-google-c3cc5b4b9c8d",
+    "date": "2026-05-26",
+    "author": "Ayush Khandelwal",
+    "excerpt": "It’s 2AM and you’re still awake staring at you laptop and your body tired . A question comes into your head, a brain storming coding error or the name of...",
+    "image": "https://cdn-images-1.medium.com/max/980/1*ErycZIXG0PaL6qI835SFpg.png"
+  },
+  {
+    "title": "Neural Wars: Power Without A Trigger",
+    "url": "https://medium.com/mozilla-firefox-club/neural-wars-power-without-a-trigger-0f4938b341a9",
+    "date": "2025-07-02",
+    "author": "Amaan",
+    "excerpt": "Modern warfare: A Bloodless Battlefield Modern warfare is no longer fiction, it is a new-age reality. While traditional military operations relied on artillery, conventional rockets, guns, and tanks, modern warfare...",
+    "image": "https://cdn-images-1.medium.com/max/1024/1*4Qr8VLMt4BhZQIBpnVEtAw.png"
+  },
+  {
+    "title": "“Click, Vote, Secure: The Blockchain Election”",
+    "url": "https://medium.com/mozilla-firefox-club/click-vote-secure-the-blockchain-election-619875c301c7",
+    "date": "2025-06-07",
+    "author": "Pranjal Sahay",
+    "excerpt": "India, the largest democracy in the world, faces enormous tasks in organizing elections for over 900 million voters. Internet voting can make it easier by saving costs and increasing voter...",
+    "image": "https://cdn-images-1.medium.com/max/320/0*bLoZAtSm_CRoEu2D"
+  },
+  {
+    "title": "Unlocking the World of Open Source: A Beginner’s Guide to Contributing and Growing",
+    "url": "https://medium.com/mozilla-firefox-club/unlocking-the-world-of-open-source-a-beginners-guide-to-contributing-and-growing-2ab2e5d21fbc",
+    "date": "2025-05-13",
+    "author": "Bihan Banerjee",
+    "excerpt": "What does open source mean? Open source refers to a type of software licensing model in which the source code of a program is made publicly available for anyone to...",
+    "image": "https://cdn-images-1.medium.com/max/1024/0*CxZgFgwer7FCaC8X"
+  },
+  {
+    "title": "Red Teaming: The Golden Ticket Attack",
+    "url": "https://medium.com/mozilla-firefox-club/red-teaming-the-golden-ticket-attack-9447fc423970",
+    "date": "2024-12-28",
+    "author": "Utkarshtyagi",
+    "excerpt": "The world of cybersecurity is constantly evolving, with new threats emerging regularly. To stay ahead of these ever-growing risks, organizations need to prepare proactively. One of the most effective ways...",
+    "image": "https://cdn-images-1.medium.com/max/904/1*xtMTiQmgvYOUthu8Ly1O2w.png"
+  },
+  {
+    "title": "Understanding Windows Directory System",
+    "url": "https://medium.com/mozilla-firefox-club/understanding-windows-directory-system-a829523f243d",
+    "date": "2024-12-08",
+    "author": "Yathaartha Srivastava",
+    "excerpt": "Understanding the Windows Directory System Introduction The directory structure in Windows is essential for managing files and folders on a computer system. Understanding Windows directory layout is critical for effective...",
+    "image": "https://cdn-images-1.medium.com/max/600/0*zXWbKdXQ2QEQria8.png"
+  },
+  {
+    "title": "Algorithmic Secrets of Viral Content",
+    "url": "https://medium.com/mozilla-firefox-club/algorithmic-secrets-of-viral-content-08cc9567c553",
+    "date": "2024-11-11",
+    "author": "Sujaa Shri",
+    "excerpt": "Have you ever wondered why random content like meme templates, catchy songs, or viral dance moves suddenly dominate social media feeds? At first glance, what may seem like instant online...",
+    "image": "https://cdn-images-1.medium.com/max/727/1*hpa6rNYRX524A2djnDHToQ.jpeg"
+  },
+  {
+    "title": "The Rise of AI Powered Code Generation: What it means for developers",
+    "url": "https://medium.com/mozilla-firefox-club/the-rise-of-ai-powered-code-generation-what-it-means-for-developers-1fd2d52d3bc5",
+    "date": "2024-10-31",
+    "author": "Vajran Kannadasan",
+    "excerpt": "In recent years, artificial intelligence (AI) has made remarkable strides across various fields, including software development. One of its most fascinating applications is in AI-powered code generation, tools like GitHub...",
+    "image": "https://cdn-images-1.medium.com/max/875/0*5-GQBqSzRsVDmdlH.jpeg"
+  }
+]
