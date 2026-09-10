@@ -1,0 +1,44 @@
+{
+  "builders": {
+    "todo": "TODO_CONTENT: names of the MFC members who built this site, shown in Director's Cut mode.",
+    "people": []
+  },
+  "assets": [
+    {
+      "what": "Fox model",
+      "by": "PixelMannen",
+      "license": "CC0 1.0",
+      "source": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox"
+    },
+    {
+      "what": "Fox rigging and animation",
+      "by": "tomkranis",
+      "license": "CC-BY 4.0",
+      "source": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox"
+    },
+    {
+      "what": "Fox glTF conversion",
+      "by": "@AsoboStudio and @scurest",
+      "license": "CC-BY 4.0",
+      "source": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox"
+    },
+    {
+      "what": "Mozilla Headline and Mozilla Text",
+      "by": "Mozilla",
+      "license": "SIL OFL 1.1",
+      "source": "https://fonts.google.com/specimen/Mozilla+Headline"
+    },
+    {
+      "what": "Fira Code",
+      "by": "Nikita Prokopov",
+      "license": "SIL OFL 1.1",
+      "source": "https://fonts.google.com/specimen/Fira+Code"
+    },
+    {
+      "what": "GSAP",
+      "by": "GreenSock",
+      "license": "GSAP Standard License",
+      "source": "https://gsap.com/standard-license"
+    }
+  ]
+}
