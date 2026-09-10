@@ -27,6 +27,8 @@ export function reportParticles(count) {
 function record(now, dt) {
   frames.push({ t: now, dt });
   while (frames.length && now - frames[0].t > WINDOW_MS) frames.shift();
+  // useFrame runs before R3F renders, and three resets info at the start of each
+  // render, so these are the previous frame's totals.
   if (renderer) lastRender = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
 }
 
@@ -48,11 +50,15 @@ export function stats() {
   };
 }
 
-/** Mount inside <Canvas> to sample real render cadence. */
+/**
+ * Mount inside <Canvas> to sample real render cadence.
+ * Default priority on purpose: any positive useFrame priority makes R3F stop
+ * rendering automatically, which would blank the film in ?debug.
+ */
 export function StatsProbe() {
   useFrame((state, delta) => {
     record(state.clock.elapsedTime * 1000, delta);
-  }, 1000);
+  });
   return null;
 }
 
