@@ -1,0 +1,137 @@
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 72rem;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-4) var(--space-8);
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+}
+
+.field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 10rem;
+  flex: 1 1 12rem;
+}
+
+.field:last-of-type {
+  flex: 3 1 20rem;
+}
+
+.label {
+  font-size: var(--hud-size);
+  letter-spacing: var(--tracking-hud);
+  color: var(--fg-dim);
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: var(--space-2) 0;
+  color: var(--fg);
+  caret-color: var(--fire);
+  resize: none;
+  field-sizing: content;
+  min-height: 2.25em;
+  max-height: 8lh;
+  line-height: 1.5;
+  border-radius: 0;
+  transition: border-color var(--dur-quick) var(--ease-film);
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--fg);
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.field:focus-within .label {
+  color: var(--fg);
+}
+
+.field[data-invalid] .label {
+  color: var(--ember);
+}
+
+.field[data-invalid] .input {
+  border-bottom-color: var(--ember);
+}
+
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.send {
+  font-family: var(--font-mono);
+  font-size: inherit;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--fg);
+  color: var(--fg);
+  transition: color var(--dur-quick) var(--ease-film), border-color var(--dur-quick) var(--ease-film);
+}
+
+.send:hover {
+  color: var(--fire);
+  border-bottom-color: var(--fire);
+}
+
+.send:active {
+  transform: translateY(1px);
+}
+
+.send:disabled {
+  color: var(--fg-dim);
+  border-bottom-color: var(--line);
+  cursor: progress;
+}
+
+.status {
+  min-height: 1.5em;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  color: var(--ember);
+}
+
+.done {
+  font-family: var(--font-mono);
+  font-size: var(--text-lead);
+}
+
+.emailLine {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  font-family: var(--font-mono);
+}
+
+.email {
+  font-family: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.email:hover {
+  color: var(--fire);
+}
+
+.copied {
+  font-size: var(--hud-size);
+  color: var(--fg-dim);
+}
