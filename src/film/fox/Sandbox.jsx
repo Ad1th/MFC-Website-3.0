@@ -21,7 +21,12 @@ const SHOTS = {
   hero: { label: 'hero, full body', position: new Vector3(1.75, 0.58, 1.55), look: new Vector3(0, 0.4, -0.1), fov: 35 },
   dive: { label: 'dive, mid shot', position: new Vector3(-0.6, 1.85, -3.4), look: new Vector3(0, 0.35, 1.2), fov: 45 },
   sky: { label: 'sky, small in frame', position: new Vector3(5.2, 0.45, 9.8), look: new Vector3(0, 2.3, 0), fov: 40 },
+  face: { label: 'close, face and ears', position: new Vector3(0.5, 0.68, 1.0), look: new Vector3(0, 0.6, 0.42), fov: 30 },
+  tail: { label: 'close, tail', position: new Vector3(-0.75, 0.5, -1.35), look: new Vector3(0, 0.3, -0.7), fov: 34 },
 };
+
+const APPROACHES = ['A', 'B', 'C'];
+const APPROACH_LABELS = { A: 'A: flame body + embers', B: 'B: particle fox', C: 'C: embers + faint flame shell' };
 
 const params = new URLSearchParams(window.location.search);
 const numberParam = (key, fallback) => {
@@ -95,7 +100,7 @@ function Bridge({ bridgeRef }) {
 const speedFor = (velocity) => Math.min(Math.abs(velocity), 3000) * 0.17;
 
 export default function Sandbox() {
-  const [approach, setApproach] = useState(params.get('approach') === 'B' ? 'B' : 'A');
+  const [approach, setApproach] = useState(APPROACHES.includes(params.get('approach')) ? params.get('approach') : 'A');
   const [shot, setShot] = useState(SHOTS[params.get('shot')] ? params.get('shot') : 'hero');
   const [velocity, setVelocity] = useState(numberParam('velocity', 0));
   const [autoIdle, setAutoIdle] = useState(!params.has('idle'));
@@ -173,7 +178,7 @@ export default function Sandbox() {
 
   useEffect(() => {
     window.__fox = {
-      setApproach: (a) => setApproach(a === 'B' ? 'B' : 'A'),
+      setApproach: (a) => setApproach(APPROACHES.includes(a) ? a : 'A'),
       setShot: (s) => SHOTS[s] && setShot(s),
       setVelocity: (v) => setVelocity(Number(v) || 0),
       setIdle: (seconds) => {
@@ -356,10 +361,10 @@ export default function Sandbox() {
 
         <fieldset className={styles.group}>
           <legend>rendering</legend>
-          {['A', 'B'].map((a) => (
+          {APPROACHES.map((a) => (
             <label key={a} className={styles.choice}>
               <input type="radio" name="approach" checked={approach === a} onChange={() => setApproach(a)} />
-              {a === 'A' ? 'A: flame body + embers' : 'B: particle fox'}
+              {APPROACH_LABELS[a]}
             </label>
           ))}
         </fieldset>

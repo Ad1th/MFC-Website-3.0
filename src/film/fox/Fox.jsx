@@ -70,7 +70,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
   const fur = useMemo(() => rig.mesh.material.map ?? null, [rig]);
 
-  const flame = useMemo(() => createFlameMaterial(fur), [fur]);
+  const flame = useMemo(() => createFlameMaterial(fur, { ghost: approach === 'C' }), [fur, approach]);
 
   const particles = useMemo(() => {
     const budget = TIERS[tier]?.particles ?? TIERS[2].particles;
@@ -90,7 +90,8 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
   useEffect(() => {
     rig.mesh.material = flame;
-    rig.mesh.visible = approach === 'A';
+    // A: solid flame body. B: particles only. C: B's particles over a faint flame shell.
+    rig.mesh.visible = approach !== 'B';
   }, [rig, flame, approach]);
 
   useEffect(() => {
