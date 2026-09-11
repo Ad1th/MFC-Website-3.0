@@ -29,9 +29,11 @@ const earUniforms = () => ({
  * Approach A body: the skinned mesh as flame. three adds USE_SKINNING for
  * skinned meshes automatically, so the skinning chunks work as-is.
  * @param {import('three').Texture|null} map fur texture from the glTF
+ * @param {{ ghost?: boolean }} [options] ghost: faint additive fresnel shell (approach C)
  */
-export function createFlameMaterial(map) {
+export function createFlameMaterial(map, { ghost = false } = {}) {
   return new ShaderMaterial({
+    ...(ghost ? { transparent: true, depthWrite: false, blending: AdditiveBlending } : {}),
     uniforms: {
       ...colors(),
       ...earUniforms(),
@@ -41,6 +43,7 @@ export function createFlameMaterial(map) {
       uBreath: { value: 1 },
       uFlicker: { value: 1 },
       uIntensity: { value: 1.15 },
+      uGhost: { value: ghost ? 1 : 0 },
       uWind: { value: new Vector3() },
       uMap: { value: map },
     },

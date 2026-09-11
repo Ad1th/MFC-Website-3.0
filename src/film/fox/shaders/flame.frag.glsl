@@ -5,6 +5,7 @@ uniform float uHeat;
 uniform float uWarm;
 uniform float uBreath;
 uniform float uIntensity;
+uniform float uGhost;
 uniform sampler2D uMap;
 uniform vec3 uDeep;
 uniform vec3 uFire;
@@ -45,6 +46,13 @@ void main() {
   color = mix(color, uGold, uWarm * 0.45);
   color *= uBreath * uIntensity;
 
-  gl_FragColor = vec4(color, 1.0);
+  if (uGhost > 0.5) {
+    // Approach C: only a faint fresnel shell under the embers, so the silhouette
+    // still reads when the fox is small in frame.
+    float shell = rim * 0.5 + 0.03;
+    gl_FragColor = vec4(mix(uFire, uEmber, rim) * uBreath * uIntensity, shell);
+  } else {
+    gl_FragColor = vec4(color, 1.0);
+  }
   #include <colorspace_fragment>
 }

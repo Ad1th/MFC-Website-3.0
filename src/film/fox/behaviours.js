@@ -263,12 +263,14 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
     return true;
   }
 
-  function ambient(mood, dt) {
+  function ambient(mood, dt, scripted) {
     state.nextBlink -= dt;
     if (state.nextBlink <= 0) {
       trigger('blink');
       state.nextBlink = 4 + random() * 3;
     }
+    // Scene-scripted poses hold: only blinks keep going.
+    if (scripted) return;
     state.nextAmbient -= dt;
     if (state.nextAmbient > 0) return;
     switch (mood) {
@@ -329,7 +331,7 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
       b.def.run(out, t, b.opts, api);
     }
 
-    ambient(ctx.mood, dt);
+    ambient(ctx.mood, dt, Boolean(ctx.scripted));
 
     // Continuous head tracking (cursor sniff, a hovered star, the camera).
     const look = ctx.look;
