@@ -125,7 +125,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
           mTmp.copy(groupRef.current.matrixWorld).invert();
           const local = vTmp.copy(opts.targetWorld).applyMatrix4(mTmp);
           const offset = new Vector3(local.x - rig.root.position.x, 0, local.z - rig.root.position.z);
-          if (offset.length() > 80) offset.setLength(80);
+          if (offset.length() > 150) offset.setLength(150);
           payload.target = offset;
         }
         return engine.trigger(name, payload, { force, scripted: input.current.scripted });
