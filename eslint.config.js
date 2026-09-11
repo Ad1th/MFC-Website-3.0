@@ -21,7 +21,12 @@ export default [
     },
   },
   {
-    files: ['scripts/**/*.mjs', '*.config.js', 'tests/**/*.js'],
+    files: ['scripts/**/*.mjs', '*.config.js'],
     languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: globals.node },
+  },
+  {
+    // Playwright specs run in node but their page.evaluate callbacks run in the browser.
+    files: ['tests/**/*.{js,mjs}'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: { ...globals.node, ...globals.browser } },
   },
 ];
