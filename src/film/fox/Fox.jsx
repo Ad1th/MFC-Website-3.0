@@ -148,6 +148,20 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       clearPose() {
         debugPose.current = {};
       },
+      /** Sandbox diagnostics: positions, pose weights and a NaN check on the skeleton. */
+      debug() {
+        const matrices = rig.mesh.skeleton.boneMatrices;
+        let nan = 0;
+        for (let i = 0; i < matrices.length; i += 1) if (!Number.isFinite(matrices[i])) nan += 1;
+        const round = (v) => v.toArray().map((x) => Math.round(x * 100) / 100);
+        return {
+          root: round(rig.root.position),
+          hip: round(rig.bones.hip.position),
+          hipWorld: round(rig.bones.hip.getWorldPosition(new Vector3())),
+          pose: lastFrame.current.pose,
+          nanInBoneMatrices: nan,
+        };
+      },
       /** Screen-space hit info for pointer interactions. */
       project(camera, size) {
         const head = rig.bones.head.getWorldPosition(new Vector3());
@@ -173,6 +187,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
     const b = brain.update(dt, inp);
     lastFrame.current.mood = b.mood;
+    lastFrame.current.pose = { sit: +b.pose.sit.toFixed(2), lie: +b.pose.lie.toFixed(2), sleep: +b.pose.sleep.toFixed(2) };
 
     // Look target in fox space.
     let look = null;

@@ -188,7 +188,7 @@ export default function Sandbox() {
       trigger: (name, opts = {}, forced = true) => foxRef.current?.trigger(name, opts, { force: forced }),
       pose: (key, yaw, pitch, roll) => foxRef.current?.setPose(key, yaw, pitch, roll),
       clearPose: () => foxRef.current?.clearPose(),
-      state: () => ({ mood: foxRef.current?.mood, active: foxRef.current?.active, stats: stats(), approach, shot }),
+      state: () => ({ mood: foxRef.current?.mood, active: foxRef.current?.active, stats: stats(), approach, shot, fox: foxRef.current?.debug() }),
     };
   }, [approach, shot]);
 
