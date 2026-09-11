@@ -67,8 +67,11 @@ export function initScroll(trackEl) {
 
   mq.addEventListener('change', applyLayout);
   write(trigger.progress, 0);
+  // Tests and benchmarks wait for this instead of guessing when the film is live.
+  document.documentElement.dataset.filmReady = 'true';
 
   return () => {
+    delete document.documentElement.dataset.filmReady;
     mq.removeEventListener('change', applyLayout);
     gsap.ticker.remove(raf);
     gsap.ticker.remove(smooth);
@@ -109,8 +112,13 @@ function sceneTop(index) {
 export function jumpToScene(index, { immediate = false } = {}) {
   const target = sceneTop(index);
   const state = film.getState();
-  if (!lenis || immediate) {
+  if (!lenis) {
     window.scrollTo({ top: target, behavior: 'instant' });
+    return;
+  }
+  if (immediate) {
+    // Through Lenis, so its internal position matches and it doesn't ease back.
+    lenis.scrollTo(target, { immediate: true, force: true });
     return;
   }
   state.setJumping(true);

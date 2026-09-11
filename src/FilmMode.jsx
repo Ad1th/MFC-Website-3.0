@@ -37,7 +37,11 @@ export default function FilmMode({ onSkip }) {
 
   const onRegionFocus = useCallback((index, target) => {
     if (!isKeyboardFocus(target)) return;
-    if (film.getState().activeScene !== index) jumpToScene(index, { immediate: true });
+    // Next frame: the browser's own scroll-to-focused-element runs after the focus
+    // event, and would otherwise land between scenes.
+    requestAnimationFrame(() => {
+      if (film.getState().activeScene !== index) jumpToScene(index, { immediate: true });
+    });
   }, []);
 
   return (
