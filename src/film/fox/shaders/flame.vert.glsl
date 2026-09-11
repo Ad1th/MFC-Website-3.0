@@ -10,6 +10,7 @@ varying vec3 vViewPosition;
 varying vec2 vUv;
 varying float vTongue;
 varying float vHeight;
+varying vec3 vModelPosition;
 
 void main() {
   vUv = uv;
@@ -27,12 +28,13 @@ void main() {
   // Flame tongues: noise scrolled upward, strongest on upward-facing surfaces.
   float tongue = snoise(transformed * 0.055 + vec3(0.0, -uTime * 1.7, uTime * 0.35));
   float lick = max(tongue, 0.0) * smoothstep(0.45, 1.0, upward);
-  transformed += n * (lick * 2.6 + tongue * 0.45) * uFlicker;
-  transformed.y += lick * lick * 4.0 * uFlicker;
+  transformed += n * (lick * 3.8 + tongue * 0.6) * uFlicker;
+  transformed.y += lick * lick * 7.0 * uFlicker;
   transformed += uWind * lick * 5.0;
 
   vTongue = tongue;
   vHeight = transformed.y / 80.0;
+  vModelPosition = transformed;
 
   vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   vViewPosition = -mvPosition.xyz;

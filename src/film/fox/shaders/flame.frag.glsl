@@ -17,6 +17,7 @@ varying vec3 vViewPosition;
 varying vec2 vUv;
 varying float vTongue;
 varying float vHeight;
+varying vec3 vModelPosition;
 
 void main() {
   vec3 n = normalize(vNormalView);
@@ -29,13 +30,18 @@ void main() {
   vec3 fur = texture2D(uMap, vUv).rgb;
   float lum = dot(fur, vec3(0.299, 0.587, 0.114));
 
-  float bands = snoise(vec3(vUv * 7.0, uTime * 0.9)) * 0.5 + 0.5;
-  vec3 body = mix(uDeep, uFire, clamp(0.3 + bands * 0.5 + vTongue * 0.2, 0.0, 1.0));
-  body = mix(body, uEmber, smoothstep(0.45, 0.85, lum) * 0.65);
-  body *= mix(0.45, 1.0, smoothstep(0.06, 0.28, lum));
+  // Rising streaks in model space (UV islands on this low-poly mesh would make
+  // spots). Stretched vertically and scrolled up so they read as flame licks.
+  vec3 mp = vModelPosition;
+  float streak = snoise(vec3(mp.x * 0.09, mp.y * 0.035 - uTime * 1.9, mp.z * 0.09));
+  float fine = snoise(vec3(mp.x * 0.22, mp.y * 0.09 - uTime * 3.1, mp.z * 0.22));
+  float burn = clamp(0.62 + streak * 0.3 + fine * 0.15 + vTongue * 0.15, 0.0, 1.0);
+  vec3 body = mix(uDeep, uFire, smoothstep(0.25, 0.8, burn));
+  body = mix(body, uEmber, smoothstep(0.5, 0.9, lum) * smoothstep(0.55, 0.95, burn) * 0.65);
+  body *= mix(0.4, 1.0, smoothstep(0.06, 0.28, lum));
 
-  vec3 color = body + uEmber * rim * 1.25;
-  color = mix(color, uCore, (1.0 - rim) * uHeat * 0.7);
+  vec3 color = body + uEmber * rim * (0.55 + 0.35 * burn);
+  color = mix(color, uCore, (1.0 - rim) * uHeat * burn * 0.6);
   color = mix(color, uGold, uWarm * 0.45);
   color *= uBreath * uIntensity;
 
