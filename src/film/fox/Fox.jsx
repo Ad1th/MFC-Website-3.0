@@ -200,6 +200,17 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       petting: inp.petting,
     });
 
+    // Restore the bind pose first. three's PropertyMixer only writes a bone when the
+    // mixed clip value changed since last frame, so whenever a clip holds still
+    // (Survey at timeScale 0 in sleep, held keys, untracked Foot02 and root joints)
+    // last frame's offset stays on the bone and the next offset compounds it. That
+    // is what twisted sit into a knot and spun the sleeping fox out of frame
+    // (verified with a minimal mixer test, DECISIONS D-055).
+    for (const [key, bone] of Object.entries(rig.bones)) {
+      bone.quaternion.copy(rig.bind[key].quaternion);
+      bone.position.copy(rig.bind[key].position);
+    }
+
     // Base clips.
     actions.walk.setEffectiveWeight(b.weights.walk).setEffectiveTimeScale(b.speeds.walk);
     actions.run.setEffectiveWeight(b.weights.run).setEffectiveTimeScale(b.speeds.run);
