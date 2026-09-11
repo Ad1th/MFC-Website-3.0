@@ -8,3 +8,4 @@ dist
 .env.production
 .env.local
 .env.*.local
+test-results
