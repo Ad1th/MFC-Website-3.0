@@ -39,8 +39,8 @@ export const BONE_NAMES = {
 export const LANDMARKS = {
   earBaseLeft: new Vector3(8, 66, 46),
   earBaseRight: new Vector3(-8, 66, 46),
-  eyeLeft: new Vector3(4.7, 61.2, 56.5),
-  eyeRight: new Vector3(-4.7, 61.2, 56.5),
+  eyeLeft: new Vector3(6.1, 61.4, 57),
+  eyeRight: new Vector3(-6.1, 61.4, 57),
   nose: new Vector3(0, 55, 67),
   tailTip: new Vector3(0, 18, -88),
   bodyCentre: new Vector3(0, 42, -5),
