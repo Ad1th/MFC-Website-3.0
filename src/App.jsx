@@ -6,6 +6,8 @@ import Still from './dom/Still.jsx';
 import NotFound from './dom/NotFound.jsx';
 
 const FilmMode = lazy(() => import('./FilmMode.jsx'));
+// Development tool. Phase 8 strips it from production builds.
+const FoxSandbox = lazy(() => import('./film/fox/Sandbox.jsx'));
 
 const HOME_PATHS = new Set(['/', '/index.html']);
 
@@ -16,6 +18,7 @@ function prefersReducedMotion() {
 /** Decide the starting mode once, before first paint of the real UI. */
 function decideMode() {
   if (!HOME_PATHS.has(window.location.pathname)) return { mode: 'notFound', tier: 0 };
+  if (flags.sandbox === 'fox') return { mode: 'sandbox', tier: flags.tier ?? 2 };
   const forced = flags.tier;
   const tier = forced !== null && forced >= 0 && forced <= 3 ? forced : initialTier();
   if (flags.still || prefersReducedMotion() || tier === 0) return { mode: 'still', tier };
@@ -46,6 +49,13 @@ export default function App() {
   }, []);
 
   if (mode === 'notFound') return <NotFound />;
+  if (mode === 'sandbox') {
+    return (
+      <Suspense fallback={null}>
+        <FoxSandbox />
+      </Suspense>
+    );
+  }
   if (mode === 'still') return <Still canPlayFilm={canPlayFilm} onPlayFilm={toFilm} />;
   return (
     <Suspense fallback={<Still canPlayFilm={false} onPlayFilm={toFilm} />}>
