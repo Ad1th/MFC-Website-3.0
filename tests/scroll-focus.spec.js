@@ -11,10 +11,17 @@ const MODES = [
   { mode: 'still', path: '/?still=1' },
 ];
 
+/** Film mode is live once scroll.js has laid out the track (data-film-ready). */
+async function waitForFilm(page) {
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe('film');
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
+}
+
 for (const { mode, path } of MODES) {
   test(`${mode} mode stays at the top for 5 seconds with no input`, async ({ page }) => {
     await page.goto(path);
-    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe(mode);
+    if (mode === 'film') await waitForFilm(page);
+    else await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe(mode);
     await page.waitForTimeout(5000);
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
@@ -22,7 +29,7 @@ for (const { mode, path } of MODES) {
 
 test('programmatic focus inside a far region does not move the film', async ({ page }) => {
   await page.goto('/?tier=2');
-  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe('film');
+  await waitForFilm(page);
   await page.waitForTimeout(500);
   await page.evaluate(() => {
     const link = document.querySelector('[data-region="team"] a');
@@ -35,7 +42,7 @@ test('programmatic focus inside a far region does not move the film', async ({ p
 
 test('tabbing into a region moves the film to its scene', async ({ page }) => {
   await page.goto('/?tier=2');
-  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe('film');
+  await waitForFilm(page);
   let region = null;
   for (let i = 0; i < 40 && !region; i += 1) {
     await page.keyboard.press('Tab');
