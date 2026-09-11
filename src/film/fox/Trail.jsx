@@ -12,7 +12,7 @@ import { createTrailMaterial } from './materials.js';
 const SAMPLES = 180;
 const SAMPLE_EVERY = 1 / 60;
 
-export default function Trail({ rig, driftRef, seconds = 3, width = 0.03 }) {
+export default function Trail({ rig, driftRef, seconds = 3, width = 0.011 }) {
   const { geometry, material, ring } = useMemo(() => {
     const g = new BufferGeometry();
     const position = new BufferAttribute(new Float32Array(SAMPLES * 2 * 3), 3).setUsage(DynamicDrawUsage);
