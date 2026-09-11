@@ -17,6 +17,9 @@ let particles = 0;
 
 export function registerRenderer(gl) {
   renderer = gl;
+  // With post-processing the last render call is a fullscreen quad, so automatic
+  // per-render resets would report 1 draw. Count the whole frame instead.
+  gl.info.autoReset = false;
 }
 
 /** Scenes that own particle systems report their live count here. */
@@ -27,9 +30,11 @@ export function reportParticles(count) {
 function record(now, dt) {
   frames.push({ t: now, dt });
   while (frames.length && now - frames[0].t > WINDOW_MS) frames.shift();
-  // useFrame runs before R3F renders, and three resets info at the start of each
-  // render, so these are the previous frame's totals.
-  if (renderer) lastRender = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+  // Runs first in the frame: read everything the previous frame drew, then reset.
+  if (renderer) {
+    lastRender = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+    renderer.info.reset();
+  }
 }
 
 export function stats() {
@@ -58,7 +63,7 @@ export function stats() {
 export function StatsProbe() {
   useFrame((state, delta) => {
     record(state.clock.elapsedTime * 1000, delta);
-  });
+  }, -1000);
   return null;
 }
 
