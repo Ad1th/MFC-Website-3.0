@@ -41,6 +41,10 @@ export const film = createStore((set) => ({
   /** Room order for S05, chosen by the cursor at S04's split. */
   /** @type {('technical'|'design'|'management')[]} */
   branchOrder: ['technical', 'design', 'management'],
+  /** S06: the slab whose HUD shows, or -1 outside the gallery. */
+  galleryIndex: -1,
+  /** performance.now() of the last click on a slab, for the dolly-in; 0 before any. */
+  galleryDolly: 0,
 
   setScroll: (patch) => set(patch),
   setMode: (mode) => set({ mode }),
@@ -51,6 +55,8 @@ export const film = createStore((set) => ({
   setJumping: (jumping) => set({ jumping }),
   setLive: (patch) => set((state) => ({ live: { ...state.live, ...patch } })),
   setBranchOrder: (branchOrder) => set({ branchOrder }),
+  setGalleryIndex: (galleryIndex) => set({ galleryIndex }),
+  dollyGallery: (galleryDolly) => set({ galleryDolly }),
 }));
 
 /**
