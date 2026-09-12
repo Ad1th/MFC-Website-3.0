@@ -8,6 +8,7 @@ import { MOODS } from './foxBrain.js';
 import { TIERS } from '../quality.js';
 import { registerRenderer, StatsProbe, stats } from '../debug/stats.js';
 import { PALETTE } from '../palette.js';
+import { FOX_REGRESS } from './testHooks.js';
 import styles from './Sandbox.module.css';
 
 /**
@@ -124,6 +125,8 @@ export default function Sandbox() {
   const tier = [1, 2, 3].includes(numberParam('tier', 2)) ? numberParam('tier', 2) : 2;
   // ?panel=0 hides the controls so recordings and benchmarks see only the stage.
   const showPanel = params.get('panel') !== '0';
+  // Test builds only: switches a fix off so a regression test can be shown to fail.
+  const regress = FOX_REGRESS;
 
   const foxRef = useRef(null);
   const bridgeRef = useRef(null);
@@ -207,7 +210,17 @@ export default function Sandbox() {
       trigger: (name, opts = {}, forced = true) => foxRef.current?.trigger(name, opts, { force: forced }),
       pose: (key, yaw, pitch, roll) => foxRef.current?.setPose(key, yaw, pitch, roll),
       clearPose: () => foxRef.current?.clearPose(),
-      state: () => ({ mood: foxRef.current?.mood, active: foxRef.current?.active, stats: stats(), approach, shot, fox: foxRef.current?.debug() }),
+      state: () => ({
+        mood: foxRef.current?.mood,
+        active: foxRef.current?.active,
+        petting: inputRef.current.petting,
+        stats: stats(),
+        approach,
+        shot,
+        fox: foxRef.current?.debug(),
+      }),
+      /** World-space ember emitter, body and root centroids (regression tests). */
+      tracking: () => foxRef.current?.tracking() ?? null,
       /** Head and body position in canvas pixels, for scripted pointer interactions. */
       screen: () => {
         const three = bridgeRef.current;
@@ -319,7 +332,9 @@ export default function Sandbox() {
     if (!three || !fox) return;
     const info = fox.project(three.camera, three.size);
     const dist = Math.hypot(x - info.body.x, y - info.body.y);
-    pointer.current.down = { t: performance.now(), x, y, onFox: dist < info.radius, near: dist < info.radius + 250 };
+    const hitRadius = regress === 'no-hit-radius' ? 0 : info.radius;
+    const nearRadius = regress === 'no-near-radius' ? info.radius : info.radius + 250;
+    pointer.current.down = { t: performance.now(), x, y, onFox: dist < hitRadius, near: dist < nearRadius };
   };
 
   const onPointerUp = (event) => {
