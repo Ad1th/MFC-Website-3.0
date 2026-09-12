@@ -11,6 +11,7 @@ Units are the model's own (about centimetres). Each pose is built with
 world-space rotations and IK, baked to a one-frame action, rendered from three
 angles, and optionally exported with the original Survey, Walk and Run clips.
 """
+import json
 import math
 import os
 import sys
@@ -126,30 +127,81 @@ def plant(foot_bone, chain, forward, side_out=0.0, height=1.0):
     ik(foot_bone, (tip.x + side * side_out, tip.y - forward, height), chain)
 
 
+def lowest_z():
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    depsgraph.update()
+    evaluated = mesh.evaluated_get(depsgraph)
+    lowest = min((evaluated.matrix_world @ v.co).z for v in evaluated.to_mesh().vertices)
+    evaluated.to_mesh_clear()
+    return lowest
+
+
+def settle(tolerance=0.2, contact=1.0, rounds=24):
+    """Move the hips until the lowest vertex rests on the floor: never below -tolerance,
+    never floating more than `contact` above it. IK keeps the paws on their targets.
+    Raising takes the full error; lowering takes half, so the loop cannot overshoot back under."""
+    history = []
+    for _ in range(rounds):
+        low = lowest_z()
+        history.append(round(low, 2))
+        if low < -tolerance:
+            move('b_Hip_01', (0, 0, -low + tolerance * 0.5))
+        elif low > contact:
+            move('b_Hip_01', (0, 0, -(low - contact) * 0.5))
+        else:
+            break
+    print(f'SETTLE rounds {history}')
+    return lowest_z()
+
+
+def pole(name, position_world, angle=-90.0):
+    """Aim the knee of an IK chain toward a point."""
+    empty = bpy.data.objects.new(f'ik_pole_{name}', None)
+    scene.collection.objects.link(empty)
+    empty.location = Vector(position_world)
+    constraint = next(c for c in pb(name).constraints if c.type == 'IK')
+    constraint.pole_target = empty
+    constraint.pole_angle = math.radians(angle)
+    view.update()
+
+
 def pose_sleep():
-    # Belly toward the ground, legs folded underneath by IK. (Rolling the body onto
-    # its side was tried and tangled the legs through the torso.)
-    move('b_Hip_01', (0, 0, -18))
-    # Curl toward the fox's left: spine, neck and head swing back along the flank.
+    # Belly down. The hips are settled onto the floor at the end, never the legs pushed through it.
+    move('b_Hip_01', (0, 0, -json.loads(os.environ.get('SLEEP', '{}')).get('hip_drop', 26)))
+    # Curl toward the fox's left: spine, neck and head swing back along the flank, head resting low.
     yaw('b_Spine01_02', 16)
     yaw('b_Spine02_03', 24)
     yaw('b_Neck_04', 46)
     yaw('b_Head_05', 38)
     nod('b_Neck_04', 26)
     nod('b_Head_05', 12)
-    # Tail sweeps round the left side to cover the nose, lying on the ground.
-    # The tail rests at a downward slope; lift each segment level with the ground first.
+    # The tail rests at a downward slope; level each segment, then sweep it round to the nose.
     nod('b_Tail01_012', -22)
     nod('b_Tail02_013', -18)
     nod('b_Tail03_014', -14)
     yaw('b_Tail01_012', -48)
     yaw('b_Tail02_013', -52)
     yaw('b_Tail03_014', -46)
-    # Hind paws tucked under, front paws folded forward under the chest.
-    plant('b_LeftFoot01_017', 3, forward=20, side_out=4)
-    plant('b_RightFoot01_021', 3, forward=20, side_out=4)
-    plant('b_LeftForeArm_010', 2, forward=-6, side_out=1, height=5)
-    plant('b_RightForeArm_07', 2, forward=-6, side_out=1, height=5)
+    # Legs are folded with direct joint rotations about the body's own lateral axis
+    # (IK left them straight and the settle step then lifted the body to standing height).
+    # SLEEP='{"thigh": 70, "shin": -130, "foot": 60, "upper": -35, "fore": 110, "knee_out": 12}'
+    params = {'thigh': 70, 'shin': -130, 'foot': 60, 'upper': -35, 'fore': 110, 'knee_out': 12, 'hip_drop': 26, 'front_yaw': 0}
+    params.update(json.loads(os.environ.get('SLEEP', '{}')))
+    hind_lateral = (head_w('b_LeftLeg01_015') - head_w('b_RightLeg01_019')).normalized()
+    front_lateral = (head_w('b_LeftUpperArm_09') - head_w('b_RightUpperArm_06')).normalized()
+    hind_forward = UP.cross(hind_lateral).normalized()
+    for side, leg1, leg2, foot in ((1, 'b_LeftLeg01_015', 'b_LeftLeg02_016', 'b_LeftFoot01_017'),
+                                   (-1, 'b_RightLeg01_019', 'b_RightLeg02_020', 'b_RightFoot01_021')):
+        rotate(leg1, hind_lateral, -params['thigh'])
+        rotate(leg1, hind_forward, side * params['knee_out'])
+        rotate(leg2, hind_lateral, -params['shin'])
+        rotate(foot, hind_lateral, -params['foot'])
+    for upper, fore in (('b_LeftUpperArm_09', 'b_LeftForeArm_010'), ('b_RightUpperArm_06', 'b_RightForeArm_07')):
+        rotate(upper, front_lateral, -params['upper'])
+        rotate(fore, front_lateral, -params['fore'])
+        # Turn the forelegs toward the inside of the curl so the paws lie under the tucked head.
+        rotate(upper, UP, params['front_yaw'])
+    print(f'SETTLE Sleep params {params} lowest z {round(settle(), 2)} hip z {round(head_w("b_Hip_01").z, 1)}')
 
 
 BUILDERS = {'Sleep': pose_sleep}
@@ -160,7 +212,7 @@ def report(label):
     depsgraph = bpy.context.evaluated_depsgraph_get()
     depsgraph.update()
     evaluated_arm = arm.evaluated_get(depsgraph)
-    for o in [o for o in bpy.data.objects if o.name.startswith('ik_')]:
+    for o in [o for o in bpy.data.objects if o.name.startswith('ik_') and not o.name.startswith('ik_pole_')]:
         bone_name = o.name[3:]
         tip = evaluated_arm.matrix_world @ evaluated_arm.pose.bones[bone_name].tail
         chain = [b.name for b in [evaluated_arm.pose.bones[bone_name]] + list(evaluated_arm.pose.bones[bone_name].parent_recursive)[:2]]
@@ -223,7 +275,13 @@ def render_views(cam, name):
     evaluated.to_mesh_clear()
     centre = sum(points, Vector()) / len(points)
     size = max((p - centre).length for p in points)
-    views = {'side': Vector((1, 0, 0.15)), 'front': Vector((0.7, -0.7, 0.35)), 'top': Vector((0.01, 0.02, 1))}
+    # endcard: low, about 15 degrees above the floor, three-quarter from the front (S11 camera).
+    views = {
+        'side': Vector((1, 0, 0.15)),
+        'threequarter': Vector((0.7, -0.7, 0.35)),
+        'top': Vector((0.01, 0.02, 1)),
+        'endcard': Vector((0.6, -0.8, math.tan(math.radians(15)))),
+    }
     for view_name, direction in views.items():
         cam.location = centre + direction.normalized() * size * 3.2
         cam.rotation_euler = (centre - cam.location).to_track_quat('-Z', 'Y').to_euler()
