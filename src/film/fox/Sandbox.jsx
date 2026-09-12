@@ -22,8 +22,8 @@ const SHOTS = {
   dive: { label: 'dive, mid shot', position: new Vector3(-0.6, 1.85, -3.4), look: new Vector3(0, 0.35, 1.2), fov: 45 },
   sky: { label: 'sky, small in frame', position: new Vector3(5.2, 0.45, 9.8), look: new Vector3(0, 2.3, 0), fov: 40 },
   // Close-ups follow the live bones, so they stay framed when the fox sits, lies or sleeps.
-  face: { label: 'close, face and ears', follow: 'eyes', offset: new Vector3(0.42, 0.08, 0.5), position: new Vector3(0.5, 0.68, 1.0), look: new Vector3(0, 0.6, 0.42), fov: 30 },
-  tail: { label: 'close, tail', follow: 'tailTip', offset: new Vector3(-0.5, 0.28, -0.55), position: new Vector3(-0.75, 0.5, -1.35), look: new Vector3(0, 0.3, -0.7), fov: 34 },
+  face: { label: 'close, face and ears', follow: 'eyes', offset: new Vector3(0.62, 0.1, 0.78), position: new Vector3(0.7, 0.72, 1.2), look: new Vector3(0, 0.6, 0.42), fov: 28 },
+  tail: { label: 'close, tail', follow: 'tailTip', offset: new Vector3(-0.7, 0.34, -0.8), position: new Vector3(-0.9, 0.55, -1.6), look: new Vector3(0, 0.3, -0.7), fov: 32 },
 };
 
 const APPROACHES = ['A', 'B', 'C'];
@@ -122,6 +122,8 @@ export default function Sandbox() {
   const [eyes, setEyes] = useState(params.get('eyes') !== '0');
   const [force, setForce] = useState(true);
   const tier = [1, 2, 3].includes(numberParam('tier', 2)) ? numberParam('tier', 2) : 2;
+  // ?panel=0 hides the controls so recordings and benchmarks see only the stage.
+  const showPanel = params.get('panel') !== '0';
 
   const foxRef = useRef(null);
   const bridgeRef = useRef(null);
@@ -340,7 +342,7 @@ export default function Sandbox() {
   };
 
   return (
-    <div className={styles.sandbox}>
+    <div className={styles.sandbox} style={showPanel ? undefined : { gridTemplateColumns: 'minmax(0, 1fr)' }}>
       <div
         className={styles.stage}
         onPointerMove={onPointerMove}
@@ -374,7 +376,7 @@ export default function Sandbox() {
         </Canvas>
       </div>
 
-      <aside className={styles.panel} aria-label="fox controls">
+      <aside className={styles.panel} aria-label="fox controls" hidden={!showPanel}>
         <h1 className={styles.title}>fox sandbox</h1>
 
         <fieldset className={styles.group}>

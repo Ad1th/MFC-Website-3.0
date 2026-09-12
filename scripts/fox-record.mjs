@@ -155,7 +155,7 @@ async function main() {
     if (only.length && !only.includes(clip.name)) continue;
     const context = await browser.newContext({ viewport: SIZE, recordVideo: { dir: outDir, size: SIZE } });
     const page = await context.newPage();
-    await page.goto(`${base}/?sandbox=fox&approach=${approach}&tier=2&bloom=1&${clip.query}`);
+    await page.goto(`${base}/?sandbox=fox&approach=${approach}&tier=2&bloom=1&panel=0&${clip.query}`);
     await page.bringToFront();
     await page.waitForFunction(() => Boolean(window.__fox && window.__fox.screen && window.__fox.screen()), null, { timeout: 30000 });
     await wait(page, 1500);
