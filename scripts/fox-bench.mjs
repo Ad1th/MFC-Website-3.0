@@ -13,6 +13,7 @@
  *                              [--velocity 900] [--tiers 1,2,3] [--approaches A,B,C] [--shots hero,dive,sky]
  * Output: director/frames/gate2-<browser>-t<tier>-<approach>-<shot>.jpg and gate2-bench.json
  */
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,8 +60,21 @@ function countFrames() {
   });
 }
 
+/** The commit the served build came from, and whether the tree had uncommitted changes. */
+function buildStamp() {
+  try {
+    const commit = execSync('git rev-parse --short HEAD', { cwd: root }).toString().trim();
+    const dirty = execSync('git status --porcelain -- src public', { cwd: root }).toString().trim().length > 0;
+    return { commit, dirty };
+  } catch {
+    return { commit: 'unknown', dirty: null };
+  }
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
+  const stamp = buildStamp();
+  console.log(`bench against commit ${stamp.commit}${stamp.dirty ? ' (src or public has uncommitted changes)' : ''}`);
   const results = [];
   for (const [browserName, type] of BROWSERS) {
     const browser = await type.launch({ headless, ...LAUNCH[browserName] });
@@ -106,7 +120,7 @@ async function main() {
   }
   fs.writeFileSync(
     path.join(outDir, 'gate2-bench.json'),
-    `${JSON.stringify({ velocity, headless, uncapped, date: new Date().toISOString(), results }, null, 2)}\n`,
+    `${JSON.stringify({ velocity, headless, uncapped, build: stamp, date: new Date().toISOString(), results }, null, 2)}\n`,
   );
 }
 
