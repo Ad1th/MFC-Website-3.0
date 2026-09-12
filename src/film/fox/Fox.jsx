@@ -96,11 +96,16 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
   useEffect(() => {
     reportParticles(particles?.count ?? 0);
+    // The particles skin against the mesh's bindMatrixInverse, which tracks the rig
+    // root's world transform, so they must live under the same root. Parented to the
+    // outer group they stayed behind whenever the root moved (overtake, pounce).
+    if (particles) rig.root.add(particles.points);
     return () => {
+      if (particles) rig.root.remove(particles.points);
       particles?.points.geometry.dispose();
       particles?.material.dispose();
     };
-  }, [particles]);
+  }, [particles, rig]);
 
   const mixer = useMemo(() => new AnimationMixer(rig.root), [rig]);
   const actions = useMemo(() => {
@@ -337,7 +342,6 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     <>
       <group ref={groupRef} position={position} rotation={rotation} scale={FOX_SCALE}>
         <primitive object={rig.root} />
-        {particles ? <primitive object={particles.points} /> : null}
       </group>
       {trail ? <Trail rig={rig} driftRef={worldDrift} /> : null}
       {eyes ? <Eyes rig={rig} eyeState={eyeState} /> : null}
