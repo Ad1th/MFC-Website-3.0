@@ -3,7 +3,13 @@
 Source: Khronos Group glTF Sample Assets, `Models/Fox`
 https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox
 
-File: `fox.glb` is the unmodified `glTF-Binary/Fox.glb` from that directory.
+File: `fox.glb` is a derivative of `glTF-Binary/Fox.glb` from that directory. The unmodified original is kept at `media-src/models/fox-khronos.glb`.
+
+Changes by the Mozilla Firefox Club, VIT Vellore:
+- added a held `Sleep` clip (head tucked back along the flank, tail swept round to the nose), authored on the existing rig with Blender IK by `scripts/blender/author-poses.py`;
+- exported with vertex normals.
+
+Mesh, rig, skin weights and the original `Survey`, `Walk` and `Run` animations are unchanged. The CC0 and CC-BY 4.0 terms below still apply, including attribution.
 
 ## Legal (copied from the model README)
 
