@@ -185,7 +185,7 @@ def pose_sleep():
     # Legs are folded with direct joint rotations about the body's own lateral axis
     # (IK left them straight and the settle step then lifted the body to standing height).
     # SLEEP='{"thigh": 70, "shin": -130, "foot": 60, "upper": -35, "fore": 110, "knee_out": 12}'
-    params = {'thigh': 70, 'shin': -130, 'foot': 60, 'upper': -35, 'fore': 110, 'knee_out': 12, 'hip_drop': 26, 'front_yaw': 0}
+    params = {'thigh': 70, 'shin': -130, 'foot': 60, 'upper': -35, 'fore': 110, 'knee_out': 12, 'hip_drop': 26, 'front_yaw': 0, 'tail_wrap': 0, 'head_rest': 0}
     params.update(json.loads(os.environ.get('SLEEP', '{}')))
     hind_lateral = (head_w('b_LeftLeg01_015') - head_w('b_RightLeg01_019')).normalized()
     front_lateral = (head_w('b_LeftUpperArm_09') - head_w('b_RightUpperArm_06')).normalized()
@@ -201,6 +201,13 @@ def pose_sleep():
         rotate(fore, front_lateral, -params['fore'])
         # Turn the forelegs toward the inside of the curl so the paws lie under the tucked head.
         rotate(upper, UP, params['front_yaw'])
+    # Head lowered onto the paws, tail swept further round so it lies over the nose.
+    if params['head_rest']:
+        nod('b_Neck_04', params['head_rest'])
+        nod('b_Head_05', params['head_rest'] * 0.5)
+    if params['tail_wrap']:
+        yaw('b_Tail02_013', -params['tail_wrap'])
+        yaw('b_Tail03_014', -params['tail_wrap'] * 1.3)
     print(f'SETTLE Sleep params {params} lowest z {round(settle(), 2)} hip z {round(head_w("b_Hip_01").z, 1)}')
 
 
