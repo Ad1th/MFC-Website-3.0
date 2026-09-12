@@ -44,6 +44,16 @@
   background: var(--paper);
 }
 
+/* The hero canvas paints the intro. Its text stays real and selectable, just unpainted,
+   so the canvas is the only source of those pixels before and after S02's swap. */
+.panel[data-region="intro"] {
+  background: none;
+}
+
+.panel[data-region="intro"] * {
+  color: transparent;
+}
+
 /* ---------- still layer: frames in normal flow ---------- */
 
 .still {

@@ -1,0 +1,11 @@
+/* Texture source for the film's hero plane. Laid out at viewport size so it measures
+   like the page, but never painted: the film paints it (D-061). */
+.canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-dom);
+  pointer-events: none;
+  visibility: hidden;
+}

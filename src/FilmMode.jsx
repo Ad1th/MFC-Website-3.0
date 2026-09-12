@@ -6,6 +6,7 @@ import { isKeyboardFocus } from './live/inputModality.js';
 import Film from './film/Film.jsx';
 import Chrome from './dom/Chrome.jsx';
 import Semantic from './dom/Semantic.jsx';
+import HeroCanvas from './dom/hero/HeroCanvas.jsx';
 import styles from './FilmMode.module.css';
 
 const DebugHud = flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
@@ -48,6 +49,7 @@ export default function FilmMode({ onSkip }) {
     <>
       <Chrome onJump={(index) => jumpToScene(index)} onSkip={onSkip} />
       <Film />
+      <HeroCanvas />
       <main id="main" tabIndex={-1} className={styles.main}>
         <div ref={trackRef} className={styles.track}>
           <Semantic variant="film" onRegionFocus={onRegionFocus} subscribe={subscribeActive} />
