@@ -401,7 +401,10 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       u.uEarR.value = out.ears.R;
       u.uWind.value.copy(windLocal);
       u.uVelocity.value.set(0, 0, inp.speed ?? 0);
-      u.uScale.value = state.size.height * state.viewport.dpr * 0.5 * state.camera.projectionMatrix.elements[5];
+      // Ember size follows the fox's world scale, so a fox scaled down by a scene keeps the
+      // same ember density instead of saturating to white.
+      const worldScale = groupRef.current ? groupRef.current.getWorldScale(vTmp).x / FOX_SCALE : 1;
+      u.uScale.value = state.size.height * state.viewport.dpr * 0.5 * state.camera.projectionMatrix.elements[5] * worldScale;
       // Sleeping embers shrink to a breathing glow.
       u.uLife.value = b.mood === 'sleep' ? 0.55 : approach === 'A' ? 0.95 : 0.8;
       u.uOpacity.value = b.mood === 'sleep' ? 0.55 : 1;
