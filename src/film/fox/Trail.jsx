@@ -12,7 +12,7 @@ import { createTrailMaterial } from './materials.js';
 const SAMPLES = 180;
 const SAMPLE_EVERY = 1 / 60;
 
-export default function Trail({ rig, driftRef, seconds = 3, width = 0.011 }) {
+export default function Trail({ rig, driftRef, fadeRef, seconds = 3, width = 0.011 }) {
   const { geometry, material, ring } = useMemo(() => {
     const g = new BufferGeometry();
     const position = new BufferAttribute(new Float32Array(SAMPLES * 2 * 3), 3).setUsage(DynamicDrawUsage);
@@ -55,8 +55,11 @@ export default function Trail({ rig, driftRef, seconds = 3, width = 0.011 }) {
   const toCamera = useMemo(() => new Vector3(), []);
   const sideVec = useMemo(() => new Vector3(), []);
 
+  const baseOpacity = useMemo(() => material.uniforms.uOpacity.value, [material]);
+
   useFrame((state, delta) => {
     const now = state.clock.elapsedTime;
+    material.uniforms.uOpacity.value = baseOpacity * (fadeRef?.current ?? 1);
     const drift = driftRef?.current;
     if (drift && drift.lengthSq() > 0) {
       for (let i = 0; i < ring.count; i += 1) {
