@@ -23,7 +23,7 @@ const SHOTS = {
   dive: { label: 'dive, mid shot', position: new Vector3(-0.6, 1.85, -3.4), look: new Vector3(0, 0.35, 1.2), fov: 45 },
   sky: { label: 'sky, small in frame', position: new Vector3(5.2, 0.45, 9.8), look: new Vector3(0, 2.3, 0), fov: 40 },
   // Close-ups follow the live bones, so they stay framed when the fox sits, lies or sleeps.
-  face: { label: 'close, face and ears', follow: 'eyes', offset: new Vector3(0.62, 0.1, 0.78), position: new Vector3(0.7, 0.72, 1.2), look: new Vector3(0, 0.6, 0.42), fov: 28 },
+  face: { label: 'close, face and ears', follow: 'eyes', offset: new Vector3(0.9, 0.2, 1.15), position: new Vector3(0.9, 0.8, 1.55), look: new Vector3(0, 0.6, 0.42), fov: 30 },
   tail: { label: 'close, tail', follow: 'tailTip', offset: new Vector3(-0.7, 0.34, -0.8), position: new Vector3(-0.9, 0.55, -1.6), look: new Vector3(0, 0.3, -0.7), fov: 32 },
 };
 
@@ -221,6 +221,19 @@ export default function Sandbox() {
       }),
       /** World-space ember emitter, body and root centroids (regression tests). */
       tracking: () => foxRef.current?.tracking() ?? null,
+      /** Mark the fox as holding a scene-scripted pose (behaviours must not fire). */
+      setScripted: (value) => {
+        inputRef.current.scripted = Boolean(value);
+      },
+      lastPounce: () => foxRef.current?.lastPounce ?? null,
+      /** Ground-plane world point under a canvas pixel (tests pick unclamped pounce targets with it). */
+      groundAt: (x, y) => {
+        const p = worldAt(x, y, ground);
+        return p ? { x: p.x, y: p.y, z: p.z } : null;
+      },
+      look: () => foxRef.current?.look ?? null,
+      /** World-space wind vector from the pointer, before it reaches the shader. */
+      wind: () => inputRef.current.wind.toArray(),
       /** Head and body position in canvas pixels, for scripted pointer interactions. */
       screen: () => {
         const three = bridgeRef.current;
@@ -289,7 +302,8 @@ export default function Sandbox() {
           return target ? fox.trigger('pounce', { targetWorld: target }) : false;
         },
       ];
-      if (steps[p.chaseStep % steps.length]()) p.chaseStep += 1;
+      // One wag, one bow, one bat per play episode; a new episode starts once the wiggling stops.
+      if (p.chaseStep < steps.length && steps[p.chaseStep]()) p.chaseStep += 1;
     }
   };
 
@@ -304,6 +318,8 @@ export default function Sandbox() {
       inp.wind.multiplyScalar(0.92);
       if (!three || !fox) return;
       const now = performance.now();
+      p.osc = p.osc.filter((t) => now - t < 1200);
+      if (p.osc.length === 0 && now - p.lastT > 1500) p.chaseStep = 0;
       if (now - p.lastT > 60) p.speed *= 0.8;
       p.still = p.speed < 60 ? p.still + 16 : 0;
       const info = fox.project(three.camera, three.size);
