@@ -223,6 +223,26 @@ export const BEHAVIOURS = {
 
 const COOLDOWN = 2;
 
+/** Tail behaviours: the tail trail fades while these run so the streak doesn't scribble over the motion. */
+const TAIL_BEHAVIOURS = new Set(['wag', 'tailThump', 'tuckTail']);
+const TRAIL_FADE = 0.2;
+
+/**
+ * Head tracking is a critically damped spring with a speed cap, so the head eases onto
+ * a new target like an animal instead of snapping (S01's turn to camera depends on it).
+ */
+const LOOK_OMEGA = 9;
+const LOOK_MAX_SPEED = 220;
+
+function springTo(s, key, velocityKey, target, dt) {
+  const x = s[key];
+  let v = s[velocityKey];
+  v += (-2 * LOOK_OMEGA * v - LOOK_OMEGA * LOOK_OMEGA * (x - target)) * dt;
+  v = Math.max(-LOOK_MAX_SPEED, Math.min(LOOK_MAX_SPEED, v));
+  s[velocityKey] = v;
+  s[key] = x + v * dt;
+}
+
 /**
  * @param {{ random?: () => number }} [options]
  */
@@ -232,9 +252,10 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
   const state = {
     lastFire: Number.NEGATIVE_INFINITY,
     committedRoot: new Vector3(),
-    nextBlink: 1.5 + random() * 3,
+    // The first blink follows the same 4 to 7s rhythm as every later one.
+    nextBlink: 4 + random() * 3,
     nextAmbient: 3 + random() * 2,
-    look: { yaw: 0, pitch: 0 },
+    look: { yaw: 0, pitch: 0, vYaw: 0, vPitch: 0 },
     pet: 0,
     wasPetting: false,
     now: 0,
@@ -247,6 +268,7 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
     ears: { L: 0, R: 0 },
     eyeScale: 1,
     warm: 0,
+    trailFade: 1,
     sparks: [],
   };
 
@@ -334,12 +356,13 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
     ambient(ctx.mood, dt, Boolean(ctx.scripted));
 
     // Continuous head tracking (cursor sniff, a hovered star, the camera).
+    out.trailFade = active.some((b) => TAIL_BEHAVIOURS.has(b.name)) ? TRAIL_FADE : 1;
+
     const look = ctx.look;
     const targetYaw = look ? look.yaw * look.weight : 0;
     const targetPitch = look ? look.pitch * look.weight : 0;
-    const k = 1 - Math.exp(-6 * dt);
-    state.look.yaw += (targetYaw - state.look.yaw) * k;
-    state.look.pitch += (targetPitch - state.look.pitch) * k;
+    springTo(state.look, 'yaw', 'vYaw', targetYaw, dt);
+    springTo(state.look, 'pitch', 'vPitch', targetPitch, dt);
     add(out, 'neck', state.look.yaw * 0.4, state.look.pitch * 0.35, 0);
     add(out, 'head', state.look.yaw * 0.6, state.look.pitch * 0.65, 0);
 
@@ -365,5 +388,16 @@ export function createBehaviourEngine({ random = Math.random } = {}) {
     state.committedRoot.set(0, 0, 0);
   }
 
-  return { trigger, update, reset, get active() { return active.map((b) => b.name); } };
+  return {
+    trigger,
+    update,
+    reset,
+    get active() {
+      return active.map((b) => b.name);
+    },
+    /** Current head-tracking angles and angular speeds, degrees and degrees per second. */
+    get look() {
+      return { ...state.look };
+    },
+  };
 }
