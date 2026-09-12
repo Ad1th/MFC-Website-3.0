@@ -51,7 +51,8 @@
 }
 
 .panel[data-region="intro"] * {
-  color: transparent;
+  /* !important: component rules such as .taglines span:last-child are more specific. */
+  color: transparent !important;
 }
 
 /* ---------- still layer: frames in normal flow ---------- */
