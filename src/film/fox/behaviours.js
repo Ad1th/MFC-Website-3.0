@@ -114,7 +114,8 @@ export const BEHAVIOURS = {
     },
   },
   shakeOff: {
-    duration: 1.2,
+    // 0.9s of shaking then the offended beat, kept under the 1.2s ceiling.
+    duration: 1.15,
     run(out, t, opts, a) {
       const shake = t * 1.2;
       const head = env(window01(shake, 0, 0.35), 0.2, 0.3);
@@ -203,7 +204,6 @@ export const BEHAVIOURS = {
   },
   pawTwitch: {
     duration: 0.25,
-    free: true,
     run(out, t) {
       add(out, 'lHand', 0, -14 * Math.sin(Math.PI * t), 0);
     },
