@@ -111,7 +111,9 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       action.setEffectiveWeight(0);
       return action;
     };
-    return { survey: make('Survey'), walk: make('Walk'), run: make('Run') };
+    // Sleep is a Blender-authored clip when the model carries one (DECISIONS D-057);
+    // otherwise the code pose in poses.js is used.
+    return { survey: make('Survey'), walk: make('Walk'), run: make('Run'), sleep: clip('Sleep') ? make('Sleep') : null };
   }, [mixer, rig]);
 
   useEffect(() => () => mixer.stopAllAction(), [mixer]);
@@ -235,16 +237,24 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     }
 
     // Base clips.
-    actions.walk.setEffectiveWeight(b.weights.walk).setEffectiveTimeScale(b.speeds.walk);
-    actions.run.setEffectiveWeight(b.weights.run).setEffectiveTimeScale(b.speeds.run);
-    actions.survey.setEffectiveWeight(b.weights.survey).setEffectiveTimeScale(b.speeds.survey);
+    // With a Sleep clip, sleep weight hands the whole skeleton over to that clip.
+    const clipSleep = actions.sleep ? b.pose.sleep : 0;
+    const awake = 1 - clipSleep;
+    actions.walk.setEffectiveWeight(b.weights.walk * awake).setEffectiveTimeScale(b.speeds.walk);
+    actions.run.setEffectiveWeight(b.weights.run * awake).setEffectiveTimeScale(b.speeds.run);
+    actions.survey.setEffectiveWeight(b.weights.survey * awake).setEffectiveTimeScale(b.speeds.survey);
+    if (actions.sleep) actions.sleep.setEffectiveWeight(clipSleep).setEffectiveTimeScale(0);
     mixer.update(dt);
 
     // Poses, behaviours and sandbox debug offsets, all layered on top.
     const offsets = {};
     const hip = new Vector3();
     for (const name of ['sit', 'lie', 'sleep']) {
-      const w = b.pose[name];
+      let w = b.pose[name];
+      if (clipSleep > 0) {
+        if (name === 'sleep') continue;
+        if (name === 'lie') w *= awake;
+      }
       if (w < 0.001) continue;
       mergeOffsets(offsets, POSES[name].bones, w);
       hip.x += POSES[name].hip[0] * w;
