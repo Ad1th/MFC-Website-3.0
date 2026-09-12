@@ -9,6 +9,8 @@ import { flags } from '../live/flags.js';
 import { filmDpr } from './dpr.js';
 import { FILM_FREEZE } from './testHooks.js';
 import S02Break from './scenes/S02Break.jsx';
+import S01ColdOpen from './scenes/S01ColdOpen.jsx';
+import CameraRig from './camera/CameraRig.jsx';
 import styles from './Film.module.css';
 
 /**
@@ -22,19 +24,6 @@ const SPACING = 30;
 function placeholderColor(index) {
   // Debug-only hues. Real scenes follow the palette rule.
   return new Color().setHSL(index / SCENES.length, 0.32, 0.42);
-}
-
-function CameraRig() {
-  useFrame((state, delta) => {
-    const { activeScene, sceneProgress } = film.getState();
-    const targetZ = 9 - (activeScene + sceneProgress) * SPACING;
-    const cam = state.camera;
-    const k = FILM_FREEZE ? 1 : 1 - Math.exp(-delta * 5);
-    cam.position.z += (targetZ - cam.position.z) * k;
-    cam.position.x = FILM_FREEZE ? 0 : Math.sin(state.clock.elapsedTime * 0.25) * 0.15;
-    cam.lookAt(0, 0, cam.position.z - 12);
-  });
-  return null;
 }
 
 function SceneBlock({ index }) {
@@ -53,9 +42,20 @@ function SceneBlock({ index }) {
   );
 }
 
+/** Scenes with real content; the rest keep their debug block until they are built. */
+const BUILT = new Set(['S01', 'S02']);
+
 function SceneWindow() {
   const active = useFilm((s) => s.activeScene);
-  return SCENES.map((scene, index) => (Math.abs(index - active) <= 1 ? <SceneBlock key={scene.id} index={index} /> : null));
+  return SCENES.map((scene, index) =>
+    !BUILT.has(scene.id) && Math.abs(index - active) <= 1 ? <SceneBlock key={scene.id} index={index} /> : null,
+  );
+}
+
+function ColdOpenWindow() {
+  const active = useFilm((s) => s.activeScene);
+  // The globe returns in S03 and S10; for now it lives while S01 to S03 are near.
+  return active <= 2 ? <S01ColdOpen /> : null;
 }
 
 function PlaceholderLabel() {
@@ -103,6 +103,7 @@ export default function Film() {
         <directionalLight position={[4, 6, 5]} intensity={1.8} />
         <CameraRig />
         <SceneWindow />
+        <ColdOpenWindow />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}
       </Canvas>

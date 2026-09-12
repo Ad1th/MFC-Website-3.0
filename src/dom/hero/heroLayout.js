@@ -1,4 +1,5 @@
 import { timeZone } from '../../live/whereami.js';
+import { filmNow } from '../../live/clock.js';
 
 /**
  * The hero's layout for a viewport, as plain numbers. The canvas draws from it and the
@@ -33,7 +34,7 @@ function clock(zone, now) {
  * @param {(text: string, font: string) => number} measure text width in CSS px
  * @param {Date} [now]
  */
-export function heroLayout(width, height, measure, now = new Date()) {
+export function heroLayout(width, height, measure, now = filmNow()) {
   const gutter = clamp(16, 6.4 + 0.03 * width, 56);
   const titleSize = Math.round(clamp(56, 0.11 * width, 192));
   const lineHeight = titleSize * 0.9;

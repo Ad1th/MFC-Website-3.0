@@ -1,8 +1,10 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { film } from '../store.js';
 import Shatter from '../shatter/Shatter.jsx';
 import { FILM_TEST, shatterOverride } from '../testHooks.js';
+import { registerShot } from '../camera/shots.js';
+import { coldOpenShot } from './S01ColdOpen.jsx';
 
 /**
  * S02 The Break. The hero page (logo, HUD, title) is drawn once into a 2D canvas and
@@ -14,9 +16,21 @@ import { FILM_TEST, shatterOverride } from '../testHooks.js';
 
 export const IMPACT = 0.1;
 const FLIGHT = 2.2;
+const PUSH = 6;
+
+/** Starts exactly where S01 ends, then the camera is sucked forward through the hole. */
+function breakShot(progress, out) {
+  coldOpenShot(1, out);
+  const t = Math.max(0, progress - IMPACT) / (1 - IMPACT);
+  const forward = out.target.clone().sub(out.position).normalize();
+  const push = PUSH * t * t;
+  out.position.addScaledVector(forward, push);
+  out.target.addScaledVector(forward, push);
+}
 
 export default function S02Break({ index }) {
   const state = useRef({ intact: true, t: 0, visible: true });
+  useEffect(() => registerShot('S02', breakShot), []);
 
   if (FILM_TEST) {
     window.__filmTest.breakState = () => ({ ...state.current });
@@ -44,7 +58,8 @@ export default function S02Break({ index }) {
     }
     state.current.intact = !shattered;
     state.current.t = t;
-    state.current.visible = t < FLIGHT;
+    // Tests that measure the world behind the page can take the page away.
+    state.current.visible = t < FLIGHT && !(FILM_TEST && window.__filmTest.hidePage);
   }, -2);
 
   return <Shatter stateRef={state} />;
