@@ -242,7 +242,7 @@ export default function Sandbox() {
         return { head, body, radius };
       },
     };
-  }, [approach, shot]);
+  }, [approach, shot, ground, worldAt]);
 
   // Pointer: sniff, wind, petting, pounce and chase play.
   const pointer = useRef({ x: 0, y: 0, vx: 0, speed: 0, lastT: 0, still: 0, down: null, osc: [], chaseStep: 0 });
