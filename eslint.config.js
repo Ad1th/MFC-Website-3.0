@@ -3,7 +3,7 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  { ignores: ['dist', 'node_modules', 'media-src', 'public', 'graphify-out', 'director'] },
+  { ignores: ['dist', 'dist-test', 'test-results', 'node_modules', 'media-src', 'public', 'graphify-out', 'director'] },
   js.configs.recommended,
   {
     files: ['src/**/*.{js,jsx}'],
