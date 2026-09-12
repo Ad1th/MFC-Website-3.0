@@ -1,4 +1,4 @@
-import { flags } from '../../live/flags.js';
+import { timeZone } from '../../live/whereami.js';
 
 /**
  * The hero's layout for a viewport, as plain numbers. The canvas draws from it and the
@@ -19,20 +19,11 @@ export const HERO_COLORS = {
 
 const clamp = (min, value, max) => Math.min(max, Math.max(min, value));
 
-function clock(timeZone, now) {
+function clock(zone, now) {
   try {
-    return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone }).format(now);
+    return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone }).format(now);
   } catch {
     return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now);
-  }
-}
-
-export function viewerTimeZone() {
-  if (flags.tz) return flags.tz;
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-  } catch {
-    return 'UTC';
   }
 }
 
@@ -50,7 +41,7 @@ export function heroLayout(width, height, measure, now = new Date()) {
 
   const logo = { x: gutter, y: 22, size: 40 };
 
-  const zone = viewerTimeZone();
+  const zone = timeZone();
   const hud = [
     { text: `you: ${zone.toLowerCase()} ${clock(zone, now)}`, x: gutter, y: 86, color: HERO_COLORS.hud },
     { text: `vellore: ${clock('Asia/Kolkata', now)}`, x: gutter, y: 104, color: HERO_COLORS.hud },
