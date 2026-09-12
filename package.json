@@ -7,6 +7,7 @@
     "dev": "vite",
     "prebuild": "npm run fetch:medium && npm run fetch:github && npm run check:content",
     "build": "vite build",
+    "postbuild": "node scripts/check-dist.mjs",
     "preview": "vite preview",
     "check:content": "node scripts/check-content.mjs",
     "fetch:medium": "node scripts/fetch-medium.mjs",
