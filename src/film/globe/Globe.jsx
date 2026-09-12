@@ -135,7 +135,11 @@ function globeSphere(widthSegments, heightSegments) {
   return new SphereGeometry(1, widthSegments, heightSegments).rotateY(-Math.PI / 2);
 }
 
-const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, children, ...props }, ref) {
+/**
+ * @param {{ tier?: number, spin?: number, facing?: number }} props
+ *   facing  longitude in degrees turned toward +z (the camera side) before any spin
+ */
+const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, facing = 0, children, ...props }, ref) {
   const size = tier >= 3 ? 4096 : 2048;
   const [day, night] = useTexture([`/textures/earth/day-${size}.webp`, `/textures/earth/night-${size}.webp`]);
   day.colorSpace = SRGBColorSpace;
@@ -197,7 +201,7 @@ const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, children, ...p
 
   return (
     <group ref={ref} {...props}>
-      <group ref={spinRef}>
+      <group ref={spinRef} rotation={[0, (-facing * Math.PI) / 180, 0]}>
         <mesh geometry={surfaceGeometry}>
           <shaderMaterial args={[surface]} />
         </mesh>
