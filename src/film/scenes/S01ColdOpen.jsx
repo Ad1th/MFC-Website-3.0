@@ -9,6 +9,7 @@ import LensedTitle from '../globe/LensedTitle.jsx';
 import Fox from '../fox/Fox.jsx';
 import { registerShot } from '../camera/shots.js';
 import { getScenes } from '../scroll.js';
+import { FILM_FREEZE } from '../testHooks.js';
 
 /**
  * S01 Cold Open. Wide on the live globe turning in space, the title set huge behind the
@@ -33,6 +34,8 @@ export const GLOBE_CENTRE = new Vector3(0, 0, 0);
 export const GLOBE_FACING = 55;
 
 const FOX_WORLD_SCALE = 0.4;
+/** Feet to body centre in world units: about 45 model units up, times FOX_SCALE (0.01) and the scene scale. */
+const FOX_BODY_HEIGHT = 45 * 0.01 * FOX_WORLD_SCALE;
 const ORBIT_RADIUS = 3.32;
 const ORBIT_U = new Vector3(1, 0, 0);
 const ORBIT_W = new Vector3(0, 0.38, 1).normalize();
@@ -118,7 +121,8 @@ export function coldOpenShot(progress, out, aspect = 16 / 9) {
  * the lens, so it fills the frame head-on as S02 begins.
  */
 function jumpTarget(cameraPosition, out) {
-  shotCloseTarget.copy(HOLD.position).addScaledVector(HOLD.up, BULLET_LIFT * 0.6);
+  // The fox's origin is at its feet; aim so its body centre, not its feet, meets the lens axis.
+  shotCloseTarget.copy(HOLD.position).addScaledVector(HOLD.up, BULLET_LIFT * 0.6 - FOX_BODY_HEIGHT);
   return out.lerpVectors(shotCloseTarget, cameraPosition, 0.82);
 }
 
@@ -191,7 +195,8 @@ export default function S01ColdOpen() {
 
     const curl = ease(window01(p, 0.36, 0.5)) * (1 - ease(window01(p, 0.8, 0.88)));
     const bullet = p >= 0.5 && p < 0.8;
-    input.timeScale = bullet ? 0 : 1;
+    // Under ?freeze the fox's clock stops too, so identical frames stay identical.
+    input.timeScale = bullet || FILM_FREEZE ? 0 : 1;
     input.scenePose.weight = curl;
     input.hint = bullet ? null : 'run';
 
