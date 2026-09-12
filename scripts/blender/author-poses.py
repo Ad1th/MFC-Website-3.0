@@ -136,7 +136,7 @@ def lowest_z():
     return lowest
 
 
-def settle(tolerance=0.2, contact=1.0, rounds=24):
+def settle(tolerance=0.2, contact=0.05, rounds=40):
     """Move the hips until the lowest vertex rests on the floor: never below -tolerance,
     never floating more than `contact` above it. IK keeps the paws on their targets.
     Raising takes the full error; lowering takes half, so the loop cannot overshoot back under."""
