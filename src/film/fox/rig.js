@@ -221,7 +221,7 @@ export function furLuminance(texture) {
  * @param {number} count
  * @param {{ emberRatio?: number, seed?: number, luminance?: ((u: number, v: number) => number)|null }} [options]
  */
-export function sampleSurface(mesh, count, { emberRatio = 1, seed = 7, luminance = null } = {}) {
+export function sampleSurface(mesh, count, { emberRatio = 1, seed = 7, luminance = null, earBoost = 0 } = {}) {
   const src = mesh.geometry;
   const pos = src.attributes.position;
   const uv = src.attributes.uv;
@@ -240,7 +240,9 @@ export function sampleSurface(mesh, count, { emberRatio = 1, seed = 7, luminance
     a.fromBufferAttribute(pos, t * 3);
     b.fromBufferAttribute(pos, t * 3 + 1);
     c.fromBufferAttribute(pos, t * 3 + 2);
-    total += ab.subVectors(b, a).cross(ac.subVectors(c, a)).length() * 0.5;
+    // earBoost adds density on the ear tips so ear folds read on a particle body.
+    const earMask = ear ? Math.max(Math.abs(ear.getX(t * 3)), Math.abs(ear.getX(t * 3 + 1)), Math.abs(ear.getX(t * 3 + 2))) : 0;
+    total += ab.subVectors(b, a).cross(ac.subVectors(c, a)).length() * 0.5 * (1 + earBoost * earMask);
     cdf[t] = total;
   }
 
