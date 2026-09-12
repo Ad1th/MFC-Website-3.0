@@ -6,6 +6,9 @@ import { SCENES } from './timeline.js';
 import { getScenes } from './scroll.js';
 import { registerRenderer, StatsProbe } from './debug/stats.js';
 import { flags } from '../live/flags.js';
+import { filmDpr } from './dpr.js';
+import { FILM_FREEZE } from './testHooks.js';
+import S02Break from './scenes/S02Break.jsx';
 import styles from './Film.module.css';
 
 /**
@@ -26,9 +29,9 @@ function CameraRig() {
     const { activeScene, sceneProgress } = film.getState();
     const targetZ = 9 - (activeScene + sceneProgress) * SPACING;
     const cam = state.camera;
-    const k = 1 - Math.exp(-delta * 5);
+    const k = FILM_FREEZE ? 1 : 1 - Math.exp(-delta * 5);
     cam.position.z += (targetZ - cam.position.z) * k;
-    cam.position.x = Math.sin(state.clock.elapsedTime * 0.25) * 0.15;
+    cam.position.x = FILM_FREEZE ? 0 : Math.sin(state.clock.elapsedTime * 0.25) * 0.15;
     cam.lookAt(0, 0, cam.position.z - 12);
   });
   return null;
@@ -38,7 +41,7 @@ function SceneBlock({ index }) {
   const ref = useRef(null);
   const color = useMemo(() => placeholderColor(index), [index]);
   useFrame((_, delta) => {
-    if (!ref.current) return;
+    if (!ref.current || FILM_FREEZE) return;
     ref.current.rotation.x += delta * 0.18;
     ref.current.rotation.y += delta * 0.27;
   });
@@ -81,12 +84,15 @@ function PlaceholderLabel() {
   );
 }
 
+const BREAK_INDEX = SCENES.findIndex((scene) => scene.id === 'S02');
+
 export default function Film() {
+  const tier = useFilm((s) => s.quality);
   return (
     <div className={styles.film} aria-hidden="true">
       <Canvas
         className={styles.canvas}
-        dpr={[1, 1.5]}
+        dpr={filmDpr(tier)}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         camera={{ fov: 45, near: 0.1, far: 200, position: [0, 0, 9] }}
         onCreated={({ gl }) => registerRenderer(gl)}
@@ -97,6 +103,7 @@ export default function Film() {
         <directionalLight position={[4, 6, 5]} intensity={1.8} />
         <CameraRig />
         <SceneWindow />
+        <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}
       </Canvas>
       <PlaceholderLabel />
