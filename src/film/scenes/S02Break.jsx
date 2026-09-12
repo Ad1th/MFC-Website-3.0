@@ -19,8 +19,8 @@ const FLIGHT = 2.2;
 const PUSH = 6;
 
 /** Starts exactly where S01 ends, then the camera is sucked forward through the hole. */
-function breakShot(progress, out) {
-  coldOpenShot(1, out);
+function breakShot(progress, out, aspect) {
+  coldOpenShot(1, out, aspect);
   const t = Math.max(0, progress - IMPACT) / (1 - IMPACT);
   const forward = out.target.clone().sub(out.position).normalize();
   const push = PUSH * t * t;

@@ -7,7 +7,8 @@ import { Vector3 } from 'three';
  * scene's pose at progress 0 (checked by `handoverGap`). No cuts.
  *
  * @typedef {{ position: Vector3, target: Vector3, fov: number, roll: number }} Pose
- * @typedef {(progress: number, out: Pose) => void} Shot
+ * @typedef {(progress: number, out: Pose, aspect: number) => void} Shot
+ *   aspect is the viewport width / height, so a shot can pull back on narrow screens
  */
 
 /** @type {Map<string, Shot>} */
@@ -33,12 +34,13 @@ export function registerShot(sceneId, shot) {
  * @param {string} sceneId
  * @param {number} progress
  * @param {Pose} out
+ * @param {number} [aspect]
  * @returns {boolean} false when the scene has no shot yet
  */
-export function sampleShot(sceneId, progress, out) {
+export function sampleShot(sceneId, progress, out, aspect = 16 / 9) {
   const shot = shots.get(sceneId);
   if (!shot) return false;
-  shot(progress, out);
+  shot(progress, out, aspect);
   return true;
 }
 
@@ -49,8 +51,8 @@ const b = createPose();
  * Distance between one scene's end pose and the next scene's start pose (tests, debug HUD).
  * @returns {{ position: number, target: number, fov: number, roll: number }|null}
  */
-export function handoverGap(fromId, toId) {
-  if (!sampleShot(fromId, 1, a) || !sampleShot(toId, 0, b)) return null;
+export function handoverGap(fromId, toId, aspect = 16 / 9) {
+  if (!sampleShot(fromId, 1, a, aspect) || !sampleShot(toId, 0, b, aspect)) return null;
   return {
     position: a.position.distanceTo(b.position),
     target: a.target.distanceTo(b.target),

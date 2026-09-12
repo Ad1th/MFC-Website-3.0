@@ -52,7 +52,7 @@ export default function CameraRig() {
     const dt = Math.min(delta, 1 / 20);
     const { activeScene, sceneProgress, velocity } = film.getState();
     const scene = getScenes()[activeScene];
-    if (!scene || !sampleShot(scene.id, sceneProgress, pose)) placeholder(activeScene, sceneProgress, pose);
+    if (!scene || !sampleShot(scene.id, sceneProgress, pose, state.size.width / state.size.height)) placeholder(activeScene, sceneProgress, pose);
 
     const cam = state.camera;
     if (FILM_FREEZE || !initialised) {
