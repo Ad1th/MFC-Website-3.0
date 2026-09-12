@@ -4,16 +4,17 @@ import { test, expect } from '@playwright/test';
 
 /**
  * S01 accept: the terminator matches the real time. With ?at= pinned and ?freeze=1 the
- * globe does not spin, so the camera looks at longitude 0 with east on the right.
- *   06:30 UTC on 13 Sep 2026: the sun is over India (81.5°E), so the right side is day.
- *   18:30 UTC the same day: the sun is over North America (98.5°W), so the left side is day.
+ * globe does not spin; S01 turns longitude 55°E toward the camera, east on the right.
+ * Moments are chosen so the subsolar point is 90° either side of that centre:
+ *   02:20 UTC on 13 Sep 2026: the sun is over 145°E, so the right side is day.
+ *   14:20 UTC the same day: the sun is over 35°W, so the left side is day.
  * The hero page is taken away so only the globe is measured. Frames are saved for the gate.
  */
 
 const OUT = path.resolve('director/frames/gate3-globe');
 const CASES = [
-  { at: '2026-09-13T06:30:00Z', lit: 'right' },
-  { at: '2026-09-13T18:30:00Z', lit: 'left' },
+  { at: '2026-09-13T02:20:00Z', lit: 'right' },
+  { at: '2026-09-13T14:20:00Z', lit: 'left' },
 ];
 
 for (const { at, lit } of CASES) {

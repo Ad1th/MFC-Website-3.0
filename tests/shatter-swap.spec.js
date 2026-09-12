@@ -79,7 +79,8 @@ for (const size of SIZES) {
     test.use({ viewport: size.viewport, deviceScaleFactor: size.deviceScaleFactor });
 
     test(`the intact page hands over to its shards with no pixel change at ${size.viewport.width}x${size.viewport.height}`, async ({ page, browser, browserName }) => {
-      await page.goto('/?tier=2&freeze=1');
+      // Mocked weather resolves at once; live weather could land between the two screenshots.
+      await page.goto('/?tier=2&freeze=1&weather=clear');
       await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
       await page.evaluate(() => document.fonts.ready);
       await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-ready]') !== null)).toBe(true);
