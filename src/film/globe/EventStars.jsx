@@ -78,7 +78,7 @@ const VERTEX = /* glsl */ `
     vTwinkle = 0.65 + 0.35 * sin(uTime * (0.6 + aSizeTwinkle.y) + aSizeTwinkle.y * 40.0);
     vec4 centre = modelViewMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
     // Billboard: offset in view space, width from the label's aspect ratio.
-    vec2 corner = position.xy * vec2(aSizeTwinkle.x, 1.0) * 0.16;
+    vec2 corner = position.xy * vec2(aSizeTwinkle.x, 1.0) * 0.09;
     vec4 view = centre + vec4(corner, 0.0, 0.0);
     // Far labels melt into star points; near labels become readable.
     vFade = clamp((-centre.z - 4.0) / 40.0, 0.0, 1.0);
@@ -94,7 +94,7 @@ const FRAGMENT = /* glsl */ `
   varying float vFade;
   void main() {
     float a = texture2D(uAtlas, vUv).a;
-    gl_FragColor = vec4(uColor * a * vTwinkle * mix(0.9, 0.35, vFade), 1.0);
+    gl_FragColor = vec4(uColor * a * vTwinkle * mix(0.9, 0.22, vFade), 1.0);
     #include <colorspace_fragment>
   }
 `;
@@ -118,12 +118,13 @@ export default function EventStars({ count = 1400, radius = 70, seed = 11 }) {
     const rectData = new Float32Array(count * 4);
     const sizeData = new Float32Array(count * 2);
     const m = new Matrix4();
-    const tilt = new Matrix4().makeRotationZ(0.5).multiply(new Matrix4().makeRotationX(1.1));
+    // A slight tilt keeps the band inside the camera's view behind the planet, crossing it on a diagonal.
+    const tilt = new Matrix4().makeRotationZ(0.45).multiply(new Matrix4().makeRotationX(0.18));
     for (let i = 0; i < count; i += 1) {
       const r = rects[i % rects.length];
       const angle = rand() * Math.PI * 2;
       // Gaussian-ish spread across the band.
-      const spread = (rand() + rand() + rand() - 1.5) * 0.28;
+      const spread = (rand() + rand() + rand() - 1.5) * 0.12;
       const dist = radius * (0.8 + rand() * 0.4);
       m.makeTranslation(Math.cos(angle) * dist, spread * dist, Math.sin(angle) * dist).premultiply(tilt);
       instanced.setMatrixAt(i, m);
