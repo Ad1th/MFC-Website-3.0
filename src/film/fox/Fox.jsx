@@ -65,6 +65,8 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
   const brain = useMemo(() => createFoxBrain(), []);
   const engine = useMemo(() => createBehaviourEngine(), []);
   const eyeState = useRef({ scale: 1 });
+  const trailFade = useRef(1);
+  const lastPounce = useRef(null);
   const sparksRef = useRef(null);
   const debugPose = useRef({});
   const lastFrame = useRef({ mood: 'trot', brain: null });
@@ -79,7 +81,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     const geometry =
       approach === 'A'
         ? sampleSurface(rig.mesh, budget, { emberRatio: 1, seed: 11 })
-        : sampleSurface(rig.mesh, budget, { emberRatio: 0.22, seed: 23, luminance: furLuminance(fur) });
+        : sampleSurface(rig.mesh, budget, { emberRatio: 0.22, seed: 23, luminance: furLuminance(fur), earBoost: 5 });
     const material =
       approach === 'A'
         ? createParticleMaterial(rig.mesh, { size: 0.0065, life: 0.95, rise: 16, spread: 7 })
@@ -135,8 +137,10 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
           mTmp.copy(groupRef.current.matrixWorld).invert();
           const local = vTmp.copy(opts.targetWorld).applyMatrix4(mTmp);
           const offset = new Vector3(local.x - rig.root.position.x, 0, local.z - rig.root.position.z);
-          if (offset.length() > 150) offset.setLength(150);
+          const clamped = offset.length() > 150;
+          if (clamped) offset.setLength(150);
           payload.target = offset;
+          lastPounce.current = { x: opts.targetWorld.x, z: opts.targetWorld.z, clamped };
         }
         return engine.trigger(name, payload, { force, scripted: input.current.scripted });
       },
@@ -152,6 +156,14 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       },
       get particleCount() {
         return particles?.count ?? 0;
+      },
+      /** The world point of the last pounce click and whether the 1.5 m cap applied. */
+      get lastPounce() {
+        return lastPounce.current;
+      },
+      /** Head-tracking spring state (degrees, degrees per second). */
+      get look() {
+        return engine.look;
       },
       setPose(key, yaw = 0, pitch = 0, roll = 0) {
         debugPose.current[key] = [yaw, pitch, roll];
@@ -232,6 +244,8 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
           lowest = Math.min(lowest, vertex.y + rig.root.position.y);
         }
         return {
+          wind: flame.uniforms.uWind.value.toArray().map((x) => Math.round(x * 1000) / 1000),
+          trailFade: Math.round(trailFade.current * 100) / 100,
           lowestY: Math.round(lowest * 100) / 100,
           root: round(rig.root.position),
           hip: round(rig.bones.hip.position),
@@ -255,7 +269,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
         return { head: h, body: b, radius, headWorld: head };
       },
     }),
-    [engine, particles, rig, input],
+    [engine, particles, rig, input, flame],
   );
 
   useFrame((state, delta) => {
@@ -377,6 +391,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     }
 
     eyeState.current.scale = out.eyeScale;
+    trailFade.current += (out.trailFade - trailFade.current) * (1 - Math.exp(-10 * dt));
 
     for (const request of out.sparks) {
       const at = request.at === 'nose' ? rig.bones.head.localToWorld(rig.noseLocal.clone()) : rig.root.localToWorld(LANDMARKS.bodyCentre.clone());
@@ -396,7 +411,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       <group ref={groupRef} position={position} rotation={rotation} scale={FOX_SCALE}>
         <primitive object={rig.root} />
       </group>
-      {trail ? <Trail rig={rig} driftRef={worldDrift} /> : null}
+      {trail ? <Trail rig={rig} driftRef={worldDrift} fadeRef={trailFade} /> : null}
       {eyes ? <Eyes rig={rig} eyeState={eyeState} /> : null}
       <Sparks ref={sparksRef} driftRef={worldDrift} />
     </>
