@@ -21,8 +21,9 @@ const SHOTS = {
   hero: { label: 'hero, full body', position: new Vector3(1.75, 0.58, 1.55), look: new Vector3(0, 0.4, -0.1), fov: 35 },
   dive: { label: 'dive, mid shot', position: new Vector3(-0.6, 1.85, -3.4), look: new Vector3(0, 0.35, 1.2), fov: 45 },
   sky: { label: 'sky, small in frame', position: new Vector3(5.2, 0.45, 9.8), look: new Vector3(0, 2.3, 0), fov: 40 },
-  face: { label: 'close, face and ears', position: new Vector3(0.5, 0.68, 1.0), look: new Vector3(0, 0.6, 0.42), fov: 30 },
-  tail: { label: 'close, tail', position: new Vector3(-0.75, 0.5, -1.35), look: new Vector3(0, 0.3, -0.7), fov: 34 },
+  // Close-ups follow the live bones, so they stay framed when the fox sits, lies or sleeps.
+  face: { label: 'close, face and ears', follow: 'eyes', offset: new Vector3(0.42, 0.08, 0.5), position: new Vector3(0.5, 0.68, 1.0), look: new Vector3(0, 0.6, 0.42), fov: 30 },
+  tail: { label: 'close, tail', follow: 'tailTip', offset: new Vector3(-0.5, 0.28, -0.55), position: new Vector3(-0.75, 0.5, -1.35), look: new Vector3(0, 0.3, -0.7), fov: 34 },
 };
 
 const APPROACHES = ['A', 'B', 'C'];
@@ -76,14 +77,24 @@ function Floor({ inputRef }) {
   );
 }
 
-function CameraRig({ shot }) {
+function CameraRig({ shot, foxRef }) {
   const { camera } = useThree();
   const look = useRef(SHOTS[shot].look.clone());
+  const desiredPosition = useMemo(() => new Vector3(), []);
+  const desiredLook = useMemo(() => new Vector3(), []);
   useFrame((_, delta) => {
     const target = SHOTS[shot];
+    const anchor = target.follow ? foxRef.current?.anchors()[target.follow] : null;
+    if (anchor) {
+      desiredLook.copy(anchor);
+      desiredPosition.copy(anchor).add(target.offset);
+    } else {
+      desiredLook.copy(target.look);
+      desiredPosition.copy(target.position);
+    }
     const k = 1 - Math.exp(-4 * delta);
-    camera.position.lerp(target.position, k);
-    look.current.lerp(target.look, k);
+    camera.position.lerp(desiredPosition, k);
+    look.current.lerp(desiredLook, k);
     camera.fov += (target.fov - camera.fov) * k;
     camera.updateProjectionMatrix();
     camera.lookAt(look.current);
@@ -342,7 +353,7 @@ export default function Sandbox() {
         >
           <color attach="background" args={[PALETTE.night]} />
           <Bridge bridgeRef={bridgeRef} />
-          <CameraRig shot={shot} />
+          <CameraRig shot={shot} foxRef={foxRef} />
           <Floor inputRef={inputRef} />
           <Suspense fallback={null}>
             <Fox key={`${approach}-${tier}`} ref={foxRef} approach={approach} tier={tier} input={inputRef} trail={trail} eyes={eyes} />
