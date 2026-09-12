@@ -6,6 +6,7 @@
  *   ?sandbox=fox                fox sandbox (Phase 2)
  *   ?weather=rain|storm|clear|fog|cloudy|drizzle
  *   ?tz=Europe/London           pretend timezone
+ *   ?at=2026-06-21T12:00:00Z    pretend the current moment (sun position, clocks)
  *   ?visits=1|3|6               pretend visit count
  *   ?commits=0                  no commit meteors
  *   ?newsletters=0              no newsletters
@@ -27,6 +28,7 @@ export const flags = Object.freeze({
   sandbox: params.get('sandbox'),
   weather: params.get('weather'),
   tz: params.get('tz'),
+  at: params.get('at'),
   visits: numberOrNull(params.get('visits')),
   noCommits: params.get('commits') === '0',
   noNewsletters: params.get('newsletters') === '0',
