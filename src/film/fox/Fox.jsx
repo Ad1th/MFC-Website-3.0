@@ -31,6 +31,9 @@ import { FOX_REGRESS } from './testHooks.js';
  * @property {number} lookWeight     0 to 1
  * @property {boolean} petting       pointer held on the fox
  * @property {Vector3} wind          world-space wind, length 0 to 1
+ * @property {number} [timeScale]    1 = normal; 0 freezes animation, embers and trail (bullet time)
+ * @property {{ name: string, weight: number }|null} [scenePose]  a POSES entry a scene holds
+ * @property {number|null} [eyeOverride]  eye openness a scene drives directly (scroll-driven blink)
  */
 
 const DEG = Math.PI / 180;
@@ -272,10 +275,17 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     [engine, particles, rig, input, flame],
   );
 
+  const foxTime = useRef(0);
+  const timeScaleRef = useRef(1);
+
   useFrame((state, delta) => {
-    const dt = Math.min(delta, 1 / 20);
     const inp = input.current;
-    const time = state.clock.elapsedTime;
+    const timeScale = inp.timeScale ?? 1;
+    timeScaleRef.current = timeScale;
+    const dt = Math.min(delta, 1 / 20) * timeScale;
+    // The fox's own clock: it stops in bullet time, so embers hang in the air.
+    foxTime.current += dt;
+    const time = foxTime.current;
 
     const b = brain.update(dt, inp);
     lastFrame.current.mood = b.mood;
@@ -343,6 +353,13 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       hip.y += POSES[name].hip[1] * w;
       hip.z += POSES[name].hip[2] * w;
     }
+    if (inp.scenePose && POSES[inp.scenePose.name] && inp.scenePose.weight > 0.001) {
+      const pose = POSES[inp.scenePose.name];
+      mergeOffsets(offsets, pose.bones, inp.scenePose.weight);
+      hip.x += pose.hip[0] * inp.scenePose.weight;
+      hip.y += pose.hip[1] * inp.scenePose.weight;
+      hip.z += pose.hip[2] * inp.scenePose.weight;
+    }
     mergeOffsets(offsets, out.bones, 1);
     mergeOffsets(offsets, debugPose.current, 1);
     applyBoneOffsets(rig, offsets);
@@ -390,7 +407,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       u.uOpacity.value = b.mood === 'sleep' ? 0.55 : 1;
     }
 
-    eyeState.current.scale = out.eyeScale;
+    eyeState.current.scale = typeof inp.eyeOverride === 'number' ? inp.eyeOverride : out.eyeScale;
     trailFade.current += (out.trailFade - trailFade.current) * (1 - Math.exp(-10 * dt));
 
     for (const request of out.sparks) {
@@ -402,7 +419,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
   const worldDrift = useRef(new Vector3());
   useFrame(() => {
     const speed = input.current.speed ?? 0;
-    worldDrift.current.set(0, 0, -speed * FOX_SCALE);
+    worldDrift.current.set(0, 0, -speed * FOX_SCALE * timeScaleRef.current);
     if (groupRef.current) worldDrift.current.applyQuaternion(groupRef.current.getWorldQuaternion(new Quaternion()));
   }, -1);
 
@@ -411,9 +428,9 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       <group ref={groupRef} position={position} rotation={rotation} scale={FOX_SCALE}>
         <primitive object={rig.root} />
       </group>
-      {trail ? <Trail rig={rig} driftRef={worldDrift} fadeRef={trailFade} /> : null}
+      {trail ? <Trail rig={rig} driftRef={worldDrift} fadeRef={trailFade} timeScaleRef={timeScaleRef} /> : null}
       {eyes ? <Eyes rig={rig} eyeState={eyeState} /> : null}
-      <Sparks ref={sparksRef} driftRef={worldDrift} />
+      <Sparks ref={sparksRef} driftRef={worldDrift} timeScaleRef={timeScaleRef} />
     </>
   );
 });

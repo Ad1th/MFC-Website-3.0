@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BufferAttribute, BufferGeometry, DynamicDrawUsage, Vector3 } from 'three';
 import { createTrailMaterial } from './materials.js';
@@ -7,12 +7,14 @@ import { createTrailMaterial } from './materials.js';
  * The tail's ribbon of fire: a ring buffer of the tail tip's world positions
  * over the last 3 seconds, drawn as a camera-facing strip that thins and fades
  * with age. driftRef moves old samples with the world when the fox runs in place.
+ * timeScaleRef (0 to 1) slows its clock with the fox's, so bullet time freezes the stroke.
  */
 
 const SAMPLES = 180;
 const SAMPLE_EVERY = 1 / 60;
 
-export default function Trail({ rig, driftRef, fadeRef, seconds = 3, width = 0.011 }) {
+export default function Trail({ rig, driftRef, fadeRef, timeScaleRef, seconds = 3, width = 0.011 }) {
+  const clock = useRef(0);
   const { geometry, material, ring } = useMemo(() => {
     const g = new BufferGeometry();
     const position = new BufferAttribute(new Float32Array(SAMPLES * 2 * 3), 3).setUsage(DynamicDrawUsage);
@@ -57,8 +59,10 @@ export default function Trail({ rig, driftRef, fadeRef, seconds = 3, width = 0.0
 
   const baseOpacity = useMemo(() => material.uniforms.uOpacity.value, [material]);
 
-  useFrame((state, delta) => {
-    const now = state.clock.elapsedTime;
+  useFrame((state, frameDelta) => {
+    const delta = frameDelta * (timeScaleRef?.current ?? 1);
+    clock.current += delta;
+    const now = clock.current;
     material.uniforms.uOpacity.value = baseOpacity * (fadeRef?.current ?? 1);
     const drift = driftRef?.current;
     if (drift && drift.lengthSq() > 0) {

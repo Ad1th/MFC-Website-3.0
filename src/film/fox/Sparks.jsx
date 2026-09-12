@@ -35,7 +35,7 @@ const fragment = /* glsl */ `
   }
 `;
 
-const Sparks = forwardRef(function Sparks({ driftRef }, ref) {
+const Sparks = forwardRef(function Sparks({ driftRef, timeScaleRef }, ref) {
   const { geometry, material, pool } = useMemo(() => {
     const g = new BufferGeometry();
     g.setAttribute('position', new BufferAttribute(new Float32Array(POOL * 3), 3).setUsage(DynamicDrawUsage));
@@ -84,7 +84,9 @@ const Sparks = forwardRef(function Sparks({ driftRef }, ref) {
     [geometry, pool],
   );
 
-  useFrame((state, delta) => {
+  useFrame((state, frameDelta) => {
+    // Sparks hang in the air when the fox's clock stops (bullet time).
+    const delta = frameDelta * (timeScaleRef?.current ?? 1);
     const pos = geometry.attributes.position.array;
     const life = geometry.attributes.aLife.array;
     const drift = driftRef?.current;
