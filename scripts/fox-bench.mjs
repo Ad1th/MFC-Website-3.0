@@ -36,6 +36,9 @@ const LAUNCH = {
   chromium: uncapped ? { args: ['--disable-gpu-vsync', '--disable-frame-rate-limit'] } : {},
   firefox: uncapped ? { firefoxUserPrefs: { 'layout.frame_rate': 1000 } } : {},
 };
+// --throttle 4 slows the CPU 4x through the Chrome DevTools protocol (Chromium only):
+// with the tier-2 DPR cap it stands in for the brief's 2020 integrated-graphics laptop.
+const throttle = Number(arg('throttle', '1'));
 const WARMUP_MS = 6000;
 const SAMPLE_MS = 5500;
 
@@ -80,6 +83,15 @@ async function main() {
     const browser = await type.launch({ headless, ...LAUNCH[browserName] });
     const browserVersion = browser.version();
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    if (throttle > 1) {
+      if (browserName !== 'chromium') {
+        console.log(`${browserName}: CPU throttling is Chromium-only, skipped`);
+        await browser.close();
+        continue;
+      }
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: throttle });
+    }
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => {
@@ -103,12 +115,35 @@ async function main() {
             const ext = gl?.getExtension('WEBGL_debug_renderer_info');
             return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : (gl?.getParameter(gl.RENDERER) ?? 'unknown');
           });
-          const file = `gate2-${browserName}-t${tier}-${approach}-${shot}.jpg`;
+          const tag = arg('tag', 'gate2');
+          const file = `${tag}-${browserName}-t${tier}-${approach}-${shot}${uncapped ? '-uncapped' : ''}${throttle > 1 ? `-cpu${throttle}x` : ''}.jpg`;
           await page.locator('canvas').first().screenshot({ path: path.join(outDir, file), type: 'jpeg', quality: 85 });
-          const row = { browser: browserName, browserVersion, tier, approach, shot, fps: stats.fps, low1: stats.low1, rafPerSecond: frames, drawCalls: stats.drawCalls, triangles: stats.triangles, particles: stats.particles, renderer, file };
+          const row = {
+            browser: browserName,
+            browserVersion,
+            throttle,
+            uncapped,
+            tier,
+            approach,
+            shot,
+            fps: stats.fps,
+            low1: stats.low1,
+            cpuAvgMs: stats.cpuAvgMs,
+            cpuP95Ms: stats.cpuP95Ms,
+            gpuAvgMs: stats.gpuAvgMs,
+            gpuP95Ms: stats.gpuP95Ms,
+            gpuTimer: stats.gpuTimer,
+            rafPerSecond: frames,
+            drawCalls: stats.drawCalls,
+            triangles: stats.triangles,
+            particles: stats.particles,
+            renderer,
+            file,
+          };
           results.push(row);
+          const ms = (v) => (v === null || v === undefined ? '  n/a' : String(v).padStart(5));
           console.log(
-            `${browserName.padEnd(9)} t${tier} ${approach} ${shot.padEnd(5)} fps ${String(stats.fps).padStart(4)}  1% ${String(stats.low1).padStart(4)}  raf/s ${String(frames).padStart(4)}  draws ${stats.drawCalls}  particles ${stats.particles}`,
+            `${browserName.padEnd(9)} t${tier} ${approach} ${shot.padEnd(5)} fps ${String(stats.fps).padStart(4)}  1% ${String(stats.low1).padStart(4)}  cpu avg ${ms(stats.cpuAvgMs)} p95 ${ms(stats.cpuP95Ms)}  gpu avg ${ms(stats.gpuAvgMs)} p95 ${ms(stats.gpuP95Ms)}  draws ${stats.drawCalls}`,
           );
         }
       }
@@ -118,9 +153,11 @@ async function main() {
     if (errors.length) console.log(`${browserName} errors:`, errors.slice(0, 5));
     await browser.close();
   }
+  const tag = arg('tag', 'gate2');
+  const suffix = `${uncapped ? '-uncapped' : ''}${throttle > 1 ? `-cpu${throttle}x` : ''}`;
   fs.writeFileSync(
-    path.join(outDir, 'gate2-bench.json'),
-    `${JSON.stringify({ velocity, headless, uncapped, build: stamp, date: new Date().toISOString(), results }, null, 2)}\n`,
+    path.join(outDir, `${tag}-bench${suffix}.json`),
+    `${JSON.stringify({ velocity, headless, uncapped, throttle, build: stamp, date: new Date().toISOString(), results }, null, 2)}\n`,
   );
 }
 
