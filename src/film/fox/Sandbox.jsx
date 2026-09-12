@@ -180,6 +180,7 @@ export default function Sandbox() {
           `idle      ${inp.idleSeconds.toFixed(1)} s`,
           `velocity  ${Math.round(inp.velocity)} px/s`,
           `particles ${fox?.particleCount ?? 0}`,
+          `lowest y  ${fox?.debug().lowestY ?? '-'} (floor 0)`,
           `fps       ${s.fps} (1% ${s.low1})`,
           `draws     ${s.drawCalls}  tris ${s.triangles}`,
         ].join('\n');

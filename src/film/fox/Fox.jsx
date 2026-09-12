@@ -164,7 +164,17 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
         let nan = 0;
         for (let i = 0; i < matrices.length; i += 1) if (!Number.isFinite(matrices[i])) nan += 1;
         const round = (v) => v.toArray().map((x) => Math.round(x * 100) / 100);
+        // Lowest skinned vertex, in model units above the fox's floor (CPU skinning, on demand only).
+        const vertex = new Vector3();
+        let lowest = Infinity;
+        const count = rig.mesh.geometry.attributes.position.count;
+        for (let i = 0; i < count; i += 1) {
+          rig.mesh.getVertexPosition(i, vertex);
+          vertex.applyMatrix4(rig.mesh.matrix);
+          lowest = Math.min(lowest, vertex.y + rig.root.position.y);
+        }
         return {
+          lowestY: Math.round(lowest * 100) / 100,
           root: round(rig.root.position),
           hip: round(rig.bones.hip.position),
           hipWorld: round(rig.bones.hip.getWorldPosition(new Vector3())),
