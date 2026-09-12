@@ -376,7 +376,9 @@ export default function Sandbox() {
         </Canvas>
       </div>
 
-      <aside className={styles.panel} aria-label="fox controls" hidden={!showPanel}>
+      {/* Not rendered at all with ?panel=0: the module's display:grid would override [hidden]. */}
+      {showPanel ? (
+      <aside className={styles.panel} aria-label="fox controls">
         <h1 className={styles.title}>fox sandbox</h1>
 
         <fieldset className={styles.group}>
@@ -460,6 +462,7 @@ export default function Sandbox() {
 
         <pre ref={readoutRef} className={styles.readout} aria-live="off" />
       </aside>
+      ) : null}
     </div>
   );
 }
