@@ -104,6 +104,98 @@ test('a click just outside the fox pounces and never pets', async ({ page }) => 
   expect(seen.petting, 'petting never started').toBe(false);
 });
 
+test('sleep rests on the floor within 0.2 model units', async ({ page }) => {
+  await openSandbox(page, 'shot=hero&velocity=0&mood=sleep');
+  await page.waitForTimeout(3000);
+  const lows = [];
+  for (let i = 0; i < 20; i += 1) {
+    lows.push((await page.evaluate(() => window.__fox.state())).fox.lowestY);
+    await page.waitForTimeout(100);
+  }
+  const line = `sleep lowest skinned vertex: min ${Math.min(...lows)}, max ${Math.max(...lows)} model units (floor 0, tolerance 0.2)`;
+  test.info().annotations.push({ type: 'measurement', description: line });
+  console.log(line);
+  expect(Math.min(...lows)).toBeGreaterThanOrEqual(-0.2);
+  expect(Math.max(...lows)).toBeLessThanOrEqual(0.2);
+});
+
+test('a scene-scripted pose holds while every behaviour is triggered', async ({ page }) => {
+  await openSandbox(page, 'shot=hero&velocity=0&mood=sit');
+  const names = await page.evaluate(() => {
+    window.__fox.setScripted(true);
+    return ['tilt', 'sneeze', 'playBow', 'pounce', 'shakeOff', 'offended', 'yawn', 'wag', 'tailThump', 'tuckTail', 'glanceBack', 'pawTwitch'];
+  });
+  for (const name of names) {
+    await page.evaluate((n) => window.__fox.trigger(n, {}, false), name);
+  }
+  await page.waitForTimeout(300);
+  const whileScripted = (await page.evaluate(() => window.__fox.state())).active;
+  const leaked = whileScripted.filter((n) => names.includes(n));
+  expect(leaked, 'no standalone behaviour runs during a scripted pose').toEqual([]);
+  // The same trigger works once the script releases, so the check is not vacuous.
+  await page.evaluate(() => {
+    window.__fox.setScripted(false);
+    window.__fox.trigger('tilt', { dir: 1 }, true);
+  });
+  await page.waitForTimeout(100);
+  expect((await page.evaluate(() => window.__fox.state())).active).toContain('tilt');
+});
+
+test('a fast cursor sweep pushes the flames away from the pointer', async ({ page }) => {
+  await openSandbox(page, 'shot=hero&velocity=0');
+  const s = await page.evaluate(() => window.__fox.screen());
+  const sweep = async (from, to) => {
+    await page.mouse.move(from, s.head.y - 40);
+    await page.mouse.move(to, s.head.y - 40, { steps: 6 });
+    return page.evaluate(() => ({ world: window.__fox.wind(), uniform: window.__fox.state().fox.wind }));
+  };
+  const rightward = await sweep(s.body.x - 500, s.body.x + 500);
+  await page.waitForTimeout(800);
+  const leftward = await sweep(s.body.x + 500, s.body.x - 500);
+  const length = (v) => Math.hypot(...v);
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const line = `wind after rightward sweep ${JSON.stringify(rightward)}, after leftward sweep ${JSON.stringify(leftward)}`;
+  test.info().annotations.push({ type: 'measurement', description: line });
+  console.log(line);
+  expect(length(rightward.uniform), 'the flame shader receives wind').toBeGreaterThan(0.05);
+  expect(length(leftward.uniform), 'the flame shader receives wind').toBeGreaterThan(0.05);
+  expect(dot(rightward.world, leftward.world), 'opposite sweeps push the flames opposite ways').toBeLessThan(0);
+});
+
+test('a pounce lands on the click point', async ({ page }) => {
+  await openSandbox(page, 'shot=hero&velocity=0');
+  const s = await page.evaluate(() => window.__fox.screen());
+  const start = await page.evaluate(() => window.__fox.tracking());
+  // Pick a click just outside the fox whose ground point is well inside the 1.5 m cap,
+  // so this measures landing accuracy rather than the cap.
+  let click = null;
+  for (const dy of [140, 110, 80, 50, 20]) {
+    for (const dx of [-(s.radius + 60), s.radius + 60, -(s.radius + 30), s.radius + 30]) {
+      const x = s.body.x + dx;
+      const y = s.body.y + dy;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= s.radius || dist >= s.radius + 250) continue;
+      const g = await page.evaluate(([px, py]) => window.__fox.groundAt(px, py), [x, y]);
+      if (g && Math.hypot(g.x - start.root.x, g.z - start.root.z) < 1.2) {
+        click = { x, y };
+        break;
+      }
+    }
+    if (click) break;
+  }
+  expect(click, 'found an in-range click point outside the fox').not.toBeNull();
+  await page.mouse.click(click.x, click.y);
+  await page.waitForTimeout(1500);
+  const target = await page.evaluate(() => window.__fox.lastPounce());
+  const t = await page.evaluate(() => window.__fox.tracking());
+  const miss = Math.hypot(t.root.x - target.x, t.root.z - target.z);
+  const line = `pounce landing: root (${t.root.x.toFixed(3)}, ${t.root.z.toFixed(3)}) vs click (${target.x.toFixed(3)}, ${target.z.toFixed(3)}), miss ${miss.toFixed(3)} = ${((miss / t.bodyLength) * 100).toFixed(1)}% of body, capped ${target.clamped}`;
+  test.info().annotations.push({ type: 'measurement', description: line });
+  console.log(line);
+  expect(target.clamped, 'the chosen click is inside the 1.5 m cap').toBe(false);
+  expect(miss, 'lands within 10% of body length of the click').toBeLessThan(t.bodyLength * 0.1);
+});
+
 test('press and hold on the fox pets and never pounces', async ({ page }) => {
   await openSandbox(page, 'shot=hero&velocity=0');
   const s = await page.evaluate(() => window.__fox.screen());
