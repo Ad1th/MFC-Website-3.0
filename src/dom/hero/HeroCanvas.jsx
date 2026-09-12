@@ -2,7 +2,9 @@ import { useEffect, useRef } from 'react';
 import { heroLayout, HERO_FONTS, HERO_COLORS } from './heroLayout.js';
 import { registerHeroCanvas, heroRedrawn } from './heroSurface.js';
 import { filmDpr } from '../../film/dpr.js';
-import { useFilm } from '../../film/store.js';
+import { film, useFilm } from '../../film/store.js';
+import { loadWeather } from '../../live/weather.js';
+import { countVisit } from '../../live/visitor.js';
 import styles from './Hero.module.css';
 
 /**
@@ -43,6 +45,8 @@ export default function HeroCanvas() {
     if (!canvas) return undefined;
     const ctx = canvas.getContext('2d');
     let logo = null;
+    let weather = film.getState().live.weather;
+    const visits = countVisit();
     let alive = true;
     let minuteTimer = 0;
 
@@ -65,7 +69,7 @@ export default function HeroCanvas() {
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
-      const layout = heroLayout(width, height, measure);
+      const layout = heroLayout(width, height, measure, { weather, visits });
 
       if (logo) ctx.drawImage(logo, layout.logo.x, layout.logo.y, layout.logo.size, layout.logo.size);
 
@@ -92,7 +96,13 @@ export default function HeroCanvas() {
       const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 20;
       minuteTimer = window.setTimeout(() => {
         draw();
-        scheduleMinute();
+        loadWeather().then((result) => {
+      if (!alive || !result) return;
+      weather = result;
+      film.getState().setLive({ weather: result });
+      draw();
+    });
+    scheduleMinute();
       }, ms);
     };
 
