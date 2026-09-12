@@ -134,6 +134,21 @@ const CLIPS = [
     },
   },
   {
+    name: 'wind',
+    query: 'shot=hero&velocity=0',
+    run: async (p) => {
+      await wait(p, 800);
+      const s = await screen(p);
+      for (let i = 0; i < 4; i += 1) {
+        const from = i % 2 ? s.body.x + 520 : s.body.x - 520;
+        const to = i % 2 ? s.body.x - 520 : s.body.x + 520;
+        await p.mouse.move(from, s.head.y - 40);
+        await p.mouse.move(to, s.head.y - 40, { steps: 8 });
+        await wait(p, 900);
+      }
+    },
+  },
+  {
     name: 'chasePlay',
     query: 'shot=hero&velocity=0',
     run: async (p) => {
