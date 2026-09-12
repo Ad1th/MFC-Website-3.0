@@ -12,6 +12,7 @@ import Eyes from './Eyes.jsx';
 import Sparks from './Sparks.jsx';
 import { TIERS } from '../quality.js';
 import { reportParticles } from '../debug/stats.js';
+import { FOX_REGRESS } from './testHooks.js';
 
 /**
  * The fox. Two rendering approaches share one rig, brain and behaviour engine:
@@ -99,9 +100,11 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     // The particles skin against the mesh's bindMatrixInverse, which tracks the rig
     // root's world transform, so they must live under the same root. Parented to the
     // outer group they stayed behind whenever the root moved (overtake, pounce).
-    if (particles) rig.root.add(particles.points);
+    // Test builds can re-create the old bug (FOX_REGRESS) to prove the regression test fails.
+    const parent = FOX_REGRESS === 'embers-parent' && groupRef.current ? groupRef.current : rig.root;
+    if (particles) parent.add(particles.points);
     return () => {
-      if (particles) rig.root.remove(particles.points);
+      if (particles) parent.remove(particles.points);
       particles?.points.geometry.dispose();
       particles?.material.dispose();
     };
@@ -162,6 +165,56 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
         const eyes = rig.bones.head.localToWorld(rig.eyesLocal.left.clone().add(rig.eyesLocal.right).multiplyScalar(0.5));
         const tailTip = rig.bones.tail3.localToWorld(rig.tailTipLocal.clone());
         return { head, eyes, tailTip };
+      },
+      /**
+       * World-space centroids for regression tests. The same sample of particle source
+       * points is skinned on the CPU twice with the shader's formula: once through the
+       * particles' own parent transform (`ember`, where the embers really render) and once
+       * through the skinned mesh's transform (`body`, where the fox's surface is). With the
+       * particles attached correctly the two are identical; attached to the wrong parent
+       * they separate by however far the rig root has moved.
+       */
+      tracking(sample = 256) {
+        let ember = null;
+        let body = null;
+        if (particles) {
+          const geo = particles.points.geometry;
+          const pos = geo.attributes.position;
+          const si = geo.attributes.skinIndex;
+          const sw = geo.attributes.skinWeight;
+          const boneMatrices = rig.mesh.skeleton.boneMatrices;
+          const bone = new Matrix4();
+          const bound = new Vector3();
+          const skinned = new Vector3();
+          const part = new Vector3();
+          const local = new Vector3();
+          const emberSum = new Vector3();
+          const bodySum = new Vector3();
+          const step = Math.max(1, Math.floor(pos.count / sample));
+          let n = 0;
+          for (let i = 0; i < pos.count; i += step) {
+            bound.fromBufferAttribute(pos, i).applyMatrix4(rig.mesh.bindMatrix);
+            skinned.set(0, 0, 0);
+            for (let k = 0; k < 4; k += 1) {
+              const w = sw.getComponent(i, k);
+              if (!w) continue;
+              bone.fromArray(boneMatrices, si.getComponent(i, k) * 16);
+              skinned.add(part.copy(bound).applyMatrix4(bone).multiplyScalar(w));
+            }
+            local.copy(skinned).applyMatrix4(rig.mesh.bindMatrixInverse);
+            emberSum.add(part.copy(local).applyMatrix4(particles.points.matrixWorld));
+            bodySum.add(part.copy(local).applyMatrix4(rig.mesh.matrixWorld));
+            n += 1;
+          }
+          ember = emberSum.divideScalar(n);
+          body = bodySum.divideScalar(n);
+        }
+        const root = rig.root.getWorldPosition(new Vector3());
+        // Live body length, nose to tail base, in world units: the scale for drift limits.
+        const nose = rig.bones.head.localToWorld(rig.noseLocal.clone());
+        const tailBase = rig.bones.tail1.getWorldPosition(new Vector3());
+        const plain = (v) => (v ? { x: v.x, y: v.y, z: v.z } : null);
+        return { ember: plain(ember), body: plain(body), root: plain(root), bodyLength: nose.distanceTo(tailBase) };
       },
       /** Sandbox diagnostics: positions, pose weights and a NaN check on the skeleton. */
       debug() {
