@@ -205,6 +205,13 @@ export default function Sandbox() {
       pose: (key, yaw, pitch, roll) => foxRef.current?.setPose(key, yaw, pitch, roll),
       clearPose: () => foxRef.current?.clearPose(),
       state: () => ({ mood: foxRef.current?.mood, active: foxRef.current?.active, stats: stats(), approach, shot, fox: foxRef.current?.debug() }),
+      /** Head and body position in canvas pixels, for scripted pointer interactions. */
+      screen: () => {
+        const three = bridgeRef.current;
+        if (!three || !foxRef.current) return null;
+        const { head, body, radius } = foxRef.current.project(three.camera, three.size);
+        return { head, body, radius };
+      },
     };
   }, [approach, shot]);
 
