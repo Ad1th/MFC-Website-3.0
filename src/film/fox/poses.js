@@ -54,17 +54,19 @@ export const POSES = {
       tail2: [-14, 12, 0],
     },
   },
-  /** Added on top of lie: curl, head turned back along the body, tail over the nose. */
+  /** Added on top of lie: head down and turned toward the flank, tail swept round to the nose. */
   sleep: {
-    hip: [0, -4, 0],
+    hip: [0, -6, 0],
     bones: {
-      spine1: [16, 0, 0],
-      spine2: [18, 0, 0],
-      neck: [40, 18, -10],
-      head: [34, 16, -18],
-      tail1: [-42, 0, 0],
-      tail2: [-44, 0, 0],
-      tail3: [-40, 0, 0],
+      spine1: [10, 4, 0],
+      spine2: [14, 4, 0],
+      neck: [28, 26, 0],
+      head: [30, 22, -10],
+      lArmUp: [0, -12, 0],
+      rArmUp: [0, -12, 0],
+      tail1: [-36, 10, 0],
+      tail2: [-40, 4, 0],
+      tail3: [-38, 0, 0],
     },
   },
 };
