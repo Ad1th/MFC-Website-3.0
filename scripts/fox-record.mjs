@@ -98,7 +98,8 @@ const CLIPS = [
       for (let i = 0; i < 2; i += 1) {
         await wait(p, 1200);
         const s = await screen(p);
-        await p.mouse.click(s.body.x - s.radius * 0.9, s.body.y + s.radius * 0.35);
+        // Just outside the fox: a click on the fox itself counts as petting, not a pounce.
+        await p.mouse.click(s.body.x - (s.radius + 90), s.body.y + 40);
         await wait(p, 2000);
       }
     },
