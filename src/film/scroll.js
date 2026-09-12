@@ -81,6 +81,7 @@ export function initScroll(trackEl) {
       lenis.scrollTo(target, { immediate: true, force: true });
       return true;
     };
+    window.__filmTest.layout = () => scenes.map(({ id, start, length }) => ({ id, start, length }));
     window.__filmTest.state = () => {
       const { activeScene, sceneProgress, progress } = film.getState();
       return { scene: scenes[activeScene]?.id, sceneProgress, progress };
