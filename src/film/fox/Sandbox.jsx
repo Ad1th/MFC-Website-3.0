@@ -193,6 +193,23 @@ export default function Sandbox() {
     return () => cancelAnimationFrame(raf);
   }, [autoIdle]);
 
+  // Pointer: sniff, wind, petting, pounce and chase play. Declared before the test-hook
+  // effect, whose deps array reads ground and worldAt during render.
+  const pointer = useRef({ x: 0, y: 0, vx: 0, speed: 0, lastT: 0, still: 0, down: null, osc: [], chaseStep: 0 });
+  const raycaster = useMemo(() => new Raycaster(), []);
+  const ground = useMemo(() => new Plane(new Vector3(0, 1, 0), 0), []);
+
+  const worldAt = useCallback(
+    (x, y, plane) => {
+      const three = bridgeRef.current;
+      if (!three) return null;
+      const ndc = new Vector2((x / three.size.width) * 2 - 1, -(y / three.size.height) * 2 + 1);
+      raycaster.setFromCamera(ndc, three.camera);
+      return raycaster.ray.intersectPlane(plane, new Vector3());
+    },
+    [raycaster],
+  );
+
   useEffect(() => {
     window.__fox = {
       setApproach: (a) => setApproach(APPROACHES.includes(a) ? a : 'A'),
@@ -243,22 +260,6 @@ export default function Sandbox() {
       },
     };
   }, [approach, shot, ground, worldAt]);
-
-  // Pointer: sniff, wind, petting, pounce and chase play.
-  const pointer = useRef({ x: 0, y: 0, vx: 0, speed: 0, lastT: 0, still: 0, down: null, osc: [], chaseStep: 0 });
-  const raycaster = useMemo(() => new Raycaster(), []);
-  const ground = useMemo(() => new Plane(new Vector3(0, 1, 0), 0), []);
-
-  const worldAt = useCallback(
-    (x, y, plane) => {
-      const three = bridgeRef.current;
-      if (!three) return null;
-      const ndc = new Vector2((x / three.size.width) * 2 - 1, -(y / three.size.height) * 2 + 1);
-      raycaster.setFromCamera(ndc, three.camera);
-      return raycaster.ray.intersectPlane(plane, new Vector3());
-    },
-    [raycaster],
-  );
 
   const onPointerMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
