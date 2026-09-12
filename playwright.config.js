@@ -11,8 +11,10 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
   },
+  // Tests run against a separate build with test hooks on (dist-test), so the
+  // production dist never contains them.
   webServer: {
-    command: `npx vite build && npx vite preview --port ${PORT} --strictPort`,
+    command: `VITE_FOX_TEST_HOOKS=1 npx vite build --outDir dist-test && npx vite preview --outDir dist-test --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: true,
     timeout: 120_000,
