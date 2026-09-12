@@ -149,6 +149,13 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       clearPose() {
         debugPose.current = {};
       },
+      /** Live world positions of the head, the point between the eyes and the tail tip (follow cameras). */
+      anchors() {
+        const head = rig.bones.head.getWorldPosition(new Vector3());
+        const eyes = rig.bones.head.localToWorld(rig.eyesLocal.left.clone().add(rig.eyesLocal.right).multiplyScalar(0.5));
+        const tailTip = rig.bones.tail3.localToWorld(rig.tailTipLocal.clone());
+        return { head, eyes, tailTip };
+      },
       /** Sandbox diagnostics: positions, pose weights and a NaN check on the skeleton. */
       debug() {
         const matrices = rig.mesh.skeleton.boneMatrices;
