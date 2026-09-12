@@ -117,7 +117,8 @@ async function main() {
           });
           const tag = arg('tag', 'gate2');
           const file = `${tag}-${browserName}-t${tier}-${approach}-${shot}${uncapped ? '-uncapped' : ''}${throttle > 1 ? `-cpu${throttle}x` : ''}.jpg`;
-          await page.locator('canvas').first().screenshot({ path: path.join(outDir, file), type: 'jpeg', quality: 85 });
+          // Uncapped frames never settle for an element screenshot, so give it a real timeout.
+          await page.locator('canvas').first().screenshot({ path: path.join(outDir, file), type: 'jpeg', quality: 85, timeout: 15000 });
           const row = {
             browser: browserName,
             browserVersion,
