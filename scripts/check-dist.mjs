@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Production build guard, run after `npm run build`. Fails if the fox test hooks
- * (FOX_REGRESS switches that re-create fixed bugs) leaked into the output.
+ * (FOX_REGRESS switches that re-create fixed bugs) or the film test hooks leaked into the output.
  *
  * It matches the hook's own signatures, not the bare word "regress": React Three
  * Fiber legitimately ships a `performance.regress()` API for adaptive resolution.
@@ -21,6 +21,8 @@ const FORBIDDEN = [
   { pattern: /["'`]embers-parent["'`]/, why: 're-creates the ember attachment bug' },
   { pattern: /["'`]no-hit-radius["'`]/, why: 'disables the petting hit radius' },
   { pattern: /["'`]no-near-radius["'`]/, why: 'disables the pounce radius' },
+  { pattern: /__filmTest/, why: 'film test hooks (scroll jumps, forced shatter)' },
+  { pattern: /get\(\s*["'`]freeze["'`]\s*\)/, why: 'reads the ?freeze= URL switch' },
 ];
 
 function* files(dir) {

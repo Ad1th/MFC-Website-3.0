@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { film } from './store.js';
 import { layout, locate, totalVh, titleFor, MOBILE_QUERY } from './timeline.js';
+import { FILM_TEST } from './testHooks.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -69,6 +70,22 @@ export function initScroll(trackEl) {
   write(trigger.progress, 0);
   // Tests and benchmarks wait for this instead of guessing when the film is live.
   document.documentElement.dataset.filmReady = 'true';
+  if (FILM_TEST) {
+    window.__filmTest.scrollToScene = (id, progress = 0) => {
+      const index = scenes.findIndex((scene) => scene.id === id);
+      if (index < 0 || !track) return false;
+      const s = scenes[index];
+      const top = track.getBoundingClientRect().top + window.scrollY;
+      const range = track.offsetHeight - window.innerHeight;
+      const target = top + ((s.start + s.length * progress) / totalVh(scenes)) * range;
+      lenis.scrollTo(target, { immediate: true, force: true });
+      return true;
+    };
+    window.__filmTest.state = () => {
+      const { activeScene, sceneProgress, progress } = film.getState();
+      return { scene: scenes[activeScene]?.id, sceneProgress, progress };
+    };
+  }
 
   return () => {
     delete document.documentElement.dataset.filmReady;
