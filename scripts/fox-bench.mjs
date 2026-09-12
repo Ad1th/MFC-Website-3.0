@@ -64,6 +64,7 @@ async function main() {
   const results = [];
   for (const [browserName, type] of BROWSERS) {
     const browser = await type.launch({ headless, ...LAUNCH[browserName] });
+    const browserVersion = browser.version();
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -90,7 +91,7 @@ async function main() {
           });
           const file = `gate2-${browserName}-t${tier}-${approach}-${shot}.jpg`;
           await page.locator('canvas').first().screenshot({ path: path.join(outDir, file), type: 'jpeg', quality: 85 });
-          const row = { browser: browserName, tier, approach, shot, fps: stats.fps, low1: stats.low1, rafPerSecond: frames, drawCalls: stats.drawCalls, triangles: stats.triangles, particles: stats.particles, renderer, file };
+          const row = { browser: browserName, browserVersion, tier, approach, shot, fps: stats.fps, low1: stats.low1, rafPerSecond: frames, drawCalls: stats.drawCalls, triangles: stats.triangles, particles: stats.particles, renderer, file };
           results.push(row);
           console.log(
             `${browserName.padEnd(9)} t${tier} ${approach} ${shot.padEnd(5)} fps ${String(stats.fps).padStart(4)}  1% ${String(stats.low1).padStart(4)}  raf/s ${String(frames).padStart(4)}  draws ${stats.drawCalls}  particles ${stats.particles}`,
@@ -98,6 +99,8 @@ async function main() {
         }
       }
     }
+    const renderers = [...new Set(results.filter((r) => r.browser === browserName).map((r) => r.renderer))];
+    console.log(`${browserName} ${browserVersion}, renderer: ${renderers.join(' | ')}`);
     if (errors.length) console.log(`${browserName} errors:`, errors.slice(0, 5));
     await browser.close();
   }
