@@ -16,6 +16,7 @@ import S04Packet from './scenes/S04Packet.jsx';
 import S05Rooms from './scenes/S05Rooms.jsx';
 import S06Gallery from './scenes/S06Gallery.jsx';
 import S07Spiral from './scenes/S07Spiral.jsx';
+import S08Burn from './scenes/S08Burn.jsx';
 import { BUILT_SCENES as BUILT } from './built.js';
 import FilmFox from './actors/FilmFox.jsx';
 import styles from './Film.module.css';
@@ -98,6 +99,13 @@ function SpiralWindow() {
   return Math.abs(active - SPIRAL_INDEX) <= 1 ? <S07Spiral /> : null;
 }
 
+const BURN_INDEX = SCENES.findIndex((scene) => scene.id === 'S08');
+
+function BurnWindow() {
+  const active = useFilm((s) => s.activeScene);
+  return Math.abs(active - BURN_INDEX) <= 1 ? <S08Burn /> : null;
+}
+
 function PlaceholderLabel() {
   const idRef = useRef(null);
   const nameRef = useRef(null);
@@ -152,6 +160,7 @@ export default function Film() {
         <RoomsWindow />
         <GalleryWindow />
         <SpiralWindow />
+        <BurnWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}
