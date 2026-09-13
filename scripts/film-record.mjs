@@ -80,11 +80,22 @@ const CLIPS = {
     await page.waitForTimeout(1500);
     await wheelTo(page, 0, 16000);
   },
+  // Bullet time is scrubbed through the film's own hook, not the wheel: Lenis keeps easing after
+  // each wheel step, so wheel targets overshot into S02's shatter and back past the cold open.
   bullet: async (page) => {
-    await page.evaluate(() => window.__filmTest.scrollToScene('S01', 0.46));
-    await page.waitForTimeout(1500);
-    await wheelTo(page, offsetOf('S01', 0.84), 9000);
-    await wheelTo(page, offsetOf('S01', 0.5), 6000);
+    const scrub = async (from, to, ms) => {
+      const steps = Math.max(1, Math.round(ms / 60));
+      for (let i = 0; i <= steps; i += 1) {
+        const p = from + ((to - from) * i) / steps;
+        await page.evaluate((value) => window.__filmTest.scrollToScene('S01', value), p);
+        await page.waitForTimeout(60);
+      }
+    };
+    await scrub(0.46, 0.46, 1500);
+    await scrub(0.46, 0.84, 9000);
+    await page.waitForTimeout(800);
+    await scrub(0.84, 0.5, 6000);
+    await page.waitForTimeout(800);
   },
   jump: async (page) => {
     await page.waitForTimeout(1200);
@@ -96,11 +107,7 @@ const CLIPS = {
 
 fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: false });
-await measureTargets(browser, [
-  ['S03', 1],
-  ['S01', 0.84],
-  ['S01', 0.5],
-]);
+await measureTargets(browser, [['S03', 1]]);
 for (const name of only) {
   const clip = CLIPS[name];
   if (!clip) continue;
