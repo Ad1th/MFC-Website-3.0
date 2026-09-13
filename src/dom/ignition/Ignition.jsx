@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { film, useFilm } from '../../film/store.js';
 import { TITLES } from '../../film/timeline.js';
-import { filmManifest, preload } from '../../live/preload.js';
+import { filmManifest, preload, watchScriptBytes } from '../../live/preload.js';
 import { darkPixel, startEmber } from '../../live/favicon.js';
-import { setScrollLocked, setTitlesLive } from '../../film/scroll.js';
+import { requestScrollLock, setTitlesLive } from '../../film/filmGate.js';
 import styles from './Ignition.module.css';
 
 /**
@@ -14,8 +14,12 @@ import styles from './Ignition.module.css';
  * Then the page is revealed and a tiny sound choice waits bottom right.
  *
  * If loading passes 6 seconds: `still loading. start anyway?` drops one quality tier and
- * lets the film stream the rest. Scroll is locked until the reveal; the skip link and
- * keyboard focus keep working the whole time.
+ * lets the film stream the rest. Scroll is locked until the reveal; keyboard focus works
+ * the whole time, and until the film's own chrome exists this cover carries the skip link.
+ *
+ * Mounted by App outside the lazy film chunk, so the counter shows at first paint and
+ * counts the film's JavaScript as well as its assets. The match strikes only when the
+ * assets are in and the film has laid itself out (`data-film-ready`).
  */
 
 const SLOW_MS = 6000;
@@ -68,12 +72,15 @@ function drawFlame(ctx, size, { ears, flare }) {
 }
 
 /**
- * @param {{ onReveal: () => void }} props
+ * @param {{ onReveal: () => void, onSkip: () => void }} props
  */
-export default function Ignition({ onReveal }) {
+export default function Ignition({ onReveal, onSkip }) {
   const [percent, setPercent] = useState(0);
   const [phase, setPhase] = useState('loading'); // loading | strike | revealed
   const [slow, setSlow] = useState(false);
+  const [assetsDone, setAssetsDone] = useState(false);
+  const [filmReady, setFilmReady] = useState(() => document.documentElement.dataset.filmReady === 'true');
+  const bytes = useRef({ assets: [0, 0], scripts: [0, 0] });
   const sound = useFilm((s) => s.sound);
   const flameRef = useRef(null);
   const started = useRef(false);
@@ -83,27 +90,66 @@ export default function Ignition({ onReveal }) {
     if (remembered) film.getState().setSound(remembered);
   }, []);
 
+  // The film chunk marks itself ready once scroll and layout are live.
+  useEffect(() => {
+    if (filmReady) return undefined;
+    const observer = new MutationObserver(() => {
+      if (document.documentElement.dataset.filmReady === 'true') setFilmReady(true);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-film-ready'] });
+    return () => observer.disconnect();
+  }, [filmReady]);
+
   useEffect(() => {
     document.title = TITLES.loading;
     darkPixel();
-    setScrollLocked(true);
+    requestScrollLock(true);
     const controller = new AbortController();
-    // Six seconds from navigation, not from when this chunk arrived.
+    // Six seconds from navigation, not from when this component mounted.
     const slowTimer = window.setTimeout(() => setSlow(true), Math.max(0, SLOW_MS - performance.now()));
-    preload(filmManifest(film.getState().quality), (value) => {
-      setPercent(value);
+
+    // One counter over real bytes from both sources: the film's assets and its JavaScript.
+    const show = () => {
+      const [assetsLoaded, assetsTotal] = bytes.current.assets;
+      const [scriptsLoaded, scriptsTotal] = bytes.current.scripts;
+      const total = assetsTotal + scriptsTotal;
+      const value = total > 0 ? Math.min(99, Math.floor(((assetsLoaded + scriptsLoaded) / total) * 100)) : 0;
+      setPercent((previous) => Math.max(previous, value));
       film.getState().setLoaded(value);
-    }, { signal: controller.signal })
+    };
+    const stopScripts = watchScriptBytes((loaded, total) => {
+      bytes.current.scripts = [loaded, total];
+      show();
+    });
+    preload(filmManifest(film.getState().quality), () => {}, {
+      signal: controller.signal,
+      onBytes: (loaded, total) => {
+        bytes.current.assets = [loaded, total];
+        show();
+      },
+    })
       .then(() => {
         window.clearTimeout(slowTimer);
-        if (!started.current) setPhase('strike');
+        setAssetsDone(true);
       })
       .catch(() => {});
     return () => {
       controller.abort();
+      stopScripts();
       window.clearTimeout(slowTimer);
+      // Leaving early (skip the film) must not leave scrolling locked.
+      requestScrollLock(false);
     };
   }, []);
+
+  // Strike once everything is here and the film can show itself behind the flare.
+  useEffect(() => {
+    if (assetsDone && filmReady && !started.current) {
+      setPercent(100);
+      film.getState().setLoaded(100);
+      setPhase('strike');
+    }
+  }, [assetsDone, filmReady]);
 
   // The strike: frame-counted, so the ears are exactly one frame and the flare exactly four.
   useEffect(() => {
@@ -129,7 +175,7 @@ export default function Ignition({ onReveal }) {
         setTitlesLive(true);
         startEmber();
         setPhase('revealed');
-        setScrollLocked(false);
+        requestScrollLock(false);
         onReveal?.();
         return;
       }
@@ -141,10 +187,15 @@ export default function Ignition({ onReveal }) {
   }, [phase, onReveal]);
 
   const startAnyway = () => {
-    started.current = true;
     const state = film.getState();
     state.setQuality(Math.max(1, state.quality - 1));
-    setPhase('strike');
+    // The film still has to exist before the match can reveal it.
+    if (filmReady) {
+      started.current = true;
+      setPhase('strike');
+    } else {
+      setAssetsDone(true);
+    }
   };
 
   const choose = (value) => {
@@ -160,6 +211,18 @@ export default function Ignition({ onReveal }) {
     <>
       {phase !== 'revealed' ? (
         <div className={styles.cover} data-phase={phase} role="status" aria-live="polite" aria-label={`loading the film, ${percent} percent`}>
+          {!filmReady ? (
+            <a
+              href="#main"
+              className={styles.skip}
+              onClick={(event) => {
+                event.preventDefault();
+                onSkip?.();
+              }}
+            >
+              skip the film
+            </a>
+          ) : null}
           {phase === 'loading' ? <span className={styles.pulse} aria-hidden="true" /> : null}
           <canvas ref={flameRef} className={styles.flame} aria-hidden="true" />
           <span className={`hud ${styles.counter}`} aria-hidden="true">

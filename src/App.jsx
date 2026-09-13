@@ -4,6 +4,7 @@ import { initialTier } from './film/quality.js';
 import { flags } from './live/flags.js';
 import Still from './dom/Still.jsx';
 import NotFound from './dom/NotFound.jsx';
+import Ignition from './dom/ignition/Ignition.jsx';
 
 const FilmMode = lazy(() => import('./FilmMode.jsx'));
 // Development tool. Phase 8 strips it from production builds.
@@ -48,6 +49,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const onReveal = useCallback(() => {
+    // Tests and frame capture wait for this instead of guessing when the cover lifts.
+    document.documentElement.dataset.ignition = 'done';
+  }, []);
+
   if (mode === 'notFound') return <NotFound />;
   if (mode === 'sandbox') {
     return (
@@ -58,8 +64,12 @@ export default function App() {
   }
   if (mode === 'still') return <Still canPlayFilm={canPlayFilm} onPlayFilm={toFilm} />;
   return (
-    <Suspense fallback={<Still canPlayFilm={false} onPlayFilm={toFilm} />}>
-      <FilmMode onSkip={toStill} />
-    </Suspense>
+    <>
+      {/* Outside the lazy film chunk: the counter shows at first paint and counts the chunk's bytes. */}
+      <Ignition onReveal={onReveal} onSkip={toStill} />
+      <Suspense fallback={null}>
+        <FilmMode onSkip={toStill} />
+      </Suspense>
+    </>
   );
 }

@@ -7,6 +7,21 @@
   background: var(--night, #0a0807);
 }
 
+/* Skip link while the film's own chrome does not exist yet: off screen until focused. */
+.skip {
+  position: absolute;
+  top: var(--gutter);
+  left: var(--gutter);
+  transform: translateY(-200%);
+  color: var(--ash, #e8ded5);
+  background: var(--night, #0a0807);
+  padding: 0.5rem 0.75rem;
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
 /* The heartbeat: one pixel in the centre, pulsing at 1Hz. */
 .pulse {
   position: absolute;
