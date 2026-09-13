@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Color } from 'three';
 import { film, useFilm } from './store.js';
@@ -14,6 +14,7 @@ import CameraRig from './camera/CameraRig.jsx';
 import S03Dive from './scenes/S03Dive.jsx';
 import S04Packet from './scenes/S04Packet.jsx';
 import S05Rooms from './scenes/S05Rooms.jsx';
+import S06Gallery from './scenes/S06Gallery.jsx';
 import { BUILT_SCENES as BUILT } from './built.js';
 import FilmFox from './actors/FilmFox.jsx';
 import styles from './Film.module.css';
@@ -77,6 +78,18 @@ function RoomsWindow() {
   return active >= 3 && active <= 5 ? <S05Rooms /> : null;
 }
 
+const GALLERY_INDEX = SCENES.findIndex((scene) => scene.id === 'S06');
+
+function GalleryWindow() {
+  const active = useFilm((s) => s.activeScene);
+  // The project screenshots load while the rooms play, so the gallery never waits on them.
+  return Math.abs(active - GALLERY_INDEX) <= 1 ? (
+    <Suspense fallback={null}>
+      <S06Gallery />
+    </Suspense>
+  ) : null;
+}
+
 function PlaceholderLabel() {
   const idRef = useRef(null);
   const nameRef = useRef(null);
@@ -129,6 +142,7 @@ export default function Film() {
         <DiveWindow />
         <PacketWindow />
         <RoomsWindow />
+        <GalleryWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}
