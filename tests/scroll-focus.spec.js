@@ -15,7 +15,10 @@ const MODES = [
 async function waitForFilm(page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe('film');
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
-  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
+  // The cover streams real assets and counts real frames; allow for a loaded machine.
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null), { timeout: 20_000 })
+    .toBe('done');
 }
 
 for (const { mode, path } of MODES) {

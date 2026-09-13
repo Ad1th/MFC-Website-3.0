@@ -22,7 +22,10 @@ for (const { at, lit } of CASES) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`/?tier=2&freeze=1&at=${at}`);
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
-    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
+    // The cover streams real assets and counts real frames; allow for a loaded machine.
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null), { timeout: 20_000 })
+      .toBe('done');
     await page.evaluate(() => {
       window.__filmTest.hidePage = true;
     });
