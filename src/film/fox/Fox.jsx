@@ -147,6 +147,11 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
         }
         return engine.trigger(name, payload, { force, scripted: input.current.scripted });
       },
+      /** Sparks from the body centre, for scene moments (steam off the fox in rain). */
+      emitSparks(request) {
+        const at = rig.root.localToWorld(LANDMARKS.bodyCentre.clone());
+        sparksRef.current?.emit(at, request);
+      },
       reset() {
         engine.reset();
         rig.root.position.set(0, 0, 0);
@@ -353,7 +358,9 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       let w = b.pose[name];
       if (clipSleep > 0) {
         if (name === 'sleep') continue;
-        if (name === 'lie') w *= awake;
+        // Fade the lie pose out faster than the Sleep clip fades in, so the two never both
+        // lower the hip mid-blend (that dipped the fox through the floor while lying down).
+        if (name === 'lie') w *= awake * awake;
       }
       if (w < 0.001) continue;
       mergeOffsets(offsets, POSES[name].bones, w);
