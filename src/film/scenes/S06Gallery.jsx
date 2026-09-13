@@ -318,9 +318,12 @@ export default function S06Gallery() {
     const hud = active ? index : -1;
     if (film.getState().galleryIndex !== hud) film.getState().setGalleryIndex(hud);
 
-    const air = inWorld ? worldAir.set(WORLDS[projects[index].slug].background) : NIGHT;
-    if (scene.background?.isColor) scene.background.copy(air);
-    scene.fog?.color.copy(air);
+    // The air is S06's only while it plays: mounted beside S05, it must not paint over the rooms.
+    if (active) {
+      const air = inWorld ? worldAir.set(WORLDS[projects[index].slug].background) : NIGHT;
+      if (scene.background?.isColor) scene.background.copy(air);
+      scene.fog?.color.copy(air);
+    }
 
     // Paw prints follow the fox while it runs the floor.
     const floor = active ? foxOnFloor(index, local, mobile, track.current.position) : null;
