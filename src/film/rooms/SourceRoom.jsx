@@ -272,7 +272,7 @@ export default function SourceRoom({ progressRef, origin, tier }) {
   return (
     <group position={origin}>
       <primitive object={mesh} />
-      <mesh rotation={[-Math.PI / 2, 0, Math.PI]} position={[0.5, 0.01, -CORRIDOR_LENGTH * 0.55]} frustumCulled={false}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.5, 0.01, -CORRIDOR_LENGTH * 0.55]} frustumCulled={false}>
         <planeGeometry args={[9, 9 / floorWord.aspect]} />
         <shaderMaterial
           args={[{ uniforms: { uMap: { value: floorWord.texture }, uColor: { value: new Color(PALETTE.ash) }, uOpacity: { value: 0.16 } }, vertexShader: PLANE_VERTEX, fragmentShader: LABEL_FRAGMENT }]}
