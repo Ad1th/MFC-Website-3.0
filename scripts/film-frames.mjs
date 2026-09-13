@@ -7,7 +7,7 @@
  *   npx vite preview --outDir dist-test --port 4174
  *   node scripts/film-frames.mjs [--base http://localhost:4174] [--out director/frames/gate3-film]
  *        [--at 2026-09-13T06:30:00Z] [--points S01:0,S01:0.2,S02:0.05] [--every 10 --scenes S01,S02,S03]
- *        [--sizes desktop,phone] [--browser chromium]
+ *        [--sizes desktop,phone] [--browser chromium] [--query weather=storm&commits=0]
  *
  * --every N captures a frame every N vh through the listed scenes (gate evidence).
  */
@@ -27,6 +27,8 @@ const at = arg('at', null);
 const browserName = arg('browser', 'chromium');
 const sizes = arg('sizes', 'desktop').split(',');
 const every = Number(arg('every', 0));
+// Extra URL flags (mock weather, no commits, visits), for mock-flag evidence.
+const query = arg('query', '');
 const SIZE = {
   desktop: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
   phone: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
@@ -39,7 +41,7 @@ for (const sizeName of sizes) {
   const { isMobile, ...contextOptions } = SIZE[sizeName];
   const context = await browser.newContext(browserName === 'firefox' ? contextOptions : { ...contextOptions, isMobile });
   const page = await context.newPage();
-  await page.goto(`${base}/?tier=2&freeze=1${at ? `&at=${at}` : ''}`);
+  await page.goto(`${base}/?tier=2&freeze=1${at ? `&at=${at}` : ''}${query ? `&${query}` : ''}`);
   await page.waitForFunction(() => document.documentElement.dataset.filmReady === 'true' && document.documentElement.dataset.ignition === 'done', null, { timeout: 30000 });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(2500);
