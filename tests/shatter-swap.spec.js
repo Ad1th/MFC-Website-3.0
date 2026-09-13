@@ -85,6 +85,8 @@ for (const size of SIZES) {
       await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
       await page.evaluate(() => document.fonts.ready);
       await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-ready]') !== null)).toBe(true);
+      // The HUD redraws when the weather resolves; compare only after that.
+      await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-weather="settled"]') !== null)).toBe(true);
 
       await page.evaluate(() => window.__filmTest.scrollToScene('S02', 0.05));
       await expect.poll(() => page.evaluate(() => window.__filmTest.state().scene)).toBe('S02');
