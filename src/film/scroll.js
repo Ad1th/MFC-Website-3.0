@@ -14,6 +14,8 @@ let scenes = layout(false);
 /** @type {HTMLElement|null} */
 let track = null;
 let rawVelocity = 0;
+/** A lock asked for before Lenis exists (child effects run before the parent's initScroll). */
+let lockRequested = false;
 let lastUpdate = 0;
 
 const JUMP_DURATION = 1.6;
@@ -41,6 +43,7 @@ export function initScroll(trackEl) {
   applyLayout();
 
   lenis = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, syncTouch: false });
+  if (lockRequested) lenis.stop();
   lenis.on('scroll', ScrollTrigger.update);
 
   const raf = (time) => lenis?.raf(time * 1000);
@@ -149,6 +152,7 @@ export function jumpToScene(index, { immediate = false } = {}) {
 
 /** Stop and start smooth scrolling (for modal moments). */
 export function setScrollLocked(locked) {
+  lockRequested = locked;
   if (!lenis) return;
   if (locked) lenis.stop();
   else lenis.start();
