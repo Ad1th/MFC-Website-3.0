@@ -104,34 +104,40 @@ test('a click just outside the fox pounces and never pets', async ({ page }) => 
   expect(seen.petting, 'petting never started').toBe(false);
 });
 
-test('sleep rests on the floor within 0.2 model units', async ({ page }) => {
+test('sleep rests on the floor within 0.2 model units, also while lying down', async ({ page }) => {
   await openSandbox(page, 'shot=hero&velocity=0&mood=sleep');
-  // Sample the settled pose, not the blend into it: a fixed wait sampled mid-blend on slow
-  // first frames (readings of -0.35 and -0.7). The lowest point during the blend is still
-  // measured and reported, because a dip through the floor while lying down would show in the film.
-  const blendLows = [];
-  await expect
-    .poll(
-      async () => {
-        const fox = (await page.evaluate(() => window.__fox.state())).fox;
-        blendLows.push(fox.lowestY);
-        return fox.pose.sleep;
-      },
-      { timeout: 15_000, intervals: [100] },
-    )
-    .toBeGreaterThanOrEqual(0.99);
-  await page.waitForTimeout(500);
-  const lows = [];
-  for (let i = 0; i < 20; i += 1) {
-    lows.push((await page.evaluate(() => window.__fox.state())).fox.lowestY);
-    await page.waitForTimeout(100);
-  }
-  const blendMin = blendLows.length ? Math.min(...blendLows) : null;
-  const line = `sleep lowest skinned vertex: min ${Math.min(...lows)}, max ${Math.max(...lows)} model units (floor 0, tolerance 0.2); lowest while blending into sleep ${blendMin}`;
+  // Sample every animation frame through the blend: a dip through the floor while lying down
+  // lasts about a second and 100 ms polling caught different points of it on every run.
+  const { blendMin, blendAt, settled } = await page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        let blendMin = Infinity;
+        let blendAt = null;
+        const settled = [];
+        const start = performance.now();
+        const step = () => {
+          const fox = window.__fox.state().fox;
+          if (fox.pose.sleep < 0.99) {
+            if (fox.lowestY < blendMin) {
+              blendMin = fox.lowestY;
+              blendAt = { lie: fox.pose.lie, sleep: fox.pose.sleep };
+            }
+          } else {
+            settled.push(fox.lowestY);
+          }
+          if (settled.length < 20 && performance.now() - start < 15000) requestAnimationFrame(step);
+          else resolve({ blendMin, blendAt, settled });
+        };
+        requestAnimationFrame(step);
+      }),
+  );
+  const line = `sleep lowest skinned vertex: settled min ${Math.min(...settled)}, max ${Math.max(...settled)}; blend min ${blendMin} at ${JSON.stringify(blendAt)} (floor 0, tolerance 0.2)`;
   test.info().annotations.push({ type: 'measurement', description: line });
   console.log(line);
-  expect(Math.min(...lows)).toBeGreaterThanOrEqual(-0.2);
-  expect(Math.max(...lows)).toBeLessThanOrEqual(0.2);
+  expect(settled.length, 'the sleep pose settled').toBeGreaterThanOrEqual(20);
+  expect(Math.min(...settled)).toBeGreaterThanOrEqual(-0.2);
+  expect(Math.max(...settled)).toBeLessThanOrEqual(0.2);
+  expect(blendMin, 'no dip through the floor while lying down').toBeGreaterThanOrEqual(-0.2);
 });
 
 test('a scene-scripted pose holds while every behaviour is triggered', async ({ page }) => {
@@ -200,7 +206,10 @@ test('a pounce lands on the click point', async ({ page }) => {
   }
   expect(click, 'found an in-range click point outside the fox').not.toBeNull();
   await page.mouse.click(click.x, click.y);
-  await page.waitForTimeout(1500);
+  // Wait for the leap itself to finish, not a fixed time: the fox's clock runs on capped frame
+  // deltas, so slow frames stretch the pounce and a fixed wait caught it mid-flight.
+  await expect.poll(() => page.evaluate(() => window.__fox.state().active?.includes('pounce') ?? false)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.__fox.state().active?.includes('pounce') ?? false), { timeout: 5_000 }).toBe(false);
   const target = await page.evaluate(() => window.__fox.lastPounce());
   const t = await page.evaluate(() => window.__fox.tracking());
   const miss = Math.hypot(t.root.x - target.x, t.root.z - target.z);
