@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Color, Quaternion, ShaderMaterial, Vector3 } from 'three';
 import { useFilm } from '../store.js';
@@ -73,6 +73,9 @@ const METEORS = [progressAtHeight(28), SKY_END + 0.04];
 const FIBRE = [0.88, 0.95];
 const IMPACT = [0.965, 1];
 const GROUND_REVEAL = [progressAtHeight(34), progressAtHeight(22)];
+// The sky set costs CPU (cloud sorting every frame) and GPU (unculled sprites) even when
+// unseen, so it mounts just before the whiteout and unmounts when the dive ends.
+const SKY_MOUNT = [0.2, 1];
 const SPACE_FOG = new Color('#0a0807');
 const SKY_BACKGROUND = new Color('#060a14');
 const SKY_FOG = new Color('#0b1222');
@@ -202,6 +205,8 @@ export default function S03Dive() {
   const lastProgress = useRef(0);
   const whiteoutRef = useRef(null);
   const heat = useRef(0);
+  const [skyOn, setSkyOn] = useState(false);
+  const skyOnRef = useRef(false);
 
   useEffect(() => registerShot('S03', diveShot), []);
   useEffect(() => registerFoxShot('S03', diveFoxShot), []);
@@ -246,6 +251,12 @@ export default function S03Dive() {
   useFrame((state) => {
     const p = sceneProgressOf('S03');
     progress.current = p;
+    // Flip only on crossing, so React re-renders twice per dive, not per frame.
+    const wantSky = p >= SKY_MOUNT[0] && p < SKY_MOUNT[1];
+    if (wantSky !== skyOnRef.current) {
+      skyOnRef.current = wantSky;
+      setSkyOn(wantSky);
+    }
 
     // The sky set has its own air: a deep night-blue sky and long fog so the cloud layers
     // read against it; space keeps the film's near-black and short fog.
@@ -283,26 +294,30 @@ export default function S03Dive() {
       <mesh ref={whiteoutRef} material={whiteoutMaterial} visible={false} frustumCulled={false} renderOrder={900}>
         <planeGeometry args={[1, 1]} />
       </mesh>
-      <Suspense fallback={null}>
-        <DiveClouds layers={LAYERS} tier={tier} weather={weather} origin={SKY_ORIGIN} />
-      </Suspense>
-      {LAYERS.map((layer) => (
-        <CarvedWords
-          key={layer.y}
-          text={layer.words}
-          // Just below the layer's height, so the fox passes the words while the camera beside it can see them.
-          position={[SKY_ORIGIN.x, SKY_ORIGIN.y + layer.y - 3, SKY_ORIGIN.z + layer.z]}
-          progressRef={progress}
-          range={layer.reveal}
-          tilt={0.5}
-          width={22}
-        />
-      ))}
-      <Suspense fallback={null}>
-        <SkyGround tier={tier} origin={SKY_ORIGIN} progressRef={progress} fibre={FIBRE} impact={IMPACT} reveal={GROUND_REVEAL} />
-      </Suspense>
-      <CommitMeteors origin={SKY_ORIGIN} progressRef={progress} range={METEORS} />
-      <RainStreaks amount={look.rain} progressRef={progress} from={SET_SWITCH} to={SKY_END} />
+      {skyOn ? (
+        <>
+        <Suspense fallback={null}>
+          <DiveClouds layers={LAYERS} tier={tier} weather={weather} origin={SKY_ORIGIN} />
+        </Suspense>
+        {LAYERS.map((layer) => (
+          <CarvedWords
+            key={layer.y}
+            text={layer.words}
+            // Just below the layer's height, so the fox passes the words while the camera beside it can see them.
+            position={[SKY_ORIGIN.x, SKY_ORIGIN.y + layer.y - 3, SKY_ORIGIN.z + layer.z]}
+            progressRef={progress}
+            range={layer.reveal}
+            tilt={0.5}
+            width={22}
+          />
+        ))}
+        <Suspense fallback={null}>
+          <SkyGround tier={tier} origin={SKY_ORIGIN} progressRef={progress} fibre={FIBRE} impact={IMPACT} reveal={GROUND_REVEAL} />
+        </Suspense>
+        <CommitMeteors origin={SKY_ORIGIN} progressRef={progress} range={METEORS} />
+        <RainStreaks amount={look.rain} progressRef={progress} from={SET_SWITCH} to={SKY_END} />
+        </>
+      ) : null}
     </>
   );
 }
