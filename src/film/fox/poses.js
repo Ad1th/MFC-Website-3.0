@@ -55,29 +55,25 @@ export const POSES = {
     },
   },
   /**
-   * S01 logo pose, held over the Run clip: the Firefox mark's silhouette. Spine arched so
-   * the body curves around the planet, head reaching forward and down, forelegs stretched
-   * ahead, hind legs trailing, tail swept up and forward over the back.
+   * S01 logo pose, held over the Run clip: the Firefox mark's silhouette. Nose tucked down
+   * in front, back arched so the body curves around the planet, forelegs reaching down and
+   * forward, and the tail raised and curled over toward the head. Chosen in the sandbox
+   * from four candidates (director/frames/gate3-curl/).
    */
   curl: {
-    hip: [0, 4, 0],
+    hip: [0, 0, 0],
     bones: {
-      hip: [0, 10, 0],
-      spine1: [0, -14, 0],
-      spine2: [0, -16, 0],
-      neck: [0, 18, 0],
-      head: [0, 22, 0],
-      lArmUp: [0, -40, 0],
-      rArmUp: [0, -34, 0],
-      lArmFore: [0, -10, 0],
-      rArmFore: [0, -12, 0],
-      lLeg1: [0, 38, 0],
-      rLeg1: [0, 44, 0],
-      lLeg2: [0, -20, 0],
-      rLeg2: [0, -24, 0],
-      tail1: [0, -48, 0],
-      tail2: [0, -38, 0],
-      tail3: [0, -30, 0],
+      spine1: [0, 10, 0],
+      spine2: [0, 12, 0],
+      neck: [0, 24, 0],
+      head: [0, 20, 0],
+      lArmUp: [0, -45, 0],
+      rArmUp: [0, -38, 0],
+      lLeg1: [0, 50, 0],
+      rLeg1: [0, 56, 0],
+      tail1: [0, 40, 0],
+      tail2: [0, 50, 0],
+      tail3: [0, 55, 0],
     },
   },
   /** Added on top of lie: head down and turned toward the flank, tail swept round to the nose. */
