@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { film } from '../store.js';
 import Shatter from '../shatter/Shatter.jsx';
 import { FILM_TEST, shatterOverride } from '../testHooks.js';
 import { registerShot } from '../camera/shots.js';
-import { coldOpenShot } from './S01ColdOpen.jsx';
+import { coldOpenFoxShot, coldOpenShot } from './S01ColdOpen.jsx';
+import { getFox, registerFoxShot } from '../actors/foxShots.js';
 
 /**
  * S02 The Break. The hero page (logo, HUD, title) is drawn once into a 2D canvas and
@@ -16,10 +18,11 @@ import { coldOpenShot } from './S01ColdOpen.jsx';
 
 export const IMPACT = 0.1;
 const FLIGHT = 2.2;
-const PUSH = 6;
+// Short enough that the camera never passes through the planet behind the page.
+const PUSH = 0.9;
 
 /** Starts exactly where S01 ends, then the camera is sucked forward through the hole. */
-function breakShot(progress, out, aspect) {
+export function breakShot(progress, out, aspect) {
   coldOpenShot(1, out, aspect);
   const t = Math.max(0, progress - IMPACT) / (1 - IMPACT);
   const forward = out.target.clone().sub(out.position).normalize();
@@ -28,9 +31,30 @@ function breakShot(progress, out, aspect) {
   out.target.addScaledVector(forward, push);
 }
 
+/**
+ * The fox where S01's jump left it, just ahead of the lens. S01's jump target follows the
+ * camera, so the fox rides the push through the hole with it.
+ * @type {import('../actors/foxShots.js').FoxShot}
+ */
+const beforeJump = { position: new Vector3(), forward: new Vector3(), up: new Vector3(), scale: 1, visible: true, cut: 0 };
+
+function breakFoxShot(progress, pose, input, context) {
+  // Halfway between where the jump began and the lens: right up against the screen, still in frame.
+  coldOpenFoxShot(0.9, beforeJump, input, context);
+  coldOpenFoxShot(1, pose, input, context);
+  pose.position.lerp(beforeJump.position, 0.5);
+  input.look = null;
+  input.lookWeight = 0;
+}
+
+const SHAKE_AT = IMPACT + 0.15;
+const OFFENDED_AT = IMPACT + 0.45;
+
 export default function S02Break({ index }) {
   const state = useRef({ intact: true, t: 0, visible: true });
+  const lastProgress = useRef(0);
   useEffect(() => registerShot('S02', breakShot), []);
+  useEffect(() => registerFoxShot('S02', breakFoxShot), []);
 
   if (FILM_TEST) {
     window.__filmTest.breakState = () => ({ ...state.current });
@@ -39,6 +63,11 @@ export default function S02Break({ index }) {
   // Priority -2 runs before Shatter's own frame callback and before render.
   useFrame(() => {
     const s = film.getState();
+    // It hit the inside of the screen: shake the glass off, then look slightly offended. Once each way down.
+    const local = s.activeScene > index ? 1 : s.activeScene < index ? 0 : s.sceneProgress;
+    if (lastProgress.current < SHAKE_AT && local >= SHAKE_AT) getFox()?.trigger('shakeOff', {}, { force: true });
+    if (lastProgress.current < OFFENDED_AT && local >= OFFENDED_AT) getFox()?.trigger('offended', {}, { force: true });
+    lastProgress.current = local;
     let shattered;
     let t;
     if (s.activeScene > index) {
