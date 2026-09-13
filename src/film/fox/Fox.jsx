@@ -61,7 +61,7 @@ function applyBoneOffsets(rig, offsets) {
   }
 }
 
-const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0] }, ref) {
+const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0], anchor = null }, ref) {
   const gltf = useGLTF(FOX_URL);
   const rig = useMemo(() => createRig(gltf), [gltf]);
   const groupRef = useRef(null);
@@ -280,6 +280,14 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
   useFrame((state, delta) => {
     const inp = input.current;
+    // A scene-driven transform (FilmFox) goes on the rig's own group, never a wrapper: the
+    // trail, eyes and sparks are world-space and would be distorted under a moved, scaled parent.
+    if (anchor && groupRef.current) {
+      groupRef.current.position.copy(anchor.position);
+      groupRef.current.quaternion.copy(anchor.quaternion);
+      groupRef.current.scale.setScalar(FOX_SCALE * anchor.scale);
+      groupRef.current.updateMatrixWorld(true);
+    }
     const timeScale = inp.timeScale ?? 1;
     timeScaleRef.current = timeScale;
     const dt = Math.min(delta, 1 / 20) * timeScale;
