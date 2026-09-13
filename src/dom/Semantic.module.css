@@ -40,8 +40,15 @@
   pointer-events: auto;
 }
 
+/* S08 paints the paper in the film; the writing sits on it, appears once the burn has filled the
+   frame, and burns away from the bottom with the paper (variables written by S08Burn). */
 .panel[data-region="writing"] {
-  background: var(--paper);
+  background: none;
+  mask-image: linear-gradient(to top, transparent calc(var(--burn-out, 0) * 130% - 6%), #000 calc(var(--burn-out, 0) * 130% + 6%));
+}
+
+.slot[data-active="true"] .panel[data-region="writing"] {
+  opacity: var(--writing-opacity, 1);
 }
 
 /* Built scenes tell their region in the film (the hero canvas paints the intro). The HTML stays
@@ -387,6 +394,53 @@
 .mediumLink {
   font-family: var(--font-mono);
   font-size: 0.9375rem;
+}
+
+.cover {
+  position: relative;
+  touch-action: none;
+}
+
+/* A held cover curls one corner. */
+.cover::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 1.6rem;
+  width: 0;
+  height: 0;
+  background: linear-gradient(135deg, rgb(27 21 18 / 0) 50%, rgb(27 21 18 / 0.18) 50%, var(--paper) 58%);
+  transition: width var(--dur-quick) var(--ease-film), height var(--dur-quick) var(--ease-film);
+  pointer-events: none;
+}
+
+.cover[data-dragging="true"]::after {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
+.cover[data-dragging="true"] img {
+  box-shadow: 0 2px 2px rgb(27 21 18 / 0.14), 0 22px 40px rgb(27 21 18 / 0.26);
+}
+
+/* The studio stamp: one tiny paw print pressed in faint ink, bottom right. */
+.pawPrint {
+  position: absolute;
+  right: calc(var(--gutter) + 3.5rem);
+  bottom: var(--space-8);
+  width: 18px;
+  height: 20px;
+  opacity: 0.22;
+  background:
+    radial-gradient(circle at 50% 70%, var(--ink) 0 28%, transparent 30%),
+    radial-gradient(circle at 18% 38%, var(--ink) 0 11%, transparent 12%),
+    radial-gradient(circle at 38% 18%, var(--ink) 0 11%, transparent 12%),
+    radial-gradient(circle at 62% 18%, var(--ink) 0 11%, transparent 12%),
+    radial-gradient(circle at 82% 38%, var(--ink) 0 11%, transparent 12%);
+}
+
+.writing {
+  position: relative;
 }
 
 .writing a:hover {

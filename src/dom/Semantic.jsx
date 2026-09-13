@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { site, domains, projects, events, team, years, blogs, credits, shortDate, longDate, avifOf } from '../content/index.js';
 import { loadNewsletters } from '../live/newsletters.js';
 import { layout, totalVh, MOBILE_QUERY } from '../film/timeline.js';
-import { BUILT_SCENES } from '../film/built.js';
+import { BUILT_SCENES, DOM_SCENES } from '../film/built.js';
 import Contact from './Contact.jsx';
+import PenTitle from './writing/PenTitle.jsx';
+import { useDragCovers } from './writing/useDragCovers.js';
 import styles from './Semantic.module.css';
 
 /**
@@ -166,6 +168,8 @@ function Writing() {
     };
   }, []);
 
+  const coversRef = useRef(null);
+  useDragCovers(coversRef, newsletters.length);
   const medium = site.socials.find((s) => s.label === 'medium')?.url;
   const [latest, ...rest] = blogs;
 
@@ -178,7 +182,9 @@ function Writing() {
       {latest ? (
         <article className={styles.latest}>
           <h3 className={styles.latestTitle}>
-            <ExternalLink href={latest.url}>{latest.title}</ExternalLink>
+            <ExternalLink href={latest.url}>
+              <PenTitle>{latest.title}</PenTitle>
+            </ExternalLink>
           </h3>
           <p className={`hud ${styles.byline}`}>
             {latest.author.toLowerCase()} <time dateTime={latest.date}>{shortDate(latest.date)}</time>
@@ -201,7 +207,7 @@ function Writing() {
       ) : null}
 
       {newsletters.length ? (
-        <ul className={styles.covers} aria-label="newsletters">
+        <ul ref={coversRef} className={styles.covers} aria-label="newsletters">
           {newsletters.map((n) => (
             <li key={n.pdf}>
               <ExternalLink href={n.pdf} className={styles.cover}>
@@ -218,6 +224,7 @@ function Writing() {
           <ExternalLink href={medium}>all of it on medium ↗</ExternalLink>
         </p>
       ) : null}
+      <span className={styles.pawPrint} aria-hidden="true" />
     </section>
   );
 }
@@ -404,7 +411,7 @@ function FilmRegions({ onRegionFocus, subscribe }) {
             onFocusCapture={(event) => onRegionFocus?.(scene.index, event.target)}
           >
             {Region ? (
-              <div className={styles.panel} data-region={scene.region} data-built={BUILT_SCENES.has(scene.id)}>
+              <div className={styles.panel} data-region={scene.region} data-built={BUILT_SCENES.has(scene.id) && !DOM_SCENES.has(scene.id)}>
                 <Region />
               </div>
             ) : null}
