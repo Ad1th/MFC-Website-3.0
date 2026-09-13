@@ -17,7 +17,7 @@
 export function filmManifest(tier) {
   const earth = tier >= 3 ? 4096 : 2048;
   return [
-    { url: '/models/fox.glb', expected: 180_000 },
+    { url: '/models/fox.glb', expected: 233_000 },
     { url: `/textures/earth/day-${earth}.webp`, expected: tier >= 3 ? 527_000 : 171_000 },
     { url: `/textures/earth/night-${earth}.webp`, expected: tier >= 3 ? 155_000 : 43_000 },
     { url: '/fonts/mozilla-headline.woff2', expected: 21_000 },
