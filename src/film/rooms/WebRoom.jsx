@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Billboard } from '@react-three/drei';
 import { AdditiveBlending, BufferGeometry, Color, Float32BufferAttribute, Vector3 } from 'three';
 import logo from '../world/Rooms/logoPath.json';
 import { domains } from '../../content/index.js';
@@ -37,6 +38,15 @@ const cumulative = (() => {
   return out;
 })();
 const TOTAL_LENGTH = cumulative[cumulative.length - 1];
+
+/** Centre and radius of the logo's bounds on the floor plane, for the reveal framing. */
+export const LOGO_BOUNDS = (() => {
+  const xs = LOGO_POINTS.map((v) => v.x);
+  const zs = LOGO_POINTS.map((v) => v.z);
+  const centre = new Vector3((Math.min(...xs) + Math.max(...xs)) / 2, 0, (Math.min(...zs) + Math.max(...zs)) / 2);
+  const radius = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...zs) - Math.min(...zs)) / 2;
+  return { centre, radius };
+})();
 
 /** A point along the logo path at t in [0, 1], and its direction. */
 export function pathAt(t, outPoint, outDir) {
@@ -95,16 +105,22 @@ const NODE_FRAGMENT = /* glsl */ `
   }
 `;
 
-function threadGeometry(a, b) {
+/** A thread along the logo path from node t0 to node t1 (wrapping past 1), sagging between them. */
+function threadGeometry(t0, t1) {
+  const span = t1 > t0 ? t1 - t0 : 1 - t0 + t1;
+  const segments = Math.max(THREAD_SEGMENTS, Math.round(span * 160));
   const positions = [];
   const ts = [];
-  for (let i = 0; i <= THREAD_SEGMENTS; i += 1) {
-    const t = i / THREAD_SEGMENTS;
-    const p = new Vector3().lerpVectors(a, b, t);
-    // Parabolic sag (a close stand-in for a catenary at this slack).
-    p.y -= SAG * 4 * t * (1 - t) * Math.min(1, a.distanceTo(b) / 4);
+  const p = new Vector3();
+  for (let i = 0; i <= segments; i += 1) {
+    const s = i / segments;
+    let t = t0 + span * s;
+    if (t > 1) t -= 1;
+    pathAt(t, p);
+    // Parabolic sag between the two nodes (a close stand-in for a catenary at this slack).
+    p.y -= SAG * 4 * s * (1 - s);
     positions.push(p.x, p.y, p.z);
-    ts.push(t);
+    ts.push(s);
   }
   const g = new BufferGeometry();
   g.setAttribute('position', new Float32BufferAttribute(positions, 3));
@@ -118,14 +134,14 @@ function threadGeometry(a, b) {
 export default function WebRoom({ progressRef, origin }) {
   const subs = useMemo(() => domains.find((d) => d.key === 'management')?.subs ?? [], []);
 
-  // Threads: the logo path between consecutive nodes, drawn as sagging strings; plus the faint
-  // full outline so the pull-back reveals the logo.
+  // Threads run the logo path from each node to the next, so the web itself is the logo and the
+  // pull-back reveals it. (Straight node-to-node threads read as a zigzag.)
   const threads = useMemo(
     () =>
-      NODES.map((node, i) => {
-        const next = NODES[(i + 1) % NODES.length];
+      NODE_T.map((t, i) => {
+        const next = NODE_T[(i + 1) % NODE_T.length];
         return {
-          geometry: threadGeometry(node, next),
+          geometry: threadGeometry(t, next),
           material: {
             uniforms: { uColor: { value: new Color(PALETTE.ember) }, uLit: { value: 0 }, uPluckTime: { value: 10 }, uAmplitude: { value: 0.18 } },
             vertexShader: THREAD_VERTEX,
@@ -136,20 +152,6 @@ export default function WebRoom({ progressRef, origin }) {
       }),
     [],
   );
-
-  const outline = useMemo(() => {
-    const g = new BufferGeometry().setFromPoints(LOGO_POINTS);
-    const ts = LOGO_POINTS.map((_, i) => cumulative[i] / TOTAL_LENGTH);
-    g.setAttribute('aT', new Float32BufferAttribute(ts, 1));
-    return {
-      geometry: g,
-      material: {
-        uniforms: { uColor: { value: new Color(PALETTE.fire) }, uDrawn: { value: 0 } },
-        vertexShader: `attribute float aT; varying float vT; void main() { vT = aT; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-        fragmentShader: `uniform vec3 uColor; uniform float uDrawn; varying float vT; void main() { if (vT > uDrawn) discard; gl_FragColor = vec4(uColor * 1.4, 1.0); #include <colorspace_fragment> }`,
-      },
-    };
-  }, []);
 
   const nodes = useMemo(
     () =>
@@ -168,10 +170,9 @@ export default function WebRoom({ progressRef, origin }) {
   useEffect(
     () => () => {
       threads.forEach((t) => t.geometry.dispose());
-      outline.geometry.dispose();
       nodes.forEach((n) => n.label.texture.dispose());
     },
-    [threads, outline, nodes],
+    [threads, nodes],
   );
 
   const lastT = useRef(0);
@@ -181,7 +182,6 @@ export default function WebRoom({ progressRef, origin }) {
     const p = progressRef.current;
     const runT = window01(p, 0.05, 0.75);
     const now = state.clock.elapsedTime;
-    outline.material.uniforms.uDrawn.value = runT;
 
     NODE_T.forEach((t, i) => {
       const reached = runT >= t;
@@ -204,9 +204,6 @@ export default function WebRoom({ progressRef, origin }) {
 
   return (
     <group position={origin}>
-      <line geometry={outline.geometry} frustumCulled={false}>
-        <shaderMaterial args={[outline.material]} transparent depthWrite={false} blending={AdditiveBlending} />
-      </line>
       {threads.map((thread, i) => (
         <line key={`t${i}`} geometry={thread.geometry} frustumCulled={false}>
           <shaderMaterial args={[thread.material]} transparent depthWrite={false} blending={AdditiveBlending} />
@@ -218,10 +215,12 @@ export default function WebRoom({ progressRef, origin }) {
             <planeGeometry args={[1.4, 1.4]} />
             <shaderMaterial args={[node.dot]} transparent depthWrite={false} blending={AdditiveBlending} />
           </mesh>
-          <mesh position={[0, 0.9, 0]} frustumCulled={false}>
-            <planeGeometry args={[0.55 * node.label.aspect, 0.55]} />
-            <shaderMaterial args={[node.text]} transparent depthWrite={false} blending={AdditiveBlending} />
-          </mesh>
+          <Billboard position={[0, 0.9, 0]}>
+            <mesh frustumCulled={false}>
+              <planeGeometry args={[0.55 * node.label.aspect, 0.55]} />
+              <shaderMaterial args={[node.text]} transparent depthWrite={false} blending={AdditiveBlending} />
+            </mesh>
+          </Billboard>
         </group>
       ))}
     </group>
