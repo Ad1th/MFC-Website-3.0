@@ -10,6 +10,7 @@
  *   ?visits=1|3|6               pretend visit count
  *   ?commits=0                  no commit meteors
  *   ?newsletters=0              no newsletters
+ *   ?blogs=0                    no blog posts
  *   ?backend=down               act as if the API is unreachable
  */
 
@@ -32,5 +33,6 @@ export const flags = Object.freeze({
   visits: numberOrNull(params.get('visits')),
   noCommits: params.get('commits') === '0',
   noNewsletters: params.get('newsletters') === '0',
+  noBlogs: params.get('blogs') === '0',
   backendDown: params.get('backend') === 'down',
 });

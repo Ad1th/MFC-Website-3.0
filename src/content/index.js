@@ -15,7 +15,7 @@ import { flags } from '../live/flags.js';
 const generated = import.meta.glob('./generated/*.json', { eager: true, import: 'default' });
 
 /** @type {Array<{ title: string, url: string, date: string, author: string, excerpt: string, image: string|null }>} */
-export const blogs = generated['./generated/blogs.json'] ?? [];
+export const blogs = flags.noBlogs ? [] : (generated['./generated/blogs.json'] ?? []);
 
 /** @type {Array<{ repo: string, actor: string, type: string, createdAt: string }>} */
 export const commits = flags.noCommits ? [] : (generated['./generated/commits.json'] ?? []);

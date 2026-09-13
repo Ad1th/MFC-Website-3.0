@@ -1,5 +1,6 @@
 import { newsletters as fallback } from '../content/index.js';
 import { flags } from './flags.js';
+import { FILM_TEST } from '../film/testHooks.js';
 
 /**
  * @typedef {{ title: string, date: string, cover: string, pdf: string }} Newsletter
@@ -34,6 +35,8 @@ function normalise(list) {
  */
 export async function loadNewsletters() {
   if (flags.noNewsletters) return { items: [], source: 'none' };
+  // Test builds only: a page can hand in newsletters to exercise the covers without a backend.
+  if (FILM_TEST && Array.isArray(window.__filmTest?.newsletters)) return { items: normalise(window.__filmTest.newsletters), source: 'fallback' };
   const base = apiBase();
   if (!base || flags.backendDown) return { items: normalise(fallback.items), source: 'fallback' };
   try {
