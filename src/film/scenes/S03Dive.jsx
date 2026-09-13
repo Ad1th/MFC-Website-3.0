@@ -260,7 +260,9 @@ export default function S03Dive() {
 
     // The sky set has its own air: a deep night-blue sky and long fog so the cloud layers
     // read against it; space keeps the film's near-black and short fog.
-    const inSky = p >= SET_SWITCH;
+    // Only while the dive is actually in the sky: S03 stays mounted into S04 (progress held at 1),
+    // and its night-blue air leaked into the tunnel's open end.
+    const inSky = p >= SET_SWITCH && p < 1;
     if (state.scene.fog) {
       state.scene.fog.color.copy(inSky ? SKY_FOG : SPACE_FOG);
       state.scene.fog.near = inSky ? 70 : 20;
