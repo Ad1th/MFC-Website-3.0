@@ -29,6 +29,7 @@ let fov = 45;
 let fovVel = 0;
 let roll = 0;
 let initialised = false;
+let lastCut = 0;
 
 function spring(x, v, goal, dt) {
   // Semi-implicit critically damped spring, per component.
@@ -41,6 +42,8 @@ function spring(x, v, goal, dt) {
 
 function placeholder(index, progress, out) {
   const z = 9 - (index + progress) * PLACEHOLDER_SPACING;
+  // Placeholder dollies are separate worlds: entering one is a cut, not a flight.
+  out.cut = 1000 + index;
   out.position.set(0, 0, z);
   out.target.set(0, 0, z - 12);
   out.fov = 45;
@@ -52,7 +55,13 @@ export default function CameraRig() {
     const dt = Math.min(delta, 1 / 20);
     const { activeScene, sceneProgress, velocity } = film.getState();
     const scene = getScenes()[activeScene];
+    pose.cut = 0;
     if (!scene || !sampleShot(scene.id, sceneProgress, pose, state.size.width / state.size.height)) placeholder(activeScene, sceneProgress, pose);
+    // A hidden cut (whiteout, set change) snaps instead of springing across worlds.
+    if (pose.cut !== lastCut) {
+      lastCut = pose.cut;
+      initialised = false;
+    }
 
     const cam = state.camera;
     if (FILM_FREEZE || !initialised) {

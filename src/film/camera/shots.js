@@ -6,7 +6,8 @@ import { Vector3 } from 'three';
  * springs toward it. Handover rule: a shot's pose at progress 1 must equal the next
  * scene's pose at progress 0 (checked by `handoverGap`). No cuts.
  *
- * @typedef {{ position: Vector3, target: Vector3, fov: number, roll: number }} Pose
+ * @typedef {{ position: Vector3, target: Vector3, fov: number, roll: number, cut: number }} Pose
+ *   cut: a shot changes it at a hidden cut (a whiteout, a set change) and the rig snaps there
  * @typedef {(progress: number, out: Pose, aspect: number) => void} Shot
  *   aspect is the viewport width / height, so a shot can pull back on narrow screens
  */
@@ -15,7 +16,7 @@ import { Vector3 } from 'three';
 const shots = new Map();
 
 export function createPose() {
-  return { position: new Vector3(), target: new Vector3(), fov: 45, roll: 0 };
+  return { position: new Vector3(), target: new Vector3(), fov: 45, roll: 0, cut: 0 };
 }
 
 /**
