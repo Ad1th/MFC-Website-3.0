@@ -38,6 +38,9 @@ export const film = createStore((set) => ({
     /** @type {null|{ condition: string, temperature: number, isDay: boolean, code: number }} */
     weather: null,
   },
+  /** Room order for S05, chosen by the cursor at S04's split. */
+  /** @type {('technical'|'design'|'management')[]} */
+  branchOrder: ['technical', 'design', 'management'],
 
   setScroll: (patch) => set(patch),
   setMode: (mode) => set({ mode }),
@@ -47,6 +50,7 @@ export const film = createStore((set) => ({
   setLoaded: (loaded) => set({ loaded }),
   setJumping: (jumping) => set({ jumping }),
   setLive: (patch) => set((state) => ({ live: { ...state.live, ...patch } })),
+  setBranchOrder: (branchOrder) => set({ branchOrder }),
 }));
 
 /**
