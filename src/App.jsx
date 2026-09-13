@@ -38,6 +38,12 @@ export default function App() {
     document.documentElement.dataset.mode = mode;
   }, [mode]);
 
+  // The inline boot cover in index.html bridges the time before this bundle runs. In film
+  // mode Ignition's identical cover has painted in this same commit; elsewhere it just goes.
+  useEffect(() => {
+    document.getElementById('boot')?.remove();
+  }, []);
+
   const toStill = useCallback(() => {
     film.getState().setMode('still');
     window.scrollTo({ top: 0, behavior: 'instant' });

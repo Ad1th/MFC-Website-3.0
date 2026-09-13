@@ -16,8 +16,28 @@
     <meta name="twitter:site" content="@mfc_vit" />
     <meta name="twitter:title" content="Mozilla Firefox Club, VIT Vellore" />
     <meta name="twitter:description" content="Students who build in the open, run campus events and teach whoever shows up next." />
+    <style>
+      /* S00 before any JavaScript: the same black cover, heartbeat pixel and counter the film's
+         Ignition shows, so a slow network sees the opening from the first paint. App removes it. */
+      #boot { position: fixed; inset: 0; z-index: 60; background: #0a0807; pointer-events: none; }
+      #boot i { position: absolute; top: 50%; left: 50%; width: 2px; height: 2px; margin: -1px 0 0 -1px; background: #e8ded5; animation: boot-beat 1s ease-in-out infinite; }
+      #boot b { position: absolute; left: clamp(16px, 6.4px + 3vw, 56px); bottom: clamp(16px, 6.4px + 3vw, 56px); font: 400 12px "Fira Code", ui-monospace, monospace; color: #a39e9a; }
+      @keyframes boot-beat { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { #boot { display: none; } }
+    </style>
   </head>
   <body>
+    <div id="boot" aria-hidden="true" hidden><i></i><b>000</b></div>
+    <script>
+      // Show the boot cover only where the film would play: the home page, not still mode or a sandbox.
+      (function () {
+        var q = location.search;
+        if ((location.pathname === '/' || location.pathname === '/index.html') && !/[?&](still=1|sandbox=)/.test(q)) {
+          document.getElementById('boot').hidden = false;
+          document.title = '.';
+        }
+      })();
+    </script>
     <div id="root"></div>
     <noscript>
       <p>The Mozilla Firefox Club, VIT Vellore. This site needs JavaScript. Write to mozillafirefox@vit.ac.in or find us at github.com/MFC-VIT.</p>
