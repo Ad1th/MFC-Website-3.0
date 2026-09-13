@@ -78,7 +78,9 @@ export default function DiveClouds({ layers, tier, weather, origin }) {
   const count = Math.max(1, TIERS[tier]?.clouds ?? 2);
   // Dense enough around the fox's path that the camera beside it is framed by cloud.
   // Tier 2 measured 13.8 to 14.4 ms GPU p95 in S03 at 28 segments per layer (budget 12 ms).
-  const segments = tier >= 3 ? 40 : tier === 2 ? 20 : 12;
+  const segments = tier >= 3 ? 40 : tier === 2 ? 14 : 10;
+  // Smaller puffs below tier 3: fewer full-screen transparent layers when the camera is inside a cloud.
+  const volume = tier >= 3 ? 16 : 11;
   const shown = layers.slice(0, count);
 
   return (
@@ -91,7 +93,7 @@ export default function DiveClouds({ layers, tier, weather, origin }) {
             seed={layer.seed}
             segments={segments}
             bounds={[34, 6, 34]}
-            volume={16}
+            volume={volume}
             position={[0, layer.y, layer.z ?? 0]}
             color={look.color}
             opacity={look.opacity}
