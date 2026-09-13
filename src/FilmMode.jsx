@@ -7,6 +7,7 @@ import Film from './film/Film.jsx';
 import Chrome from './dom/Chrome.jsx';
 import Semantic from './dom/Semantic.jsx';
 import HeroCanvas from './dom/hero/HeroCanvas.jsx';
+import Ignition from './dom/ignition/Ignition.jsx';
 import styles from './FilmMode.module.css';
 
 const DebugHud = flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
@@ -36,6 +37,11 @@ export default function FilmMode({ onSkip }) {
     return film.subscribe(listener);
   }, []);
 
+  const onReveal = useCallback(() => {
+    // Tests and frame capture wait for this instead of guessing when the cover lifts.
+    document.documentElement.dataset.ignition = 'done';
+  }, []);
+
   const onRegionFocus = useCallback((index, target) => {
     if (!isKeyboardFocus(target)) return;
     // Next frame: the browser's own scroll-to-focused-element runs after the focus
@@ -55,6 +61,7 @@ export default function FilmMode({ onSkip }) {
           <Semantic variant="film" onRegionFocus={onRegionFocus} subscribe={subscribeActive} />
         </div>
       </main>
+      <Ignition onReveal={onReveal} />
       {DebugHud ? (
         <Suspense fallback={null}>
           <DebugHud />

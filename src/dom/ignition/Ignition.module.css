@@ -1,0 +1,88 @@
+/* S00: black cover over the film until the match is struck. */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-dom) + 20);
+  background: var(--night, #0a0807);
+}
+
+/* The heartbeat: one pixel in the centre, pulsing at 1Hz. */
+.pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  margin: -1px 0 0 -1px;
+  background: var(--ash, #e8ded5);
+  animation: heartbeat 1s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.flame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.counter {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--gutter);
+  color: var(--ash-dim, #a39e9a);
+  font-variant-numeric: tabular-nums;
+}
+
+.slow {
+  position: absolute;
+  left: var(--gutter);
+  bottom: calc(var(--gutter) + 1.75rem);
+  color: var(--ash, #e8ded5);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+/* Two words, no button styling. */
+.sound {
+  position: fixed;
+  right: calc(var(--gutter) + 3rem);
+  bottom: var(--gutter);
+  z-index: calc(var(--z-dom) + 5);
+  display: flex;
+  gap: var(--space-6, 1.5rem);
+}
+
+.sound button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ash-dim, #a39e9a);
+  cursor: pointer;
+}
+
+.sound button:hover,
+.sound button:focus-visible {
+  color: var(--ash, #e8ded5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.6;
+  }
+}
