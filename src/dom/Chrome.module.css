@@ -23,7 +23,7 @@
   top: var(--space-6);
   right: calc(var(--gutter) + 1.5rem);
   z-index: var(--z-chrome);
-  color: var(--ash);
+  color: var(--fg);
   padding: var(--space-2) 0;
   border-bottom: 1px solid rgb(232 222 213 / 0.4);
   transition: color var(--dur-quick) var(--ease-film), border-color var(--dur-quick) var(--ease-film);
@@ -56,7 +56,7 @@
   gap: var(--space-3);
   min-height: 1.5rem;
   padding-left: var(--space-3);
-  color: var(--ash-dim);
+  color: var(--fg-dim);
 }
 
 .chapterLabel {
@@ -82,7 +82,7 @@
 }
 
 .chapter:hover {
-  color: var(--ash);
+  color: var(--fg);
 }
 
 .chapter[aria-current="step"] {
