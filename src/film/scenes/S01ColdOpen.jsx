@@ -1,15 +1,14 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Matrix4, Quaternion, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { film, useFilm } from '../store.js';
 import Globe from '../globe/Globe.jsx';
 import GlobeArc from '../globe/GlobeArc.jsx';
 import EventStars from '../globe/EventStars.jsx';
 import LensedTitle from '../globe/LensedTitle.jsx';
-import Fox from '../fox/Fox.jsx';
 import { registerShot } from '../camera/shots.js';
+import { registerFoxShot } from '../actors/foxShots.js';
 import { getScenes } from '../scroll.js';
-import { FILM_FREEZE } from '../testHooks.js';
 
 /**
  * S01 Cold Open. Wide on the live globe turning in space, the title set huge behind the
@@ -135,100 +134,74 @@ function localProgress() {
   return sceneProgress;
 }
 
-const foxPosition = new Vector3();
-const foxForward = new Vector3();
-const foxUp = new Vector3();
-const foxLeft = new Vector3();
-const toLens = new Vector3();
-const basis = new Matrix4();
-const foxQuaternion = new Quaternion();
 const cameraDirection = new Vector3();
 const jumpPoint = new Vector3();
+const toLens = new Vector3();
+
+/**
+ * S01's fox shot for the film's one fox (FilmFox): the orbit, the logo curl, bullet time
+ * with the front-facing blink, the look into the lens and the jump, all from sceneProgress.
+ * @type {import('../actors/foxShots.js').FoxShot}
+ */
+export function coldOpenFoxShot(progress, pose, input, context) {
+  const p = Math.min(Math.max(progress, 0), 1);
+  const cameraPosition = context.camera.position;
+
+  orbitFrame(orbitAngle(p), pose.position, pose.forward, pose.up);
+  const jump = ease(window01(p, 0.9, 1));
+  if (jump > 0) {
+    jumpTarget(cameraPosition, jumpPoint);
+    pose.position.lerp(jumpPoint, jump);
+    // A shallow arc: the leap rises a little, then comes straight down the lens axis.
+    pose.position.addScaledVector(HOLD.up, Math.sin(jump * Math.PI) * 0.08);
+    toLens.subVectors(cameraPosition, HOLD.position).normalize();
+    pose.forward.lerp(toLens, jump).normalize();
+  }
+  pose.scale = FOX_WORLD_SCALE;
+
+  const curl = ease(window01(p, 0.36, 0.5)) * (1 - ease(window01(p, 0.8, 0.88)));
+  const bullet = p >= 0.5 && p < 0.8;
+  input.timeScale = bullet ? 0 : 1;
+  input.scenePose = curl > 0.001 ? { name: 'curl', weight: curl } : null;
+  input.hint = bullet ? null : 'run';
+
+  // After bullet time the head turns into the lens.
+  const look = ease(window01(p, 0.8, 0.88));
+  input.look = look > 0 ? cameraPosition : null;
+  input.lookWeight = look;
+
+  // The blink: once, slowly, when the orbiting camera is within ±8° of the fox's front.
+  if (bullet) {
+    cameraDirection.subVectors(cameraPosition, HOLD.position).projectOnPlane(HOLD.up).normalize();
+    const closed = 1 - Math.min(cameraDirection.angleTo(HOLD.forward) / BLINK_HALF_ANGLE, 1);
+    input.eyeOverride = 1 - 0.92 * Math.sin((closed * Math.PI) / 2);
+  }
+}
 
 export default function S01ColdOpen() {
   const tier = useFilm((s) => s.quality);
   const arcProgress = useRef(0);
-  const foxGroup = useRef(null);
-  const foxInput = useRef({
-    velocity: 0,
-    idleSeconds: 0,
-    hint: 'run',
-    forced: null,
-    scripted: true,
-    speed: 0,
-    look: null,
-    lookWeight: 0,
-    petting: false,
-    wind: new Vector3(),
-    timeScale: 1,
-    scenePose: { name: 'curl', weight: 0 },
-    eyeOverride: null,
-  });
+  const titleOpacity = useRef(1);
 
   useEffect(() => registerShot('S01', coldOpenShot), []);
+  useEffect(() => registerFoxShot('S01', coldOpenFoxShot), []);
 
-  // Before the fox's own frame callback (priority -1), so it reads this frame's input.
-  useFrame((state) => {
+  useFrame(() => {
     const p = localProgress();
     arcProgress.current = ease(window01(p, 0.05, 0.35));
-
-    const group = foxGroup.current;
-    const input = foxInput.current;
-    if (!group) return;
-
-    orbitFrame(orbitAngle(p), foxPosition, foxForward, foxUp);
-    const jump = ease(window01(p, 0.9, 1));
-    if (jump > 0) {
-      jumpTarget(state.camera.position, jumpPoint);
-      foxPosition.lerp(jumpPoint, jump);
-      // A shallow arc: the leap rises a little, then comes straight down the lens axis.
-      foxPosition.addScaledVector(HOLD.up, Math.sin(jump * Math.PI) * 0.08);
-      toLens.subVectors(state.camera.position, HOLD.position).normalize();
-      foxForward.lerp(toLens, jump).normalize();
-    }
-    foxLeft.crossVectors(foxUp, foxForward).normalize();
-    foxUp.crossVectors(foxForward, foxLeft).normalize();
-    basis.makeBasis(foxLeft, foxUp, foxForward);
-    foxQuaternion.setFromRotationMatrix(basis);
-    group.position.copy(foxPosition);
-    group.quaternion.copy(foxQuaternion);
-
-    const curl = ease(window01(p, 0.36, 0.5)) * (1 - ease(window01(p, 0.8, 0.88)));
-    const bullet = p >= 0.5 && p < 0.8;
-    // Under ?freeze the fox's clock stops too, so identical frames stay identical.
-    input.timeScale = bullet || FILM_FREEZE ? 0 : 1;
-    input.scenePose.weight = curl;
-    input.hint = bullet ? null : 'run';
-
-    // After bullet time the head turns into the lens.
-    const look = ease(window01(p, 0.8, 0.88));
-    input.look = look > 0 ? state.camera.position : null;
-    input.lookWeight = look;
-
-    // The blink: once, slowly, when the orbiting camera is within ±8° of the fox's front.
-    if (bullet) {
-      cameraDirection.subVectors(state.camera.position, HOLD.position).projectOnPlane(HOLD.up).normalize();
-      const closed = 1 - Math.min(cameraDirection.angleTo(HOLD.forward) / BLINK_HALF_ANGLE, 1);
-      input.eyeOverride = 1 - 0.92 * Math.sin((closed * Math.PI) / 2);
-    } else {
-      input.eyeOverride = null;
-    }
-  }, -2);
+    // The giant title belongs to the cold open; once S01 is over it must not hang in later shots.
+    titleOpacity.current = p < 1 ? 1 : 0;
+  });
 
   return (
     <>
       <EventStars count={tier >= 3 ? 2200 : tier === 2 ? 1400 : 700} />
-      <LensedTitle globeCentre={GLOBE_CENTRE} globeRadius={GLOBE_RADIUS} position={[0, -0.6, -16]} width={64} />
+      <LensedTitle globeCentre={GLOBE_CENTRE} globeRadius={GLOBE_RADIUS} position={[0, -0.6, -16]} width={64} opacityRef={titleOpacity} />
       <Suspense fallback={null}>
         <Globe tier={tier} scale={GLOBE_RADIUS} rotation={[0.41, 0, 0]} facing={GLOBE_FACING}>
           <GlobeArc progressRef={arcProgress} />
         </Globe>
       </Suspense>
-      <group ref={foxGroup} scale={FOX_WORLD_SCALE}>
-        <Suspense fallback={null}>
-          <Fox approach="C" tier={tier} input={foxInput} />
-        </Suspense>
-      </group>
     </>
   );
 }
