@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { AnimationMixer, Matrix4, Points, Quaternion, Vector3 } from 'three';
+import { AdditiveBlending, AnimationMixer, Matrix4, NormalBlending, Points, Quaternion, Vector3 } from 'three';
 import { createRig, furLuminance, sampleSurface, FOX_SCALE, FOX_URL, LANDMARKS } from './rig.js';
 import { createFlameMaterial, createParticleMaterial } from './materials.js';
 import { createFoxBrain } from './foxBrain.js';
@@ -61,7 +61,7 @@ function applyBoneOffsets(rig, offsets) {
   }
 }
 
-const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0], anchor = null, tint = null }, ref) {
+const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0], anchor = null, tint = null, light = false }, ref) {
   const gltf = useGLTF(FOX_URL);
   const rig = useMemo(() => createRig(gltf), [gltf]);
   const groupRef = useRef(null);
@@ -95,9 +95,28 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
   }, [rig, approach, tier, fur]);
   // A colour multiplied into the flame and embers (S05's prism splits the fox red, green, blue).
   useEffect(() => {
+    const mix = tint ? 1 : 0;
     flame.uniforms.uTint.value.set(tint ?? '#ffffff');
-    if (particles) particles.material.uniforms.uTint.value.set(tint ?? '#ffffff');
+    flame.uniforms.uTintMix.value = mix;
+    if (particles) {
+      particles.material.uniforms.uTint.value.set(tint ?? '#ffffff');
+      particles.material.uniforms.uTintMix.value = mix;
+    }
   }, [flame, particles, tint]);
+
+  // On a light background (S05's white void) additive embers and the ghost shell vanish, so they
+  // blend normally there; everywhere else they add light.
+  useEffect(() => {
+    const blending = light ? NormalBlending : AdditiveBlending;
+    if (particles) {
+      particles.material.blending = blending;
+      particles.material.needsUpdate = true;
+    }
+    if (flame.transparent) {
+      flame.blending = blending;
+      flame.needsUpdate = true;
+    }
+  }, [flame, particles, light]);
 
   useEffect(() => {
     rig.mesh.material = flame;

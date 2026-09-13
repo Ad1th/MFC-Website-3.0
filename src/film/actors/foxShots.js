@@ -6,9 +6,10 @@ import { Vector3 } from 'three';
  * (time scale, held pose, eyes, look, mood hints). One persistent FilmFox samples the
  * active scene's shot every frame, so the same fox runs through the whole film.
  *
- * @typedef {{ position: Vector3, forward: Vector3, up: Vector3, scale: number, visible: boolean, cut: number }} FoxPose
+ * @typedef {{ position: Vector3, forward: Vector3, up: Vector3, scale: number, visible: boolean, cut: number, light: boolean }} FoxPose
  *   forward is the nose direction, up the back; scale multiplies FOX_SCALE;
- *   cut changes at a hidden cut (a set change), so world-space trails restart there
+ *   cut changes at a hidden cut (a set change), so world-space trails restart there;
+ *   light: the fox is on a light background and must blend normally
  * @typedef {{ camera: import('three').Camera, aspect: number }} FoxShotContext
  * @typedef {(progress: number, pose: FoxPose, input: object, context: FoxShotContext) => void} FoxShot
  */
@@ -19,7 +20,7 @@ let foxHandle = null;
 
 /** @returns {FoxPose} */
 export function createFoxPose() {
-  return { position: new Vector3(), forward: new Vector3(0, 0, 1), up: new Vector3(0, 1, 0), scale: 0.4, visible: true, cut: 0 };
+  return { position: new Vector3(), forward: new Vector3(0, 0, 1), up: new Vector3(0, 1, 0), scale: 0.4, visible: true, cut: 0, light: false };
 }
 
 /**

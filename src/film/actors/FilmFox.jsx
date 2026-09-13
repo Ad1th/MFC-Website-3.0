@@ -25,6 +25,8 @@ export default function FilmFox() {
   const pose = useMemo(() => createFoxPose(), []);
   const anchor = useMemo(() => ({ position: pose.position, quaternion: new Quaternion(), scale: pose.scale, visible: false }), [pose]);
   const [trail, setTrail] = useState(true);
+  const [light, setLight] = useState(false);
+  const lightRef = useRef(false);
   const lastCut = useRef(0);
   const input = useRef({
     velocity: 0,
@@ -62,10 +64,17 @@ export default function FilmFox() {
     pose.visible = true;
     pose.scale = 0.4;
     pose.cut = 0;
+    pose.light = false;
 
     const sampled = Boolean(scene) && sampleFoxShot(scene.id, sceneProgress, pose, inp, { camera: state.camera, aspect: state.size.width / state.size.height });
     if (FILM_FREEZE) inp.timeScale = 0;
     if (foxRef.current) setFoxHandle(foxRef.current);
+
+    // Light backgrounds flip the fox's blending; a React update, but only when it changes.
+    if (pose.light !== lightRef.current) {
+      lightRef.current = pose.light;
+      setLight(pose.light);
+    }
 
     const shown = sampled && pose.visible;
     anchor.visible = shown;
@@ -89,7 +98,7 @@ export default function FilmFox() {
   return (
     <group ref={visibleRef} visible={false}>
       <Suspense fallback={null}>
-        <Fox ref={foxRef} approach="C" tier={tier} input={input} trail={trail} anchor={anchor} />
+        <Fox ref={foxRef} approach="C" tier={tier} input={input} trail={trail} anchor={anchor} light={light} />
       </Suspense>
     </group>
   );

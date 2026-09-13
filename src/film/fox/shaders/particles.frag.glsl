@@ -1,4 +1,9 @@
 uniform vec3 uTint;
+uniform float uTintMix;
+vec3 tinted(vec3 c) {
+  float lum = dot(c, vec3(0.299, 0.587, 0.114));
+  return mix(c, uTint * lum * 1.8, uTintMix);
+}
 uniform vec3 uDeep;
 uniform vec3 uFire;
 uniform vec3 uEmber;
@@ -34,6 +39,6 @@ void main() {
   }
   color = mix(color, uGold, uWarm * 0.4);
 
-  gl_FragColor = vec4(color * uIntensity * uTint, alpha * uOpacity);
+  gl_FragColor = vec4(tinted(color * uIntensity), alpha * uOpacity);
   #include <colorspace_fragment>
 }

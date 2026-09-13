@@ -46,6 +46,7 @@ export function createFlameMaterial(map, { ghost = false } = {}) {
       uGhost: { value: ghost ? 1 : 0 },
       // White by default; S05's prism tints split foxes red, green and blue.
       uTint: { value: new Color(1, 1, 1) },
+      uTintMix: { value: 0 },
       uWind: { value: new Vector3() },
       uMap: { value: map },
     },
@@ -73,6 +74,7 @@ export function createParticleMaterial(mesh, { size = 1.6, life = 0.9, rise = 42
       bindMatrixInverse: { value: mesh.bindMatrixInverse },
       uTime: { value: 0 },
       uTint: { value: new Color(1, 1, 1) },
+      uTintMix: { value: 0 },
       uLife: { value: life },
       uSize: { value: size },
       uScale: { value: 500 },
