@@ -127,13 +127,15 @@ export default function SkyGround({ tier, origin, progressRef, fibre, impact, re
     ground.uniforms.uFade.value = ramp(reveal[0], reveal[1]);
     fibreMaterial.uniforms.uIntensity.value = 1.6 * ramp(fibre[0], fibre[1]);
     const pulse = FILM_FREEZE ? 0.5 : 0.5 + 0.5 * Math.sin(state.clock.elapsedTime * Math.PI * 1.6);
-    velloreMaterial.uniforms.uIntensity.value = 1.2 + 0.6 * pulse;
+    // Campus is a bright point from altitude, not a floodlight when the camera arrives.
+    velloreMaterial.uniforms.uIntensity.value = 0.7 + 0.3 * pulse;
     const flash = ramp(impact[0], impact[1]);
     const bloom = Math.sin(Math.PI * Math.min(flash * 1.4, 1));
-    flashMaterial.uniforms.uIntensity.value = 1.4 * bloom;
+    // A brief warm bloom at the fibre, not a whiteout: the frame should still show the fox arriving.
+    flashMaterial.uniforms.uIntensity.value = 0.55 * bloom;
     if (flashRef.current) {
       flashRef.current.visible = bloom > 0.001;
-      flashRef.current.scale.setScalar(8 + 60 * flash);
+      flashRef.current.scale.setScalar(6 + 26 * flash);
     }
   });
 
@@ -145,11 +147,11 @@ export default function SkyGround({ tier, origin, progressRef, fibre, impact, re
         <shaderMaterial args={[ground]} transparent depthWrite={false} blending={AdditiveBlending} />
       </mesh>
       <mesh position={[fibreLine.mid.x, 0.05, fibreLine.mid.z]} rotation={[-Math.PI / 2, 0, fibreLine.angle]}>
-        <planeGeometry args={[fibreLine.length, 1.2]} />
+        <planeGeometry args={[fibreLine.length, 0.45]} />
         <shaderMaterial args={[fibreMaterial]} transparent depthWrite={false} blending={AdditiveBlending} />
       </mesh>
       <mesh position={[0, 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[10, 10]} />
+        <planeGeometry args={[4, 4]} />
         <shaderMaterial args={[velloreMaterial]} transparent depthWrite={false} blending={AdditiveBlending} />
       </mesh>
       <mesh ref={flashRef} position={[0, 0.2, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
