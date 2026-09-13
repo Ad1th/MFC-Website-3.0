@@ -66,7 +66,9 @@ const GLOW_FRAGMENT = /* glsl */ `
   uniform float uShape; // 0 = round glow, 1 = line (uv.y across)
   varying vec2 vUv;
   void main() {
-    float round = exp(-dot(vUv - 0.5, vUv - 0.5) * 18.0);
+    // Circular mask: the glow reaches exactly zero inside the quad, so its square edge never shows.
+    float r = length(vUv - 0.5);
+    float round = exp(-dot(vUv - 0.5, vUv - 0.5) * 18.0) * (1.0 - smoothstep(0.32, 0.5, r));
     float line = exp(-pow((vUv.y - 0.5) / 0.12, 2.0));
     float shape = mix(round, line, uShape);
     gl_FragColor = vec4(uColor * shape * uIntensity, 1.0);
@@ -128,7 +130,7 @@ export default function SkyGround({ tier, origin, progressRef, fibre, impact, re
     velloreMaterial.uniforms.uIntensity.value = 1.2 + 0.6 * pulse;
     const flash = ramp(impact[0], impact[1]);
     const bloom = Math.sin(Math.PI * Math.min(flash * 1.4, 1));
-    flashMaterial.uniforms.uIntensity.value = 3.5 * bloom;
+    flashMaterial.uniforms.uIntensity.value = 1.4 * bloom;
     if (flashRef.current) {
       flashRef.current.visible = bloom > 0.001;
       flashRef.current.scale.setScalar(8 + 60 * flash);
