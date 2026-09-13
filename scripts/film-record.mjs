@@ -38,6 +38,8 @@ const TO = point(arg('to', 'S03:1'));
 const RAIL = Number(arg('rail', '2'));
 const SCRUB_SCENE = arg('scrub-scene', 'S04');
 const SCRUB_RANGE = arg('scrub-range', '0.8,1').split(',').map(Number);
+/** Must match WHEEL_MULTIPLIER in src/film/scroll.js: Lenis moves this fraction of each wheel delta. */
+const WHEEL_MULTIPLIER = Number(arg('wheel-multiplier', '0.5'));
 
 async function ready(page) {
   await page.waitForFunction(() => document.documentElement.dataset.filmReady === 'true' && document.documentElement.dataset.ignition === 'done', null, { timeout: 60000 });
@@ -76,7 +78,7 @@ function offsetOf(id, progress) {
 async function wheelTo(page, target, ms) {
   const from = await page.evaluate(() => window.scrollY);
   const steps = Math.max(1, Math.round(ms / 16));
-  const delta = (target - from) / steps;
+  const delta = (target - from) / steps / WHEEL_MULTIPLIER;
   for (let i = 0; i < steps; i += 1) {
     await page.mouse.wheel(0, delta);
     await page.waitForTimeout(16);
