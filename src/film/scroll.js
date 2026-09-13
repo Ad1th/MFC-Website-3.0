@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { film } from './store.js';
 import { layout, locate, totalVh, titleFor, MOBILE_QUERY } from './timeline.js';
 import { FILM_TEST } from './testHooks.js';
+import { onScrollLockChange, requestScrollLock, scrollLockRequested, titlesAreLive } from './filmGate.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,14 +15,6 @@ let scenes = layout(false);
 /** @type {HTMLElement|null} */
 let track = null;
 let rawVelocity = 0;
-/** A lock asked for before Lenis exists (child effects run before the parent's initScroll). */
-let lockRequested = false;
-/** Scene titles wait for S00: the tab reads "." until the match is struck. */
-let titlesLive = false;
-
-export function setTitlesLive(live) {
-  titlesLive = live;
-}
 let lastUpdate = 0;
 
 const JUMP_DURATION = 1.6;
@@ -49,7 +42,9 @@ export function initScroll(trackEl) {
   applyLayout();
 
   lenis = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, syncTouch: false });
-  if (lockRequested) lenis.stop();
+  // S00 may have asked for a lock before Lenis existed; apply it now and follow changes.
+  if (scrollLockRequested()) lenis.stop();
+  const offLock = onScrollLockChange((locked) => (locked ? lenis?.stop() : lenis?.start()));
   lenis.on('scroll', ScrollTrigger.update);
 
   const raf = (time) => lenis?.raf(time * 1000);
@@ -103,6 +98,7 @@ export function initScroll(trackEl) {
     gsap.ticker.remove(raf);
     gsap.ticker.remove(smooth);
     trigger.kill();
+    offLock();
     lenis?.destroy();
     lenis = null;
     track = null;
@@ -117,7 +113,7 @@ function write(progress, velocity) {
   const patch = { progress, sceneProgress, lastScrollAt: lastUpdate };
   if (index !== state.activeScene) patch.activeScene = index;
   state.setScroll(patch);
-  if (titlesLive && !document.hidden) {
+  if (titlesAreLive() && !document.hidden) {
     const title = titleFor(scenes[index], sceneProgress);
     if (document.title !== title) document.title = title;
   }
@@ -158,8 +154,5 @@ export function jumpToScene(index, { immediate = false } = {}) {
 
 /** Stop and start smooth scrolling (for modal moments). */
 export function setScrollLocked(locked) {
-  lockRequested = locked;
-  if (!lenis) return;
-  if (locked) lenis.stop();
-  else lenis.start();
+  requestScrollLock(locked);
 }
