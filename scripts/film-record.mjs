@@ -33,19 +33,31 @@ async function ready(page) {
 }
 
 /**
- * Scroll position in px at a scene's progress, measured from the film itself: jump there with
- * the test hook, read scrollY, then return to where we were. Computing it from the document's
- * scroll height overshot, because the film maps progress through its track, not the document
- * (a bullet-time target at S01 0.84 landed in S02's shatter).
+ * Scroll targets in px, measured once before recording in a throwaway page: jump there with the
+ * test hook (Lenis-aware) and read scrollY. Measuring inside the clip meant jumping away and
+ * back with window.scrollTo, which Lenis does not track, so later wheel steps started from the
+ * wrong place (the bullet clip fell back to the wide shot). Computing it from the document's
+ * scroll height overshot into S02, because the film maps progress through its track.
  */
-async function offsetOf(page, id, progress) {
-  const back = await page.evaluate(() => window.scrollY);
-  await page.evaluate(([sceneId, p]) => window.__filmTest.scrollToScene(sceneId, p), [id, progress]);
-  await page.waitForTimeout(120);
-  const target = await page.evaluate(() => window.scrollY);
-  await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), back);
-  await page.waitForTimeout(400);
-  return target;
+const targets = new Map();
+
+async function measureTargets(browser, points) {
+  const context = await browser.newContext({ viewport: SIZE });
+  const page = await context.newPage();
+  await page.goto(`${base}/?tier=2&weather=clear`);
+  await ready(page);
+  for (const [id, progress] of points) {
+    await page.evaluate(([sceneId, p]) => window.__filmTest.scrollToScene(sceneId, p), [id, progress]);
+    await page.waitForTimeout(150);
+    targets.set(`${id}:${progress}`, await page.evaluate(() => window.scrollY));
+  }
+  await context.close();
+}
+
+function offsetOf(id, progress) {
+  const value = targets.get(`${id}:${progress}`);
+  if (value === undefined) throw new Error(`target ${id}:${progress} was not measured`);
+  return value;
 }
 
 /** Wheel from the current position to a target in px over roughly `ms`. */
@@ -61,8 +73,8 @@ async function wheelTo(page, target, ms) {
 }
 
 const CLIPS = {
-  continuous: async (page) => wheelTo(page, await offsetOf(page, 'S03', 1), 26000),
-  fast: async (page) => wheelTo(page, await offsetOf(page, 'S03', 1), 4000),
+  continuous: async (page) => wheelTo(page, offsetOf('S03', 1), 26000),
+  fast: async (page) => wheelTo(page, offsetOf('S03', 1), 4000),
   reverse: async (page) => {
     await page.evaluate(() => window.__filmTest.scrollToScene('S03', 0.99));
     await page.waitForTimeout(1500);
@@ -71,8 +83,8 @@ const CLIPS = {
   bullet: async (page) => {
     await page.evaluate(() => window.__filmTest.scrollToScene('S01', 0.46));
     await page.waitForTimeout(1500);
-    await wheelTo(page, await offsetOf(page, 'S01', 0.84), 9000);
-    await wheelTo(page, await offsetOf(page, 'S01', 0.5), 6000);
+    await wheelTo(page, offsetOf('S01', 0.84), 9000);
+    await wheelTo(page, offsetOf('S01', 0.5), 6000);
   },
   jump: async (page) => {
     await page.waitForTimeout(1200);
@@ -84,6 +96,11 @@ const CLIPS = {
 
 fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: false });
+await measureTargets(browser, [
+  ['S03', 1],
+  ['S01', 0.84],
+  ['S01', 0.5],
+]);
 for (const name of only) {
   const clip = CLIPS[name];
   if (!clip) continue;
