@@ -29,8 +29,11 @@ const FRAGMENT = /* glsl */ `
   varying vec2 vUv;
   void main() {
     vec2 c = vUv - 0.5;
-    // Distance to the nearest edge, 0 at the border and 0.5 at the centre.
-    float edge = 0.5 - max(abs(c.x), abs(c.y));
+    // Distance inside a rounded rectangle the size of the frame: a thin rim along every edge,
+    // with softened corners (an ellipse filled the corners; a hard box showed square corners).
+    float r = 0.09;
+    vec2 q = abs(c) - (0.5 - r);
+    float edge = -(length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r);
     // A thin shimmering rim: a few percent of the frame, never a border that eats the shot.
     float ripple = sin(atan(c.y, c.x) * 9.0 + uTime * 5.0) * 0.5 + 0.5;
     float band = smoothstep(0.045 + 0.012 * ripple, 0.0, edge);
