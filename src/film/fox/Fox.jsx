@@ -439,6 +439,10 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     flame.uniforms.uWarm.value = out.warm;
     flame.uniforms.uBreath.value = b.breath;
     flame.uniforms.uFlicker.value = 0.7 + heat * 0.6;
+    // A scene can turn the flame down (S09's hilltop, and rain sputtering it): input.flame, 1 by default.
+    const flameLevel = inp.flame ?? 1;
+    flame.userData.baseIntensity ??= flame.uniforms.uIntensity.value;
+    flame.uniforms.uIntensity.value = flame.userData.baseIntensity * flameLevel;
     flame.uniforms.uWind.value.copy(windLocal);
     flame.uniforms.uEarL.value = out.ears.L;
     flame.uniforms.uEarR.value = out.ears.R;
@@ -449,6 +453,8 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       u.uHeat.value = heat;
       u.uWarm.value = out.warm;
       u.uBreath.value = b.breath;
+      particles.material.userData.baseIntensity ??= u.uIntensity.value;
+      u.uIntensity.value = particles.material.userData.baseIntensity * flameLevel;
       u.uEarL.value = out.ears.L;
       u.uEarR.value = out.ears.R;
       u.uWind.value.copy(windLocal);

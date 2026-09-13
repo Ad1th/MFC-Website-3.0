@@ -44,6 +44,7 @@ export default function FilmFox() {
     timeScale: 1,
     scenePose: null,
     eyeOverride: null,
+    flame: 1,
   });
 
   useEffect(() => () => setFoxHandle(null), []);
@@ -60,6 +61,7 @@ export default function FilmFox() {
     inp.timeScale = 1;
     inp.scenePose = null;
     inp.eyeOverride = null;
+    inp.flame = 1;
     inp.look = null;
     inp.lookWeight = 0;
     inp.scripted = true;
