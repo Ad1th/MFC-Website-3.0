@@ -6,8 +6,8 @@ import { registerShot } from '../camera/shots.js';
 import { registerFoxShot } from '../actors/foxShots.js';
 import { sceneProgressOf } from './progress.js';
 import SourceRoom, { CORRIDOR_LENGTH, WALL_X } from '../rooms/SourceRoom.jsx';
-import PrismRoom, { PRISM_BEATS, PRISM_CENTRE } from '../rooms/PrismRoom.jsx';
-import WebRoom, { WEB_SIZE, pathAt } from '../rooms/WebRoom.jsx';
+import PrismRoom, { PRISM_BEATS, PRISM_CENTRE, PRISM_FOX_SCALE } from '../rooms/PrismRoom.jsx';
+import WebRoom, { LOGO_BOUNDS, WEB_SIZE, pathAt } from '../rooms/WebRoom.jsx';
 import { PALETTE } from '../palette.js';
 import { clamp01, ease, lerp, window01 } from '../rooms/labels.js';
 import { FILM_TEST } from '../testHooks.js';
@@ -48,6 +48,7 @@ function technicalPose(p, origin, pose, cam, aspect) {
   const z = -run * CORRIDOR_LENGTH * 0.8;
   const floorPoint = tmp.set(lerp(1, WALL_X + 0.3, climb > 0 ? 1 : 0), 0, z);
   const height = climb * 22;
+  pose.scale = 0.7;
   pose.position.set(climb > 0 ? WALL_X + 0.3 : lerp(0.5, 1, run), height, z).add(origin);
   // Gravity turns: the fox's back points away from the wall while it climbs.
   if (climb > 0) {
@@ -77,13 +78,16 @@ function designPose(p, origin, pose, cam, aspect) {
   pose.position.set(0, 0, lerp(8, PRISM_CENTRE.z, enter)).add(origin);
   pose.forward.set(0, 0, -1);
   pose.up.set(0, 1, 0);
-  // The film's fox is the fused one: hidden while the three colours are apart.
+  // The film's fox is the fused one: hidden while the three colours are apart. White void: blend normally.
   pose.visible = p <= PRISM_BEATS.split || p >= PRISM_BEATS.fuse;
+  pose.light = true;
+  pose.scale = PRISM_FOX_SCALE;
   if (cam) {
     const fit = Math.max(1, 0.8 / aspect);
+    // Far enough back that the prism reads as glass with the walls and foxes around it.
     const orbit = ease(window01(p, 0.15, 0.9)) * Math.PI * 0.6 - Math.PI * 0.3;
-    cam.position.set(Math.sin(orbit) * 16 * fit, 5.5, PRISM_CENTRE.z + Math.cos(orbit) * 16 * fit).add(origin);
-    cam.target.set(0, 2.5, PRISM_CENTRE.z).add(origin);
+    cam.position.set(Math.sin(orbit) * 30 * fit, 9, PRISM_CENTRE.z + Math.cos(orbit) * 30 * fit).add(origin);
+    cam.target.set(0, 4, PRISM_CENTRE.z).add(origin);
     cam.fov = 48;
     cam.roll = 0;
   }
@@ -99,10 +103,13 @@ function managementPose(p, origin, pose, cam, aspect) {
     const fit = Math.max(1, 0.8 / aspect);
     // Close behind the fox on the threads, then pull back high to reveal the logo.
     const reveal = ease(window01(p, 0.72, 1));
-    const chase = tmp.copy(pose.position).addScaledVector(dir, -3.5 * fit).add(new Vector3(0, 2.2, 0));
-    const high = new Vector3(0, WEB_SIZE * 2.6 * fit, 0.01).add(origin);
+    // Beside and a little behind, so the fox reads in profile on the thread, not tail-on.
+    const side = new Vector3().crossVectors(new Vector3(0, 1, 0), dir).normalize();
+    const chase = tmp.copy(pose.position).addScaledVector(dir, -1.6 * fit).addScaledVector(side, 3 * fit).add(new Vector3(0, 1.6, 0));
+    // High enough that the whole logo, with its node labels, sits inside the frame at fov 45.
+    const high = new Vector3(LOGO_BOUNDS.centre.x, (LOGO_BOUNDS.radius * 1.45 * fit) / Math.tan((22.5 * Math.PI) / 180), LOGO_BOUNDS.centre.z + 0.01).add(origin);
     cam.position.lerpVectors(chase, high, reveal);
-    cam.target.lerpVectors(new Vector3().copy(pose.position).addScaledVector(dir, 3), new Vector3().copy(origin), reveal);
+    cam.target.lerpVectors(new Vector3().copy(pose.position).addScaledVector(dir, 3), new Vector3().copy(LOGO_BOUNDS.centre).add(origin), reveal);
     cam.fov = lerp(55, 45, reveal);
     cam.roll = 0;
   }
@@ -125,8 +132,9 @@ function roomsFoxShot(progress, pose, input) {
   const order = film.getState().branchOrder;
   const { key, local } = roomAt(progress, order);
   pose.visible = true;
-  POSES[key](local, ROOM_ORIGINS[key], pose, null, 16 / 9);
+  // A room's pose may override the scale (the prism camera sits far back).
   pose.scale = 0.4;
+  POSES[key](local, ROOM_ORIGINS[key], pose, null, 16 / 9);
   pose.cut = ROOM_CUTS[key];
   input.hint = 'run';
   input.velocity = 900;
