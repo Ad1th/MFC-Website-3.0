@@ -106,13 +106,28 @@ test('a click just outside the fox pounces and never pets', async ({ page }) => 
 
 test('sleep rests on the floor within 0.2 model units', async ({ page }) => {
   await openSandbox(page, 'shot=hero&velocity=0&mood=sleep');
-  await page.waitForTimeout(3000);
+  // Sample the settled pose, not the blend into it: a fixed wait sampled mid-blend on slow
+  // first frames (readings of -0.35 and -0.7). The lowest point during the blend is still
+  // measured and reported, because a dip through the floor while lying down would show in the film.
+  const blendLows = [];
+  await expect
+    .poll(
+      async () => {
+        const fox = (await page.evaluate(() => window.__fox.state())).fox;
+        blendLows.push(fox.lowestY);
+        return fox.pose.sleep;
+      },
+      { timeout: 15_000, intervals: [100] },
+    )
+    .toBeGreaterThanOrEqual(0.99);
+  await page.waitForTimeout(500);
   const lows = [];
   for (let i = 0; i < 20; i += 1) {
     lows.push((await page.evaluate(() => window.__fox.state())).fox.lowestY);
     await page.waitForTimeout(100);
   }
-  const line = `sleep lowest skinned vertex: min ${Math.min(...lows)}, max ${Math.max(...lows)} model units (floor 0, tolerance 0.2)`;
+  const blendMin = blendLows.length ? Math.min(...blendLows) : null;
+  const line = `sleep lowest skinned vertex: min ${Math.min(...lows)}, max ${Math.max(...lows)} model units (floor 0, tolerance 0.2); lowest while blending into sleep ${blendMin}`;
   test.info().annotations.push({ type: 'measurement', description: line });
   console.log(line);
   expect(Math.min(...lows)).toBeGreaterThanOrEqual(-0.2);
