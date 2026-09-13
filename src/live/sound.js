@@ -59,6 +59,33 @@ export function pluck(frequency, { duration = 1.6, gain = 1 } = {}) {
 }
 
 /**
+ * A short hiss (S09: rain on the fox's flame): white noise through a highpass, fast in, slow out.
+ * @returns {boolean} true if it played
+ */
+export function hiss({ duration = 0.6, gain = 0.35 } = {}) {
+  const ctx = ensure();
+  if (!ctx) return false;
+  const now = ctx.currentTime;
+  const length = Math.floor(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < length; i += 1) data[i] = Math.random() * 2 - 1;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 3000;
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(0.0001, now);
+  env.gain.exponentialRampToValueAtTime(gain, now + 0.05);
+  env.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  source.connect(filter).connect(env).connect(master);
+  source.start(now);
+  source.stop(now + duration);
+  return true;
+}
+
+/**
  * One heartbeat (S07, Code To Survive in the dark): two low sine thumps, lub and dub, each a pitch
  * drop with a fast attack and a short decay.
  * @returns {boolean} true if it played
