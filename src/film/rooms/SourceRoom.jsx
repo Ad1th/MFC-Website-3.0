@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Billboard } from '@react-three/drei';
 import {
   AdditiveBlending,
   BoxGeometry,
@@ -118,6 +119,8 @@ const FRAGMENT = /* glsl */ `
   void main() {
     // Glyph grid on the column's faces: box is 1 x 1 x 1 in local space (scaled by the instance).
     vec2 face = abs(vNormalLocal.x) > 0.5 ? vLocal.zy : vLocal.xy;
+    // Read left to right on every face: the +x and -z faces ran their local axis backwards.
+    if (vNormalLocal.z < -0.5 || vNormalLocal.x > 0.5) face.x = -face.x;
     vec2 grid = vec2((face.x + 0.5) * COLS, (face.y + 0.5) * ROWS);
     vec2 cellId = floor(grid);
     vec2 inCell = fract(grid);
@@ -269,7 +272,7 @@ export default function SourceRoom({ progressRef, origin, tier }) {
   return (
     <group position={origin}>
       <primitive object={mesh} />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.5, 0.01, -CORRIDOR_LENGTH * 0.55]} frustumCulled={false}>
+      <mesh rotation={[-Math.PI / 2, 0, Math.PI]} position={[0.5, 0.01, -CORRIDOR_LENGTH * 0.55]} frustumCulled={false}>
         <planeGeometry args={[9, 9 / floorWord.aspect]} />
         <shaderMaterial
           args={[{ uniforms: { uMap: { value: floorWord.texture }, uColor: { value: new Color(PALETTE.ash) }, uOpacity: { value: 0.16 } }, vertexShader: PLANE_VERTEX, fragmentShader: LABEL_FRAGMENT }]}
@@ -287,10 +290,12 @@ export default function SourceRoom({ progressRef, origin, tier }) {
               <planeGeometry args={[length, 0.02]} />
               <shaderMaterial args={[l.line]} transparent depthWrite={false} blending={AdditiveBlending} />
             </mesh>
-            <mesh position={[l.at.x - 0.2 - (0.5 * l.label.aspect) / 2, l.at.y, l.at.z]} rotation={[0, Math.PI / 2, 0]} frustumCulled={false}>
-              <planeGeometry args={[0.5 * l.label.aspect, 0.5]} />
-              <shaderMaterial args={[l.text]} transparent depthWrite={false} blending={AdditiveBlending} />
-            </mesh>
+            <Billboard position={[l.at.x - 0.2 - (0.5 * l.label.aspect) / 2, l.at.y, l.at.z]}>
+              <mesh frustumCulled={false}>
+                <planeGeometry args={[0.5 * l.label.aspect, 0.5]} />
+                <shaderMaterial args={[l.text]} transparent depthWrite={false} blending={AdditiveBlending} />
+              </mesh>
+            </Billboard>
           </group>
         );
       })}
