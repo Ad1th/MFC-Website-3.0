@@ -31,7 +31,7 @@ import { LABEL_FRAGMENT, PLANE_VERTEX, ease, textTexture, window01 } from './lab
  * frame, one column's characters rearrange into an ASCII fox.
  */
 
-const SOURCES = import.meta.glob('/src/film/**/*.{glsl,js,jsx}', { query: '?raw', import: 'default', eager: false });
+const SOURCES = import.meta.glob('/src/film/**/*.{glsl,js,jsx}', { query: '?source', import: 'default', eager: false });
 
 export const SOURCE_COLUMNS = 26;
 const COLUMN_HEIGHT = 26;
