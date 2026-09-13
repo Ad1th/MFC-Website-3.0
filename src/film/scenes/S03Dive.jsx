@@ -12,11 +12,12 @@ import DiveClouds, { RainStreaks, lookFor } from '../sky/DiveClouds.jsx';
 import CarvedWords from '../sky/CarvedWords.jsx';
 import SkyGround from '../sky/SkyGround.jsx';
 import CommitMeteors from '../sky/CommitMeteors.jsx';
+import HeatEdges from '../sky/HeatEdges.jsx';
 import { FILM_FREEZE } from '../testHooks.js';
 
 /**
  * S03 The Dive. The fox leaps past us toward Earth and the camera swings round behind its
- * tail. Re-entry: the fox burns white-hot and the horizon rolls up to 15°. At the top of the clouds a
+ * tail. Re-entry: the fox burns white-hot, the frame's edges burn, and the horizon rolls up to 15°. At the top of the clouds a
  * whiteout hides a change of scale into the sky set, a real-sized sky under Vellore. The fox
  * falls through three weather-shaped cloud layers, carving `open minds.`, `open ideas.`,
  * `OPEN SOURCE.` into them, sneezes on leaving the last one, and the subcontinent at night
@@ -66,6 +67,8 @@ export const LAYERS = LAYER_Y.map((y, i) => ({
   reveal: [progressAtHeight(y + 4), progressAtHeight(y - 4)],
 }));
 const SNEEZE_AT = progressAtHeight(LAYER_Y[2] - 7);
+// In rain, steam hisses off the fox as it enters the first wet layer.
+const STEAM_AT = progressAtHeight(LAYER_Y[0] - 2);
 const METEORS = [progressAtHeight(28), SKY_END + 0.04];
 const FIBRE = [0.88, 0.95];
 const IMPACT = [0.965, 1];
@@ -198,6 +201,7 @@ export default function S03Dive() {
   const progress = useRef(0);
   const lastProgress = useRef(0);
   const whiteoutRef = useRef(null);
+  const heat = useRef(0);
 
   useEffect(() => registerShot('S03', diveShot), []);
   useEffect(() => registerFoxShot('S03', diveFoxShot), []);
@@ -255,7 +259,13 @@ export default function S03Dive() {
 
     // The sneeze, once, on the way down through the last layer's underside.
     if (!FILM_FREEZE && lastProgress.current < SNEEZE_AT && p >= SNEEZE_AT) getFox()?.trigger('sneeze', {}, { force: true });
+    if (!FILM_FREEZE && look.rain > 0 && lastProgress.current < STEAM_AT && p >= STEAM_AT) {
+      getFox()?.emitSparks?.({ count: 36, speed: 0.7, spread: 1.2, up: true });
+    }
     lastProgress.current = p;
+
+    // Re-entry burns at the edges of the frame.
+    heat.current = window01(p, 0.1, 0.18) * (1 - window01(p, 0.27, 0.32));
 
     const whiteout = whiteoutRef.current;
     if (whiteout) {
@@ -269,6 +279,7 @@ export default function S03Dive() {
 
   return (
     <>
+      <HeatEdges strengthRef={heat} />
       <mesh ref={whiteoutRef} material={whiteoutMaterial} visible={false} frustumCulled={false} renderOrder={900}>
         <planeGeometry args={[1, 1]} />
       </mesh>
