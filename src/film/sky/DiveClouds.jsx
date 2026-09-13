@@ -49,7 +49,8 @@ function Lightning({ layers }) {
       }
       const light = lights.current[i];
       // A flash with a flicker in it, like a real strike.
-      if (light) light.intensity = 900 * timer.flash * (0.6 + 0.4 * Math.sin(timer.flash * 40));
+      // A steady dim glow inside storm clouds, so even a still frame of a storm differs from rain; strikes flicker on top.
+      if (light) light.intensity = 70 + 900 * timer.flash * (0.6 + 0.4 * Math.sin(timer.flash * 40));
     });
   });
 
