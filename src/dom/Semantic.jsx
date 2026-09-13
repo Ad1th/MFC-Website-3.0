@@ -3,6 +3,7 @@ import { site, domains, projects, events, team, years, blogs, credits, shortDate
 import { loadNewsletters } from '../live/newsletters.js';
 import { layout, totalVh, MOBILE_QUERY } from '../film/timeline.js';
 import { BUILT_SCENES, DOM_SCENES } from '../film/built.js';
+import { film, useFilm } from '../film/store.js';
 import Contact from './Contact.jsx';
 import PenTitle from './writing/PenTitle.jsx';
 import { useDragCovers } from './writing/useDragCovers.js';
@@ -230,7 +231,9 @@ function Writing() {
 }
 
 function Team() {
-  const [year, setYear] = useState(years[0]);
+  // The same year as the sky's dial in film mode (the film store), so both always agree.
+  const year = useFilm((s) => s.teamYear) ?? years[0];
+  const setYear = (next) => film.getState().setTeamYear(next);
   const members = team.years[year];
   const { faculty } = team;
 
