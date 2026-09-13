@@ -45,6 +45,10 @@ export const film = createStore((set) => ({
   galleryIndex: -1,
   /** performance.now() of the last click on a slab, for the dolly-in; 0 before any. */
   galleryDolly: 0,
+  /** S09: the board year the sky shows (the dial and the team region share it). */
+  teamYear: null,
+  /** S09: the star the camera has flown to ('faculty', 'empty' or 'year:index'), or null. */
+  skyFocus: null,
 
   setScroll: (patch) => set(patch),
   setMode: (mode) => set({ mode }),
@@ -57,6 +61,8 @@ export const film = createStore((set) => ({
   setBranchOrder: (branchOrder) => set({ branchOrder }),
   setGalleryIndex: (galleryIndex) => set({ galleryIndex }),
   dollyGallery: (galleryDolly) => set({ galleryDolly }),
+  setTeamYear: (teamYear) => set({ teamYear }),
+  setSkyFocus: (skyFocus) => set({ skyFocus }),
 }));
 
 /**
