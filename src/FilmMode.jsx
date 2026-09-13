@@ -8,6 +8,7 @@ import Chrome from './dom/Chrome.jsx';
 import Semantic from './dom/Semantic.jsx';
 import HeroCanvas from './dom/hero/HeroCanvas.jsx';
 import GalleryHud from './dom/GalleryHud.jsx';
+import SkyOverlay from './dom/SkyOverlay.jsx';
 import styles from './FilmMode.module.css';
 
 const DebugHud = flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
@@ -51,6 +52,7 @@ export default function FilmMode({ onSkip }) {
       <Chrome onJump={(index) => jumpToScene(index)} onSkip={onSkip} />
       <Film />
       <GalleryHud />
+      <SkyOverlay />
       <HeroCanvas />
       <main id="main" tabIndex={-1} className={styles.main}>
         <div ref={trackRef} className={styles.track}>

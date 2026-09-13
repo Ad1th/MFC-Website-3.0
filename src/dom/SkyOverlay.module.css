@@ -1,0 +1,102 @@
+/* The year dial: five years carved along an arc in the rock at the bottom of the frame. */
+.dial {
+  position: fixed;
+  /* Left of the fox's rock on wide screens; above the ridge on phones (below). */
+  left: var(--gutter);
+  bottom: calc(var(--space-16) + 2.5rem);
+  z-index: var(--z-chrome);
+  width: min(34rem, calc(100vw - 2 * var(--gutter)));
+  height: 4.5rem;
+  touch-action: none;
+  outline-offset: 6px;
+}
+
+.year {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--hud-size);
+  letter-spacing: var(--tracking-hud);
+  color: var(--ash-dim);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  /* Along an arc: spread out, lift toward the middle, and tilt with the curve. */
+  transform: translateX(calc(-50% + var(--i) * min(6rem, 17vw))) translateY(calc(var(--i) * var(--i) * 0.35rem)) rotate(calc(var(--i) * 4deg));
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.06), 0 -1px 0 rgb(0 0 0 / 0.8);
+  transition: color var(--dur-quick) var(--ease-film);
+}
+
+@media (max-width: 767px) {
+  .dial {
+    bottom: calc(var(--space-32) + 8rem);
+  }
+}
+
+.year[aria-checked="true"] {
+  color: var(--ember);
+}
+
+.year:hover {
+  color: var(--ash);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-chrome);
+  display: grid;
+  place-items: end start;
+  padding: var(--gutter);
+  padding-bottom: calc(var(--space-16) + 4rem);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 22rem;
+  padding: var(--space-4) var(--space-6);
+  color: var(--ash);
+  background: rgb(10 8 7 / 0.72);
+  border-left: 1px solid var(--ember);
+}
+
+.card p {
+  margin: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+}
+
+.role {
+  color: var(--ash-dim);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.links a {
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+
+.close {
+  justify-self: start;
+  margin-top: var(--space-2);
+  padding: 0;
+  color: var(--ash-dim);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
