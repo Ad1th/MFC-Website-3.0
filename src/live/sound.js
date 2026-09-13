@@ -57,3 +57,32 @@ export function pluck(frequency, { duration = 1.6, gain = 1 } = {}) {
   osc.stop(now + duration + 0.05);
   return true;
 }
+
+/**
+ * One heartbeat (S07, Code To Survive in the dark): two low sine thumps, lub and dub, each a pitch
+ * drop with a fast attack and a short decay.
+ * @returns {boolean} true if it played
+ */
+export function heartbeat({ gain = 1 } = {}) {
+  const ctx = ensure();
+  if (!ctx) return false;
+  const now = ctx.currentTime;
+  for (const [offset, level] of [
+    [0, 1],
+    [0.22, 0.7],
+  ]) {
+    const start = now + offset;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(70, start);
+    osc.frequency.exponentialRampToValueAtTime(42, start + 0.18);
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0.0001, start);
+    env.gain.exponentialRampToValueAtTime(gain * level, start + 0.012);
+    env.gain.exponentialRampToValueAtTime(0.0001, start + 0.25);
+    osc.connect(env).connect(master);
+    osc.start(start);
+    osc.stop(start + 0.3);
+  }
+  return true;
+}
