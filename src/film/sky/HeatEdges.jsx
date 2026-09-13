@@ -31,10 +31,11 @@ const FRAGMENT = /* glsl */ `
     vec2 c = vUv - 0.5;
     // Distance to the nearest edge, 0 at the border and 0.5 at the centre.
     float edge = 0.5 - max(abs(c.x), abs(c.y));
-    float ripple = sin(atan(c.y, c.x) * 22.0 + uTime * 6.0) * 0.5 + 0.5;
-    float band = smoothstep(0.16 + 0.03 * ripple, 0.0, edge);
-    vec3 color = mix(uFire, uCore, band * band);
-    gl_FragColor = vec4(color * band * uStrength * 0.8, 1.0);
+    // A thin shimmering rim: a few percent of the frame, never a border that eats the shot.
+    float ripple = sin(atan(c.y, c.x) * 9.0 + uTime * 5.0) * 0.5 + 0.5;
+    float band = smoothstep(0.045 + 0.012 * ripple, 0.0, edge);
+    vec3 color = mix(uFire, uCore, band * band * 0.4);
+    gl_FragColor = vec4(color * band * uStrength * 0.35, 1.0);
     #include <colorspace_fragment>
   }
 `;
