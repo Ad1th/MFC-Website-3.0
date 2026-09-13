@@ -15,7 +15,8 @@ import { FILM_FREEZE } from '../testHooks.js';
 
 const PLACEHOLDER_SPACING = 30;
 const OMEGA = 7;
-const FOV_MAX_BOOST = 20;
+// Kept small: a wide velocity lens on top of fast trackpad scrolling read as dizzying.
+const FOV_MAX_BOOST = 8;
 const VELOCITY_FOR_MAX = 4000;
 
 const pose = createPose();
@@ -94,7 +95,7 @@ export default function CameraRig() {
       cam.position.add(breath);
       // Shake: layered sines as cheap noise, from scroll speed and from shots that ask for it.
       const speed = Math.min(Math.abs(velocity) / VELOCITY_FOR_MAX, 1);
-      const amplitude = 0.012 * speed * speed + 0.05 * pose.shake;
+      const amplitude = 0.006 * speed * speed + 0.05 * pose.shake;
       if (amplitude > 1e-4) {
         shake
           .set(Math.sin(t * 37.1) * 0.6 + Math.sin(t * 61.7) * 0.4, Math.sin(t * 43.3) * 0.6 + Math.sin(t * 71.9) * 0.4, Math.sin(t * 29.3) * 0.5)

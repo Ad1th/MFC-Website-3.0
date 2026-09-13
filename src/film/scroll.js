@@ -30,6 +30,9 @@ export function getScenes() {
  * @param {HTMLElement} trackEl the element whose height is the whole film
  * @returns {() => void} teardown
  */
+/** Film distance per wheel or trackpad delta (Lenis default is 1). The recorder compensates for it. */
+export const WHEEL_MULTIPLIER = 0.5;
+
 export function initScroll(trackEl) {
   track = trackEl;
   const mq = window.matchMedia(MOBILE_QUERY);
@@ -41,7 +44,9 @@ export function initScroll(trackEl) {
   };
   applyLayout();
 
-  lenis = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, syncTouch: false });
+  // Mac trackpads send long momentum streams, and at 1:1 the film raced past (reported as too trippy).
+  // Half the distance per wheel delta and a softer follow keep a flick to a readable pace.
+  lenis = new Lenis({ autoRaf: false, lerp: 0.07, wheelMultiplier: WHEEL_MULTIPLIER, smoothWheel: true, syncTouch: false });
   // S00 may have asked for a lock before Lenis existed; apply it now and follow changes.
   if (scrollLockRequested()) lenis.stop();
   const offLock = onScrollLockChange((locked) => (locked ? lenis?.stop() : lenis?.start()));
