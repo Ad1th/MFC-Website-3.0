@@ -1,0 +1,34 @@
+.hud {
+  position: fixed;
+  left: var(--gutter);
+  bottom: calc(var(--gutter) + 3rem);
+  z-index: calc(var(--z-film) + 1);
+  display: grid;
+  gap: var(--space-1);
+  max-width: min(28rem, calc(100vw - 2 * var(--gutter)));
+  color: var(--ash);
+  pointer-events: none;
+}
+
+.hud p {
+  margin: 0;
+}
+
+.count,
+.stack {
+  color: var(--ash-dim);
+}
+
+.name {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+.link {
+  justify-self: start;
+  color: var(--ember, #ffb36b);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  pointer-events: auto;
+}
