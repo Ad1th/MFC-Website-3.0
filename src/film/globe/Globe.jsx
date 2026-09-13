@@ -7,6 +7,7 @@ import { latLonToVector, sunDirection } from '../sun.js';
 import { filmNow } from '../../live/clock.js';
 import { site } from '../../content/index.js';
 import { FILM_FREEZE } from '../testHooks.js';
+import { velloreWorld } from './anchors.js';
 
 /**
  * The live Earth (S01, S03, S10). Radius 1 in its own group; scenes scale and place it.
@@ -138,8 +139,9 @@ function globeSphere(widthSegments, heightSegments) {
 /**
  * @param {{ tier?: number, spin?: number, facing?: number }} props
  *   facing  longitude in degrees turned toward +z (the camera side) before any spin
+ *   primary this globe publishes live world anchors (anchors.js) for scenes that fly to it
  */
-const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, facing = 0, children, ...props }, ref) {
+const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, facing = 0, primary = true, children, ...props }, ref) {
   const size = tier >= 3 ? 4096 : 2048;
   const [day, night] = useTexture([`/textures/earth/day-${size}.webp`, `/textures/earth/night-${size}.webp`]);
   day.colorSpace = SRGBColorSpace;
@@ -195,6 +197,10 @@ const Globe = forwardRef(function Globe({ tier = 2, spin = 0.012, facing = 0, ch
       surface.uniforms.uSun.value.copy(sunDirection(filmNow(), sunTmp));
     }
     if (spinRef.current && !FILM_FREEZE) spinRef.current.rotation.y += delta * spin;
+    if (primary && spinRef.current) {
+      spinRef.current.updateWorldMatrix(true, false);
+      velloreWorld.copy(vellore).applyMatrix4(spinRef.current.matrixWorld);
+    }
     point.uniforms.uPulse.value = FILM_FREEZE ? 0.5 : 0.5 + 0.5 * Math.sin(t * Math.PI * 2 * 0.8);
     point.uniforms.uPixelRatio.value = state.gl.getPixelRatio();
   });
