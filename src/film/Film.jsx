@@ -11,6 +11,8 @@ import { FILM_FREEZE } from './testHooks.js';
 import S02Break from './scenes/S02Break.jsx';
 import S01ColdOpen from './scenes/S01ColdOpen.jsx';
 import CameraRig from './camera/CameraRig.jsx';
+import S03Dive from './scenes/S03Dive.jsx';
+import FilmFox from './actors/FilmFox.jsx';
 import styles from './Film.module.css';
 
 /**
@@ -43,7 +45,7 @@ function SceneBlock({ index }) {
 }
 
 /** Scenes with real content; the rest keep their debug block until they are built. */
-const BUILT = new Set(['S01', 'S02']);
+const BUILT = new Set(['S01', 'S02', 'S03']);
 
 function SceneWindow() {
   const active = useFilm((s) => s.activeScene);
@@ -56,6 +58,11 @@ function ColdOpenWindow() {
   const active = useFilm((s) => s.activeScene);
   // The globe returns in S03 and S10; for now it lives while S01 to S03 are near.
   return active <= 2 ? <S01ColdOpen /> : null;
+}
+
+function DiveWindow() {
+  const active = useFilm((s) => s.activeScene);
+  return active >= 1 && active <= 3 ? <S03Dive /> : null;
 }
 
 function PlaceholderLabel() {
@@ -107,6 +114,8 @@ export default function Film() {
         <CameraRig />
         <SceneWindow />
         <ColdOpenWindow />
+        <DiveWindow />
+        <FilmFox />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}
       </Canvas>
