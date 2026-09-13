@@ -16,6 +16,12 @@ let track = null;
 let rawVelocity = 0;
 /** A lock asked for before Lenis exists (child effects run before the parent's initScroll). */
 let lockRequested = false;
+/** Scene titles wait for S00: the tab reads "." until the match is struck. */
+let titlesLive = false;
+
+export function setTitlesLive(live) {
+  titlesLive = live;
+}
 let lastUpdate = 0;
 
 const JUMP_DURATION = 1.6;
@@ -111,7 +117,7 @@ function write(progress, velocity) {
   const patch = { progress, sceneProgress, lastScrollAt: lastUpdate };
   if (index !== state.activeScene) patch.activeScene = index;
   state.setScroll(patch);
-  if (!document.hidden) {
+  if (titlesLive && !document.hidden) {
     const title = titleFor(scenes[index], sceneProgress);
     if (document.title !== title) document.title = title;
   }

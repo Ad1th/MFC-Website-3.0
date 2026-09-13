@@ -3,7 +3,7 @@ import { film, useFilm } from '../../film/store.js';
 import { TITLES } from '../../film/timeline.js';
 import { filmManifest, preload } from '../../live/preload.js';
 import { darkPixel, startEmber } from '../../live/favicon.js';
-import { setScrollLocked } from '../../film/scroll.js';
+import { setScrollLocked, setTitlesLive } from '../../film/scroll.js';
 import styles from './Ignition.module.css';
 
 /**
@@ -88,7 +88,8 @@ export default function Ignition({ onReveal }) {
     darkPixel();
     setScrollLocked(true);
     const controller = new AbortController();
-    const slowTimer = window.setTimeout(() => setSlow(true), SLOW_MS);
+    // Six seconds from navigation, not from when this chunk arrived.
+    const slowTimer = window.setTimeout(() => setSlow(true), Math.max(0, SLOW_MS - performance.now()));
     preload(filmManifest(film.getState().quality), (value) => {
       setPercent(value);
       film.getState().setLoaded(value);
@@ -125,6 +126,7 @@ export default function Ignition({ onReveal }) {
       else {
         drawFlame(ctx, 10, { ears: false, flare: false });
         document.title = TITLES.ready;
+        setTitlesLive(true);
         startEmber();
         setPhase('revealed');
         setScrollLocked(false);
