@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { site, domains, projects, events, team, years, blogs, credits, shortDate, longDate, avifOf } from '../content/index.js';
 import { loadNewsletters } from '../live/newsletters.js';
 import { layout, totalVh, MOBILE_QUERY } from '../film/timeline.js';
+import { BUILT_SCENES } from '../film/built.js';
 import Contact from './Contact.jsx';
 import styles from './Semantic.module.css';
 
@@ -403,7 +404,7 @@ function FilmRegions({ onRegionFocus, subscribe }) {
             onFocusCapture={(event) => onRegionFocus?.(scene.index, event.target)}
           >
             {Region ? (
-              <div className={styles.panel} data-region={scene.region}>
+              <div className={styles.panel} data-region={scene.region} data-built={BUILT_SCENES.has(scene.id)}>
                 <Region />
               </div>
             ) : null}

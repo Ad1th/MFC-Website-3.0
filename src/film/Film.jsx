@@ -12,6 +12,8 @@ import S02Break from './scenes/S02Break.jsx';
 import S01ColdOpen from './scenes/S01ColdOpen.jsx';
 import CameraRig from './camera/CameraRig.jsx';
 import S03Dive from './scenes/S03Dive.jsx';
+import S04Packet from './scenes/S04Packet.jsx';
+import { BUILT_SCENES as BUILT } from './built.js';
 import FilmFox from './actors/FilmFox.jsx';
 import styles from './Film.module.css';
 
@@ -44,8 +46,7 @@ function SceneBlock({ index }) {
   );
 }
 
-/** Scenes with real content; the rest keep their debug block until they are built. */
-const BUILT = new Set(['S01', 'S02', 'S03']);
+/* Scenes with real content (built.js); the rest keep their debug block until they are built. */
 
 function SceneWindow() {
   const active = useFilm((s) => s.activeScene);
@@ -63,6 +64,11 @@ function ColdOpenWindow() {
 function DiveWindow() {
   const active = useFilm((s) => s.activeScene);
   return active >= 1 && active <= 3 ? <S03Dive /> : null;
+}
+
+function PacketWindow() {
+  const active = useFilm((s) => s.activeScene);
+  return active >= 2 && active <= 4 ? <S04Packet /> : null;
 }
 
 function PlaceholderLabel() {
@@ -115,6 +121,7 @@ export default function Film() {
         <SceneWindow />
         <ColdOpenWindow />
         <DiveWindow />
+        <PacketWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}

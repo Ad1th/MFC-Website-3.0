@@ -44,15 +44,24 @@
   background: var(--paper);
 }
 
-/* The hero canvas paints the intro. Its text stays real and selectable, just unpainted,
-   so the canvas is the only source of those pixels before and after S02's swap. */
-.panel[data-region="intro"] {
+/* Built scenes tell their region in the film (the hero canvas paints the intro). The HTML stays
+   real, selectable and focusable, just unpainted while the film plays, so the film is the only
+   source of those pixels. Keyboard focus inside a region paints it again. */
+.panel[data-built="true"] {
   background: none;
 }
 
-.panel[data-region="intro"] * {
+.panel[data-built="true"] * {
   /* !important: component rules such as .taglines span:last-child are more specific. */
   color: transparent !important;
+}
+
+.panel[data-built="true"]:focus-within {
+  background: linear-gradient(90deg, rgb(10 8 7 / 0.9) 0%, rgb(10 8 7 / 0.72) 48%, rgb(10 8 7 / 0) 78%);
+}
+
+.panel[data-built="true"]:focus-within * {
+  color: inherit !important;
 }
 
 /* ---------- still layer: frames in normal flow ---------- */
