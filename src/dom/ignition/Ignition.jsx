@@ -117,11 +117,16 @@ export default function Ignition({ onReveal, onSkip }) {
       setPercent((previous) => Math.max(previous, value));
       film.getState().setLoaded(value);
     };
-    const stopScripts = watchScriptBytes((loaded, total) => {
-      bytes.current.scripts = [loaded, total];
+    const stopScripts = watchScriptBytes((loaded) => {
+      // Scripts arriving now add to both sides: bytes received and bytes expected.
+      bytes.current.scripts = [loaded, loaded];
       show();
     });
-    preload(filmManifest(film.getState().quality), () => {}, {
+    // Seed the asset total from the manifest before the first byte arrives, or the first
+    // script bytes alone would read as nearly done and the counter could never come back down.
+    const manifest = filmManifest(film.getState().quality);
+    bytes.current.assets = [0, manifest.reduce((sum, item) => sum + item.expected, 0)];
+    preload(manifest, () => {}, {
       signal: controller.signal,
       onBytes: (loaded, total) => {
         bytes.current.assets = [loaded, total];

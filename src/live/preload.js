@@ -84,29 +84,30 @@ export async function preload(manifest, onProgress, { signal, onBytes } = {}) {
   return { bytes: loaded.reduce((a, b) => a + b, 0), failed };
 }
 
-/** Compressed size of the film's JavaScript, roughly (main entry plus the lazy film chunk). */
-const SCRIPT_EXPECTED = 380_000;
-
 /**
- * The film's JavaScript counts too. Script and module-preload downloads are read from
- * resource timing as each file completes (bytes on the wire, `encodedBodySize`), including
- * files that finished before this was called.
- * @param {(loaded: number, total: number) => void} onBytes
+ * The film's JavaScript counts too, but only what arrives after the counter exists: files
+ * that finished before it mounted are already here and must not read as progress still to
+ * show. Script and module-preload downloads are read from resource timing as each file
+ * completes (bytes on the wire, `encodedBodySize`). There is no forecast for scripts; the
+ * asset manifest carries the expected total.
+ * @param {(loaded: number) => void} onBytes
  * @returns {() => void} stop watching
  */
 export function watchScriptBytes(onBytes) {
   if (typeof PerformanceObserver === 'undefined') return () => {};
+  const since = performance.now();
   const seen = new Set();
   let loaded = 0;
   const take = (entries) => {
+    let changed = false;
     for (const entry of entries) {
-      if (seen.has(entry.name) || !/\.m?js(\?|$)/.test(entry.name)) continue;
+      if (seen.has(entry.name) || entry.responseEnd <= since || !/\.m?js(\?|$)/.test(entry.name)) continue;
       seen.add(entry.name);
       loaded += entry.encodedBodySize || entry.transferSize || 0;
+      changed = true;
     }
-    onBytes(loaded, Math.max(SCRIPT_EXPECTED, loaded));
+    if (changed) onBytes(loaded);
   };
-  take(performance.getEntriesByType('resource'));
   const observer = new PerformanceObserver((list) => take(list.getEntries()));
   observer.observe({ type: 'resource', buffered: false });
   return () => observer.disconnect();
