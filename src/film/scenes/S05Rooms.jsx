@@ -102,12 +102,13 @@ function managementPose(p, origin, pose, cam, aspect) {
   if (cam) {
     const fit = Math.max(1, 0.8 / aspect);
     // Close behind the fox on the threads, then pull back high to reveal the logo.
-    const reveal = ease(window01(p, 0.72, 1));
+    // Fully pulled back by 0.9, then the whole logo holds for the room's last tenth.
+    const reveal = ease(window01(p, 0.72, 0.9));
     // Beside and a little behind, so the fox reads in profile on the thread, not tail-on.
     const side = new Vector3().crossVectors(new Vector3(0, 1, 0), dir).normalize();
     const chase = tmp.copy(pose.position).addScaledVector(dir, -1.6 * fit).addScaledVector(side, 3 * fit).add(new Vector3(0, 1.6, 0));
     // High enough that the whole logo, with its node labels, sits inside the frame at fov 45.
-    const high = new Vector3(LOGO_BOUNDS.centre.x, (LOGO_BOUNDS.radius * 1.45 * fit) / Math.tan((22.5 * Math.PI) / 180), LOGO_BOUNDS.centre.z + 0.01).add(origin);
+    const high = new Vector3(LOGO_BOUNDS.centre.x, (LOGO_BOUNDS.radius * 1.45 * Math.max(1, 1 / aspect)) / Math.tan((22.5 * Math.PI) / 180), LOGO_BOUNDS.centre.z + 0.01).add(origin);
     cam.position.lerpVectors(chase, high, reveal);
     cam.target.lerpVectors(new Vector3().copy(pose.position).addScaledVector(dir, 3), new Vector3().copy(LOGO_BOUNDS.centre).add(origin), reveal);
     cam.fov = lerp(55, 45, reveal);
