@@ -1,3 +1,4 @@
+uniform vec3 uTint;
 uniform vec3 uDeep;
 uniform vec3 uFire;
 uniform vec3 uEmber;
@@ -33,6 +34,6 @@ void main() {
   }
   color = mix(color, uGold, uWarm * 0.4);
 
-  gl_FragColor = vec4(color * uIntensity, alpha * uOpacity);
+  gl_FragColor = vec4(color * uIntensity * uTint, alpha * uOpacity);
   #include <colorspace_fragment>
 }

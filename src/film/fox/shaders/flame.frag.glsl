@@ -1,3 +1,4 @@
+uniform vec3 uTint;
 // Approach A flame body. Prepended at build: common, noise.glsl.
 
 uniform float uTime;
@@ -50,9 +51,9 @@ void main() {
     // Approach C: only a faint fresnel shell under the embers, so the silhouette
     // still reads when the fox is small in frame.
     float shell = rim * 0.5 + 0.03;
-    gl_FragColor = vec4(mix(uFire, uEmber, rim) * uBreath * uIntensity, shell);
+    gl_FragColor = vec4(mix(uFire, uEmber, rim) * uBreath * uIntensity * uTint, shell);
   } else {
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color * uTint, 1.0);
   }
   #include <colorspace_fragment>
 }

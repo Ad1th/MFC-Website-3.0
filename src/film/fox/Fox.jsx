@@ -61,7 +61,7 @@ function applyBoneOffsets(rig, offsets) {
   }
 }
 
-const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0], anchor = null }, ref) {
+const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = true, eyes = true, position = [0, 0, 0], rotation = [0, 0, 0], anchor = null, tint = null }, ref) {
   const gltf = useGLTF(FOX_URL);
   const rig = useMemo(() => createRig(gltf), [gltf]);
   const groupRef = useRef(null);
@@ -93,6 +93,11 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
     points.frustumCulled = false;
     return { points, material, count: budget };
   }, [rig, approach, tier, fur]);
+  // A colour multiplied into the flame and embers (S05's prism splits the fox red, green, blue).
+  useEffect(() => {
+    flame.uniforms.uTint.value.set(tint ?? '#ffffff');
+    if (particles) particles.material.uniforms.uTint.value.set(tint ?? '#ffffff');
+  }, [flame, particles, tint]);
 
   useEffect(() => {
     rig.mesh.material = flame;
