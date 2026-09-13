@@ -358,9 +358,7 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       let w = b.pose[name];
       if (clipSleep > 0) {
         if (name === 'sleep') continue;
-        // Fade the lie pose out faster than the Sleep clip fades in, so the two never both
-        // lower the hip mid-blend (that dipped the fox through the floor while lying down).
-        if (name === 'lie') w *= awake * awake;
+        if (name === 'lie') w *= awake;
       }
       if (w < 0.001) continue;
       mergeOffsets(offsets, POSES[name].bones, w);
