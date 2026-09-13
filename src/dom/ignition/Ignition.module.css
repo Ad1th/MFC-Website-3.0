@@ -1,8 +1,9 @@
-/* S00: black cover over the film until the match is struck. */
+/* S00: black cover over the film and the chrome until the match is struck. It sits under
+   the debug HUD and the skip link, so "skip the film" still works while loading. */
 .cover {
   position: fixed;
   inset: 0;
-  z-index: calc(var(--z-dom) + 20);
+  z-index: calc(var(--z-chrome) + 10);
   background: var(--night, #0a0807);
 }
 

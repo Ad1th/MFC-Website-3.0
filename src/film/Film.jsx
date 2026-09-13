@@ -66,6 +66,9 @@ function PlaceholderLabel() {
     const paint = (state) => {
       const scene = getScenes()[state.activeScene];
       if (!scene || !idRef.current) return;
+      // Debug marker for unbuilt scenes only; built scenes carry their own frame.
+      // visibility, not [hidden]: the module's display:grid would override the attribute.
+      idRef.current.parentElement.style.visibility = BUILT.has(scene.id) ? 'hidden' : 'visible';
       idRef.current.textContent = scene.id;
       nameRef.current.textContent = scene.name;
       barRef.current.style.transform = `scaleX(${state.sceneProgress})`;
