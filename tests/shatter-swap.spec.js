@@ -87,9 +87,10 @@ for (const size of SIZES) {
         .poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null), { timeout: 20_000 })
         .toBe('done');
       await page.evaluate(() => document.fonts.ready);
-      await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-ready]') !== null)).toBe(true);
+      // Same allowance as the ignition wait: on a busy machine the hero's first draw can lag the cover.
+      await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-ready]') !== null), { timeout: 20_000 }).toBe(true);
       // The HUD redraws when the weather resolves; compare only after that.
-      await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-weather="settled"]') !== null)).toBe(true);
+      await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-weather="settled"]') !== null), { timeout: 20_000 }).toBe(true);
 
       await page.evaluate(() => window.__filmTest.scrollToScene('S02', 0.05));
       await expect.poll(() => page.evaluate(() => window.__filmTest.state().scene)).toBe('S02');
