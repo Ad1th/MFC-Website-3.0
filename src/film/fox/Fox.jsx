@@ -385,6 +385,21 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
 
     rig.root.position.set(out.root.x, out.root.y, out.root.z + b.overtake * 55);
     rig.root.updateMatrixWorld(true);
+    const blending = ['sit', 'lie', 'sleep'].some((name) => b.pose[name] > 0.01 && b.pose[name] < 0.99);
+    if (blending) {
+      rig.mesh.skeleton.update();
+      let lowest = Infinity;
+      for (const i of groundVertices) {
+        rig.mesh.getVertexPosition(i, groundVertex);
+        groundVertex.applyMatrix4(rig.mesh.matrix);
+        if (groundVertex.y < lowest) lowest = groundVertex.y;
+      }
+      const lift = Math.max(0, -(lowest + rig.root.position.y));
+      if (lift > 0) {
+        rig.root.position.y += lift;
+        rig.root.updateMatrixWorld(true);
+      }
+    }
     if (approach === 'B') rig.mesh.skeleton.update();
 
     // Shader drivers.
@@ -433,6 +448,20 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
   }, -1);
 
   const worldDrift = useRef(new Vector3());
+  // Ground contact: vertices near the floor in the bind pose (paws and lower legs). While a
+  // pose blends, partial leg folds can leave the feet below the floor (measured -8.3 model
+  // units mid-blend into sleep), so the rig is lifted by however far these sit below it.
+  const groundVertices = useMemo(() => {
+    const position = rig.mesh.geometry.attributes.position;
+    const v = new Vector3();
+    const low = [];
+    for (let i = 0; i < position.count; i += 1) {
+      v.fromBufferAttribute(position, i).applyMatrix4(rig.mesh.bindMatrix);
+      if (v.y < 18) low.push(i);
+    }
+    return low;
+  }, [rig]);
+  const groundVertex = useMemo(() => new Vector3(), []);
   useFrame(() => {
     const speed = input.current.speed ?? 0;
     worldDrift.current.set(0, 0, -speed * FOX_SCALE * timeScaleRef.current);
