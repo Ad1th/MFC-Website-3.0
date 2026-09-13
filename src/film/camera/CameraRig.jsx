@@ -24,6 +24,7 @@ const vel = new Vector3();
 const target = new Vector3();
 const targetVel = new Vector3();
 const breath = new Vector3();
+const shake = new Vector3();
 const up = new Vector3();
 let fov = 45;
 let fovVel = 0;
@@ -56,6 +57,7 @@ export default function CameraRig() {
     const { activeScene, sceneProgress, velocity } = film.getState();
     const scene = getScenes()[activeScene];
     pose.cut = 0;
+    pose.shake = 0;
     if (!scene || !sampleShot(scene.id, sceneProgress, pose, state.size.width / state.size.height)) placeholder(activeScene, sceneProgress, pose);
     // A hidden cut (whiteout, set change) snaps instead of springing across worlds.
     if (pose.cut !== lastCut) {
@@ -90,6 +92,15 @@ export default function CameraRig() {
       const rest = 1 - Math.min(Math.abs(velocity) / 400, 1);
       breath.set(Math.sin(t * 0.31) * 0.02, Math.sin(t * 0.47) * 0.014, 0).multiplyScalar(rest);
       cam.position.add(breath);
+      // Shake: layered sines as cheap noise, from scroll speed and from shots that ask for it.
+      const speed = Math.min(Math.abs(velocity) / VELOCITY_FOR_MAX, 1);
+      const amplitude = 0.012 * speed * speed + 0.05 * pose.shake;
+      if (amplitude > 1e-4) {
+        shake
+          .set(Math.sin(t * 37.1) * 0.6 + Math.sin(t * 61.7) * 0.4, Math.sin(t * 43.3) * 0.6 + Math.sin(t * 71.9) * 0.4, Math.sin(t * 29.3) * 0.5)
+          .multiplyScalar(amplitude);
+        cam.position.add(shake);
+      }
     }
     cam.up.copy(up.set(Math.sin(roll), Math.cos(roll), 0));
     cam.lookAt(target);

@@ -147,6 +147,8 @@ export function diveShot(progress, out, aspect = 16 / 9) {
     out.fov = lerp(cam0.fov, 55, w);
     out.roll = ((15 * Math.PI) / 180) * Math.sin(Math.PI * window01(p, 0.12, 0.3));
     out.cut = 0;
+    // Re-entry rattles the camera.
+    out.shake = window01(p, 0.1, 0.18) * (1 - window01(p, 0.28, 0.32));
     return;
   }
 
@@ -158,6 +160,8 @@ export function diveShot(progress, out, aspect = 16 / 9) {
   out.roll = Math.sin(p * 20) * 0.03 * (1 - bank);
   // The sky set is a different world from the globe: arriving in it is a cut hidden by the whiteout.
   out.cut = 1;
+  // Falling through cloud: a gentle buffet that settles as the fox banks in.
+  out.shake = 0.25 * (1 - bank);
 }
 
 /** @type {import('../actors/foxShots.js').FoxShot} */
