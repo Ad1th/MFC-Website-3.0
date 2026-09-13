@@ -275,7 +275,8 @@ export default function S03Dive() {
         <CarvedWords
           key={layer.y}
           text={layer.words}
-          position={[SKY_ORIGIN.x, SKY_ORIGIN.y + layer.y + 2.5, SKY_ORIGIN.z + layer.z]}
+          // Just below the layer's height, so the fox passes the words while the camera beside it can see them.
+          position={[SKY_ORIGIN.x, SKY_ORIGIN.y + layer.y - 3, SKY_ORIGIN.z + layer.z]}
           progressRef={progress}
           range={layer.reveal}
           tilt={0.5}
