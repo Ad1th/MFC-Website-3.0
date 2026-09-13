@@ -96,13 +96,7 @@ export default function HeroCanvas() {
       const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 20;
       minuteTimer = window.setTimeout(() => {
         draw();
-        loadWeather().then((result) => {
-      if (!alive || !result) return;
-      weather = result;
-      film.getState().setLive({ weather: result });
-      draw();
-    });
-    scheduleMinute();
+        scheduleMinute();
       }, ms);
     };
 
@@ -111,6 +105,16 @@ export default function HeroCanvas() {
     Promise.all([fontsReady(), loadLogo()]).then(([, img]) => {
       logo = img;
       draw();
+    });
+    loadWeather().then((result) => {
+      if (!alive) return;
+      if (result) {
+        weather = result;
+        film.getState().setLive({ weather: result });
+        draw();
+      }
+      // Settled either way; tests wait for this before comparing frames.
+      canvas.dataset.weather = 'settled';
     });
     scheduleMinute();
     window.addEventListener('resize', draw);
