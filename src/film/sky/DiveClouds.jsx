@@ -22,7 +22,7 @@ export const CLOUD_LOOK = {
   fog: { color: '#a3a8ad', opacity: 0.85, moon: 0.3, lightning: false, rain: 0 },
   drizzle: { color: '#7b828d', opacity: 0.8, moon: 0.25, lightning: false, rain: 0.35 },
   rain: { color: '#626975', opacity: 0.85, moon: 0.15, lightning: false, rain: 0.8 },
-  storm: { color: '#474d58', opacity: 0.9, moon: 0.06, lightning: true, rain: 1 },
+  storm: { color: '#58618a', opacity: 0.9, moon: 0.06, lightning: true, rain: 1 },
 };
 
 /** @param {null|{ condition: string }} weather */
@@ -50,7 +50,7 @@ function Lightning({ layers }) {
       const light = lights.current[i];
       // A flash with a flicker in it, like a real strike.
       // A steady dim glow inside storm clouds, so even a still frame of a storm differs from rain; strikes flicker on top.
-      if (light) light.intensity = 70 + 900 * timer.flash * (0.6 + 0.4 * Math.sin(timer.flash * 40));
+      if (light) light.intensity = 450 + 900 * timer.flash * (0.6 + 0.4 * Math.sin(timer.flash * 40));
     });
   });
 
@@ -60,9 +60,10 @@ function Lightning({ layers }) {
       ref={(el) => {
         lights.current[i] = el;
       }}
-      position={[(i - 1) * 18, layer.y + 1, -10 - i * 8]}
+      // Inside each layer, near where the fox falls through it, so the camera sees the glow.
+      position={[(i - 1) * 6, layer.y - 1, (layer.z ?? 0) - 4]}
       color="#dfe8ff"
-      distance={90}
+      distance={60}
       decay={2}
       intensity={0}
     />
