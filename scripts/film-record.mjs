@@ -32,18 +32,20 @@ async function ready(page) {
   await page.waitForTimeout(1200);
 }
 
-/** Scroll position in px at a scene's progress, from the film's own layout. */
-function offsetOf(page, id, progress) {
-  return page.evaluate(
-    ([sceneId, p]) => {
-      const scenes = window.__filmTest.layout();
-      const total = scenes[scenes.length - 1].start + scenes[scenes.length - 1].length;
-      const s = scenes.find((scene) => scene.id === sceneId);
-      const range = document.documentElement.scrollHeight - window.innerHeight;
-      return ((s.start + s.length * p) / total) * range;
-    },
-    [id, progress],
-  );
+/**
+ * Scroll position in px at a scene's progress, measured from the film itself: jump there with
+ * the test hook, read scrollY, then return to where we were. Computing it from the document's
+ * scroll height overshot, because the film maps progress through its track, not the document
+ * (a bullet-time target at S01 0.84 landed in S02's shatter).
+ */
+async function offsetOf(page, id, progress) {
+  const back = await page.evaluate(() => window.scrollY);
+  await page.evaluate(([sceneId, p]) => window.__filmTest.scrollToScene(sceneId, p), [id, progress]);
+  await page.waitForTimeout(120);
+  const target = await page.evaluate(() => window.scrollY);
+  await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), back);
+  await page.waitForTimeout(400);
+  return target;
 }
 
 /** Wheel from the current position to a target in px over roughly `ms`. */
