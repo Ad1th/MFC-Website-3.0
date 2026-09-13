@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { MeshTransmissionMaterial } from '@react-three/drei';
+import { Edges, MeshTransmissionMaterial } from '@react-three/drei';
 import { AdditiveBlending, Color, Matrix4, Quaternion, Vector3 } from 'three';
 import Fox from '../fox/Fox.jsx';
 import { getFox } from '../actors/foxShots.js';
@@ -22,10 +22,11 @@ import { PLANE_VERTEX, clamp01, ease, textTexture, window01 } from './labels.js'
 
 export const PRISM_CENTRE = new Vector3(0, 0, -12);
 const WALL_DISTANCE = 11;
+export const PRISM_FOX_SCALE = 1.1;
 /** Red, green and blue run to left, back and right walls. */
 const SPLITS = [
   { name: 'red', tint: '#ff3b2f', dir: new Vector3(-1, 0, 0.15).normalize(), sub: 0 },
-  { name: 'green', tint: '#34e07a', dir: new Vector3(0, 0, -1), sub: 1 },
+  { name: 'green', tint: '#34e07a', dir: new Vector3(0.55, 0, -1).normalize(), sub: 1 },
   { name: 'blue', tint: '#3d7bff', dir: new Vector3(1, 0, 0.15).normalize(), sub: 2 },
 ];
 
@@ -108,7 +109,8 @@ function SplitFox({ split, progressRef, origin }) {
   });
   const position = useMemo(() => new Vector3(), []);
   const quaternion = useMemo(() => new Quaternion(), []);
-  const anchor = useMemo(() => ({ position, quaternion, scale: 0.4, visible: true }), [position, quaternion]);
+  // Large enough to read from the pulled-back camera that frames the prism.
+  const anchor = useMemo(() => ({ position, quaternion, scale: PRISM_FOX_SCALE, visible: true }), [position, quaternion]);
 
   useFrame(() => {
     const p = progressRef.current;
@@ -125,7 +127,7 @@ function SplitFox({ split, progressRef, origin }) {
   return (
     <group ref={groupRef} visible={false}>
       <Suspense fallback={null}>
-        <Fox approach="C" tier={1} input={input} trail={false} anchor={anchor} tint={split.tint} />
+        <Fox approach="C" tier={1} input={input} trail={false} anchor={anchor} tint={split.tint} light />
       </Suspense>
     </group>
   );
@@ -192,37 +194,42 @@ export default function PrismRoom({ progressRef, origin, tier }) {
   });
 
   const samples = tier >= 3 ? 8 : tier === 2 ? 4 : 2;
+  // The split foxes are placed in world space (origin included) and sit outside the room group:
+  // under it they would be offset twice, and the Fox's trail and sparks must not be under a moved parent.
   return (
-    <group position={origin}>
-      <mesh position={[PRISM_CENTRE.x, 7, PRISM_CENTRE.z]} rotation={[0, Math.PI / 6, 0]}>
-        <cylinderGeometry args={[3.2, 3.2, 14, 3, 1]} />
-        <MeshTransmissionMaterial
-          samples={samples}
-          resolution={tier >= 3 ? 1024 : 512}
-          thickness={3}
-          chromaticAberration={1}
-          anisotropy={0.3}
-          distortion={0.2}
-          distortionScale={0.5}
-          ior={1.5}
-          roughness={0.02}
-          color="#ffffff"
-          background={new Color('#f4f2ef')}
-        />
-      </mesh>
-      {strokes.map((stroke, i) => (
-        <mesh key={i} position={stroke.wallPoint} quaternion={stroke.q} frustumCulled={false}>
-          <planeGeometry args={[1.3 * stroke.label.aspect, 1.3]} />
-          <shaderMaterial args={[stroke.material]} transparent depthWrite={false} />
+    <>
+      <group position={origin}>
+        <gridHelper args={[60, 30, '#d9d4cc', '#e6e2db']} position={[0, 0.001, PRISM_CENTRE.z]} />
+        <mesh position={[PRISM_CENTRE.x, 7, PRISM_CENTRE.z]} rotation={[0, Math.PI / 6, 0]}>
+          <cylinderGeometry args={[3.2, 3.2, 14, 3, 1]} />
+          <MeshTransmissionMaterial
+            samples={samples}
+            resolution={tier >= 3 ? 1024 : 512}
+            thickness={3}
+            chromaticAberration={1}
+            anisotropy={0.3}
+            distortion={0.2}
+            distortionScale={0.5}
+            ior={1.5}
+            roughness={0.02}
+            color="#ffffff"
+          />
+          <Edges threshold={20} color="#9d978e" />
         </mesh>
-      ))}
+        {strokes.map((stroke, i) => (
+          <mesh key={i} position={stroke.wallPoint} quaternion={stroke.q} frustumCulled={false}>
+            <planeGeometry args={[1.3 * stroke.label.aspect, 1.3]} />
+            <shaderMaterial args={[stroke.material]} transparent depthWrite={false} />
+          </mesh>
+        ))}
+        <mesh ref={flashRef} visible={false} frustumCulled={false} renderOrder={960}>
+          <planeGeometry args={[1, 1]} />
+          <shaderMaterial args={[flash]} transparent depthTest={false} depthWrite={false} blending={AdditiveBlending} />
+        </mesh>
+      </group>
       {SPLITS.map((split) => (
         <SplitFox key={split.name} split={split} progressRef={progressRef} origin={origin} />
       ))}
-      <mesh ref={flashRef} visible={false} frustumCulled={false} renderOrder={960}>
-        <planeGeometry args={[1, 1]} />
-        <shaderMaterial args={[flash]} transparent depthTest={false} depthWrite={false} blending={AdditiveBlending} />
-      </mesh>
-    </group>
+    </>
   );
 }
