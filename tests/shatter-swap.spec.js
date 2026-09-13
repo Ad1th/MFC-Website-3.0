@@ -82,6 +82,7 @@ for (const size of SIZES) {
       // Mocked weather resolves at once; live weather could land between the two screenshots.
       await page.goto('/?tier=2&freeze=1&weather=clear');
       await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
+      await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
       await page.evaluate(() => document.fonts.ready);
       await expect.poll(() => page.evaluate(() => document.querySelector('canvas[data-ready]') !== null)).toBe(true);
 

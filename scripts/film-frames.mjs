@@ -11,6 +11,7 @@
  *
  * --every N captures a frame every N vh through the listed scenes (gate evidence).
  */
+/* global window, document */
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, firefox } from '@playwright/test';
@@ -39,7 +40,7 @@ for (const sizeName of sizes) {
   const context = await browser.newContext(browserName === 'firefox' ? contextOptions : { ...contextOptions, isMobile });
   const page = await context.newPage();
   await page.goto(`${base}/?tier=2&freeze=1${at ? `&at=${at}` : ''}`);
-  await page.waitForFunction(() => document.documentElement.dataset.filmReady === 'true', null, { timeout: 30000 });
+  await page.waitForFunction(() => document.documentElement.dataset.filmReady === 'true' && document.documentElement.dataset.ignition === 'done', null, { timeout: 30000 });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(2500);
 

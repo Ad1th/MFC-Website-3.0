@@ -15,6 +15,7 @@ const MODES = [
 async function waitForFilm(page) {
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode)).toBe('film');
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
 }
 
 for (const { mode, path } of MODES) {

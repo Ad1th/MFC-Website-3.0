@@ -22,6 +22,7 @@ for (const { at, lit } of CASES) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`/?tier=2&freeze=1&at=${at}`);
     await expect.poll(() => page.evaluate(() => document.documentElement.dataset.filmReady ?? null)).toBe('true');
+    await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null)).toBe('done');
     await page.evaluate(() => {
       window.__filmTest.hidePage = true;
     });
