@@ -29,6 +29,7 @@ import {
 } from '../spiral/layout.js';
 import Embers, { emberLabels } from '../spiral/Embers.jsx';
 import { ClockRing, HexFlash } from '../spiral/Flagships.jsx';
+import { buzz } from '../../live/haptics.js';
 
 /**
  * S07 The Spiral. The fox runs off the mirror floor into open night and climbs a spiral staircase
@@ -341,6 +342,8 @@ export default function S07Spiral() {
         fox?.emitSparks?.({ count: 40, speed: 1.4, spread: 1.2 });
       }
     }
+    // A flagship blooms: a short buzz on phones as its hold begins.
+    if (hold && hold !== lastHold.current.slug) buzz(24);
     lastHold.current = { slug: hold, t: holdT };
 
     if (active) {

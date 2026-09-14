@@ -67,3 +67,17 @@ test('the ember cursor replaces the pointer on a fine pointer', async ({ page })
   expect(await page.evaluate(() => document.documentElement.dataset.cursor)).toBe('ember');
   expect(await page.evaluate(() => getComputedStyle(document.body).cursor)).toBe('none');
 });
+
+test('press and hold on the fox pets it in the film, and letting go stops', async ({ page }) => {
+  test.setTimeout(120_000);
+  await ready(page);
+  await page.evaluate(() => window.__filmTest.scrollToScene('S01', 0.62));
+  await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress?.().screen ?? null), { timeout: 15_000 }).not.toBeNull();
+  const { screen } = await page.evaluate(() => window.__filmTest.foxPress());
+  await page.mouse.move(screen.x, screen.y);
+  await page.mouse.down();
+  await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress().petting)).toBe(true);
+  expect(await page.evaluate(() => window.__filmTest.foxPress().petUntil > performance.now())).toBe(true);
+  await page.mouse.up();
+  await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress().petting)).toBe(false);
+});

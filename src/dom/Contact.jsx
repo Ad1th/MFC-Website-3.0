@@ -5,6 +5,7 @@ import { flags } from '../live/flags.js';
 import { FILM_TEST } from '../film/testHooks.js';
 import { formSignals } from '../live/formSignals.js';
 import { sparkAtCursor } from '../live/cursor.js';
+import { buzz } from '../live/haptics.js';
 import styles from './Contact.module.css';
 
 /**
@@ -100,6 +101,7 @@ export default function Contact() {
     }
     // The fox carries it first (film only; resolves at once elsewhere).
     setStatus('delivering');
+    buzz([20, 60, 30]);
     await formSignals.sent(values.message.trim());
     setStatus('sent');
   };
