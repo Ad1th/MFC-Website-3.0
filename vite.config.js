@@ -26,8 +26,40 @@ function sourceText() {
   };
 }
 
+/**
+ * SEO files that need the site's absolute address. robots.txt is always written; the sitemap, the
+ * canonical link and the og/twitter image tags are added only when SITE_URL is set at build time
+ * (the production domain is not decided yet, see CONTENT_NEEDED), so nothing points at a guess.
+ */
+function seo() {
+  const site = (process.env.SITE_URL ?? '').trim().replace(/\/+$/, '');
+  return {
+    name: 'mfc-seo',
+    transformIndexHtml(html) {
+      if (!site) return html;
+      const tags = [
+        `<link rel="canonical" href="${site}/" />`,
+        `<meta property="og:url" content="${site}/" />`,
+        `<meta property="og:image" content="${site}/og.jpg" />`,
+        '<meta property="og:image:width" content="1200" />',
+        '<meta property="og:image:height" content="630" />',
+        `<meta name="twitter:image" content="${site}/og.jpg" />`,
+      ];
+      return html.replace('</head>', `    ${tags.join('\n    ')}\n  </head>`);
+    },
+    generateBundle() {
+      const robots = ['User-agent: *', 'Allow: /', ...(site ? [`Sitemap: ${site}/sitemap.xml`] : [])].join('\n');
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `${robots}\n` });
+      if (site) {
+        const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${site}/</loc><changefreq>monthly</changefreq></url>\n</urlset>\n`;
+        this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap });
+      }
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [sourceText(), react()],
+  plugins: [sourceText(), seo(), react()],
   build: {
     target: 'es2022',
     sourcemap: false,
