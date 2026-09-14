@@ -1,7 +1,8 @@
+/* Above the hero title, under the HUD lines, so it never sits on the wordmark. */
 .result {
   position: fixed;
   left: 50%;
-  bottom: clamp(var(--space-12), 14vh, var(--space-24));
+  top: clamp(var(--space-24), 22vh, 14rem);
   transform: translateX(-50%);
   z-index: calc(var(--z-dom) + 1);
 }
@@ -10,7 +11,8 @@
   font-family: var(--font-mono);
   font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
   color: var(--fg);
-  padding: var(--space-2) 0;
+  padding: var(--space-2) var(--space-4);
+  background: rgb(10 8 7 / 0.72);
   border-bottom: 1px solid var(--fg);
   transition: color var(--dur-quick) var(--ease-film), border-color var(--dur-quick) var(--ease-film);
 }
