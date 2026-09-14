@@ -20,7 +20,7 @@ export const BANNED_PHRASES = [
 export const BANNED_PATTERNS = [/\bnot just\b[^.]*,\s*but\b/i];
 
 /** Em dash and en dash. Hyphen is the only dash allowed. */
-export const DASH_PATTERN = /[—–]/;
+export const DASH_PATTERN = /[\u2014\u2013]/;
 
 const url = z.url({ protocol: /^https?$/ });
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'expected YYYY-MM-DD');

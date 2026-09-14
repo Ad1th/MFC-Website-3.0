@@ -19,7 +19,7 @@ function normalise(list) {
   return list
     .filter((n) => n && isHttps(n.cover_url) && isHttps(n.pdf_link) && n.title)
     .map((n) => ({
-      title: String(n.title).replace(/^"|"$/g, '').replace(/[—–]/g, ', ').trim(),
+      title: String(n.title).replace(/^"|"$/g, '').replace(/[\u2014\u2013]/g, ', ').trim(),
       date: String(n.uploadDate ?? ''),
       cover: n.cover_url,
       pdf: n.pdf_link,
