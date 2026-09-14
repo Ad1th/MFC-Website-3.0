@@ -1,0 +1,21 @@
+.result {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(var(--space-12), 14vh, var(--space-24));
+  transform: translateX(-50%);
+  z-index: calc(var(--z-dom) + 1);
+}
+
+.button {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  color: var(--fg);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--fg);
+  transition: color var(--dur-quick) var(--ease-film), border-color var(--dur-quick) var(--ease-film);
+}
+
+.button:hover {
+  color: var(--fire);
+  border-bottom-color: var(--fire);
+}

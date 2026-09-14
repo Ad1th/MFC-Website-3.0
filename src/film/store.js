@@ -59,6 +59,8 @@ export const film = createStore((set) => ({
   foxSpritesUntil: 0,
   /** Director's Cut mode (D). */
   directorsCut: false,
+  /** The race home from S11 (live/race.js): idle, racing or done, with who won. */
+  race: { phase: 'idle', startedAt: 0, result: null },
 
   setScroll: (patch) => set(patch),
   setMode: (mode) => set({ mode }),
@@ -78,6 +80,7 @@ export const film = createStore((set) => ({
   petFox: (petUntil) => set({ petUntil }),
   setFoxSprites: (foxSpritesUntil) => set({ foxSpritesUntil }),
   setDirectorsCut: (directorsCut) => set({ directorsCut }),
+  setRace: (race) => set({ race }),
 }));
 
 /**

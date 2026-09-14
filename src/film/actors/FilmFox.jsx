@@ -5,6 +5,7 @@ import Fox from '../fox/Fox.jsx';
 import { film, useFilm } from '../store.js';
 import { getScenes } from '../scroll.js';
 import { createFoxPose, sampleFoxShot, setFoxHandle } from './foxShots.js';
+import { raceFoxPose } from './raceFox.js';
 import { FILM_FREEZE } from '../testHooks.js';
 
 /**
@@ -71,7 +72,11 @@ export default function FilmFox() {
     pose.light = false;
     pose.tint = null;
 
-    const sampled = Boolean(scene) && sampleFoxShot(scene.id, sceneProgress, pose, inp, { camera: state.camera, aspect: state.size.width / state.size.height });
+    const context = { camera: state.camera, aspect: state.size.width / state.size.height };
+    let sampled = Boolean(scene) && sampleFoxShot(scene.id, sceneProgress, pose, inp, context);
+    // The race home takes the fox over from any scene (live/race.js).
+    const race = film.getState().race;
+    if (race.phase !== 'idle' && raceFoxPose(race, activeScene, sceneProgress, pose, inp, context)) sampled = true;
     if (FILM_FREEZE) inp.timeScale = 0;
     // Back after a long absence: asleep until the next scroll (tab.js, scroll.js).
     inp.forced = film.getState().foxAsleep ? 'sleep' : null;

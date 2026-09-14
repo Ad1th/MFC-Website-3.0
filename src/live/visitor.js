@@ -53,6 +53,11 @@ export function visits() {
   return flags.visits ?? Math.max(1, state.visits);
 }
 
+/** @returns {{ visits: number, firstCompletion: string|null, pets: number }} */
+export function visitorState() {
+  return { ...state };
+}
+
 export function markCompleted() {
   if (state.firstCompletion) return;
   state = { ...state, firstCompletion: new Date().toISOString() };
