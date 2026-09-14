@@ -9,6 +9,8 @@ import Semantic from './dom/Semantic.jsx';
 import HeroCanvas from './dom/hero/HeroCanvas.jsx';
 import GalleryHud from './dom/GalleryHud.jsx';
 import SkyOverlay from './dom/SkyOverlay.jsx';
+import { initTab } from './live/tab.js';
+import { initSecrets } from './live/secrets.js';
 import styles from './FilmMode.module.css';
 
 const DebugHud = flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
@@ -24,6 +26,16 @@ export default function FilmMode({ onSkip }) {
   useEffect(() => {
     if (!trackRef.current) return undefined;
     return initScroll(trackRef.current);
+  }, []);
+
+  // The tab and the keyboard secrets live with the film.
+  useEffect(() => {
+    const offTab = initTab();
+    const offSecrets = initSecrets();
+    return () => {
+      offTab();
+      offSecrets();
+    };
   }, []);
 
   const subscribeActive = useCallback((fn) => {
