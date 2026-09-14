@@ -75,8 +75,9 @@ test('still mode tabs through every link and control in reading order without tr
   const expected = await page.evaluate(
     () => [...document.querySelectorAll('a[href], button:not([disabled]), input:not([type="hidden"]):not([tabindex="-1"]), textarea, select')].filter((el) => el.offsetParent !== null || el.getClientRects().length).length,
   );
-  // The still page carries every link: socials, projects, events, 80+ members' profiles, the form.
-  expect(expected).toBeGreaterThan(150);
+  // A real page of controls (socials, projects, events, the shown board's member profiles, the form),
+  // so the walk below cannot pass on an empty count.
+  expect(expected).toBeGreaterThan(60);
   const seen = new Set();
   let previousTop = -Infinity;
   let backwards = 0;
