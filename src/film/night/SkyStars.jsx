@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Billboard } from '@react-three/drei';
 import { AdditiveBlending, BufferGeometry, Color, Float32BufferAttribute, SRGBColorSpace, TextureLoader, Vector3 } from 'three';
 import { PALETTE } from '../palette.js';
-import { FILM_FREEZE } from '../testHooks.js';
+import { FILM_FREEZE, FILM_TEST } from '../testHooks.js';
 import { LABEL_FRAGMENT, PLANE_VERTEX, textTexture } from '../rooms/labels.js';
 import { LINES, POLE, SKY_LINE_DIRECTION, SKY_RADIUS, STARS } from './layout.js';
 
@@ -242,8 +242,15 @@ export default function SkyStars({ stateRef }) {
   const shown = useRef({ key: null, label: null, aspect: 1 });
   const hoverScale = useRef(0);
 
+  const ringRef = useRef(null);
+
   useFrame((state, delta) => {
     const s = stateRef.current;
+    // Still-mode captures lay the real heading over the frame; the sky's own words and the empty
+    // star's ring would sit behind it twice (test builds only).
+    const clean = FILM_TEST && Boolean(window.__filmTest?.cleanStill);
+    if (skyLineRef.current) skyLineRef.current.visible = !clean;
+    if (ringRef.current) ringRef.current.visible = !clean;
     if (turnRef.current) turnRef.current.quaternion.setFromAxisAngle(POLE, s.angle);
     stars.material.uniforms.uYear.value = s.yearIndex;
     stars.material.uniforms.uPixelRatio.value = state.gl.getPixelRatio();
@@ -310,7 +317,7 @@ export default function SkyStars({ stateRef }) {
       </points>
       {empty ? (
         <Billboard position={empty.dir.clone().multiplyScalar(SKY_RADIUS)}>
-          <mesh frustumCulled={false}>
+          <mesh ref={ringRef} frustumCulled={false}>
             <planeGeometry args={[3.2, 3.2]} />
             <shaderMaterial args={[ring]} transparent depthWrite={false} blending={AdditiveBlending} />
           </mesh>

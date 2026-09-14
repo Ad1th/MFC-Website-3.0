@@ -34,10 +34,10 @@ export function shortDate(iso) {
 }
 
 /** "2024-09-28" to a readable, locale-aware date. */
+const LONG_DATE = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
 export function longDate(iso) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-    new Date(`${iso}T00:00:00Z`),
-  );
+  return LONG_DATE.format(new Date(`${iso}T00:00:00Z`));
 }
 
 /** Swap a /media/...webp path for its AVIF twin. */

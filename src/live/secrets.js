@@ -1,5 +1,5 @@
 import { film } from '../film/store.js';
-import { getFox } from '../film/actors/foxShots.js';
+import { getFox } from '../film/actors/foxHandle.js';
 import { STAMPEDE_MS, stampede } from './stampede.js';
 
 /**

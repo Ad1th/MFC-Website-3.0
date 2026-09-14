@@ -17,7 +17,8 @@ import { Vector3 } from 'three';
 
 /** @type {Map<string, FoxShot>} */
 const shots = new Map();
-let foxHandle = null;
+
+export { getFox, setFoxHandle } from './foxHandle.js';
 
 /** @returns {FoxPose} */
 export function createFoxPose() {
@@ -44,11 +45,3 @@ export function sampleFoxShot(sceneId, progress, pose, input, context) {
   return true;
 }
 
-/** The film's fox (its imperative handle: trigger, anchors, ...), or null before it mounts. */
-export function getFox() {
-  return foxHandle;
-}
-
-export function setFoxHandle(handle) {
-  foxHandle = handle;
-}

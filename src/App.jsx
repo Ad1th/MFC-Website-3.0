@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { film, useFilm } from './film/store.js';
 import { initialTier, tierAfterWarmUp, warmUpBenchmark } from './film/quality.js';
 import { flags } from './live/flags.js';
@@ -24,19 +24,37 @@ function prefersReducedMotion() {
 function decideMode() {
   if (!HOME_PATHS.has(window.location.pathname)) return { mode: 'notFound', tier: 0 };
   if (flags.sandbox === 'fox') return { mode: 'sandbox', tier: flags.tier ?? 2 };
-  const forced = flags.tier;
-  const tier = forced !== null && forced >= 0 && forced <= 3 ? forced : initialTier();
-  if (flags.still || prefersReducedMotion() || tier === 0) return { mode: 'still', tier };
+  const forced = flags.tier !== null && flags.tier >= 0 && flags.tier <= 3 ? flags.tier : null;
+  // Still mode asked for: no WebGL probe before first paint (it is slow without a GPU). Whether
+  // the film could play is probed after paint, for the "play the film" button (tier null = unknown).
+  if (flags.still || prefersReducedMotion()) return { mode: 'still', tier: forced };
+  const tier = forced ?? initialTier();
+  if (tier === 0) return { mode: 'still', tier };
   return { mode: 'film', tier };
 }
 
 const initial = decideMode();
-film.getState().setQuality(initial.tier);
+film.getState().setQuality(initial.tier ?? 0);
 film.getState().setMode(initial.mode);
 
 export default function App() {
   const mode = useFilm((s) => s.mode);
-  const canPlayFilm = useRef(initial.tier > 0 && initial.mode !== 'notFound').current;
+  const [canPlayFilm, setCanPlayFilm] = useState(initial.tier !== null && initial.tier > 0 && initial.mode !== 'notFound');
+
+  // Still mode chosen up front: find out after paint whether this device could play the film.
+  useEffect(() => {
+    if (initial.tier !== null || initial.mode !== 'still') return undefined;
+    const idle = window.requestIdleCallback ?? ((fn) => window.setTimeout(fn, 200));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const id = idle(() => {
+      const tier = initialTier();
+      if (tier > 0) {
+        film.getState().setQuality(tier);
+        setCanPlayFilm(true);
+      }
+    });
+    return () => cancel(id);
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.mode = mode;

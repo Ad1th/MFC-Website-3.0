@@ -54,9 +54,10 @@ for (const size of SIZES) {
   // so no chrome, hero HUD, cursor or region text lands in the still; still mode lays real text over it.
   await page.addStyleTag({ content: 'body * { visibility: hidden !important; } canvas[data-engine] { visibility: visible !important; }' });
   // The hero page is painted inside the film until S02's impact (D-061); its title and live HUD
-  // (the viewer's timezone and clock) must not be baked into a still.
+  // (the viewer's timezone and clock) must not be baked into a still, nor the sky's own words.
   await page.evaluate(() => {
     window.__filmTest.hidePage = true;
+    window.__filmTest.cleanStill = true;
   });
   for (const [id, progress] of Object.entries(MOMENTS)) {
     if (only && !only.includes(id)) continue;
