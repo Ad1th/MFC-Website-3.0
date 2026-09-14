@@ -18,3 +18,8 @@ export const WORLDS = {
   soty: qr,
   'code-to-survive': tape,
 };
+
+/** The world for a project; a project added in projects.json without its own world gets the doors. */
+export function worldFor(slug) {
+  return WORLDS[slug] ?? doors;
+}

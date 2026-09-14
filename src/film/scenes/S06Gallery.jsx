@@ -17,7 +17,7 @@ import MirrorFloor from '../gallery/MirrorFloor.jsx';
 import Slab from '../gallery/Slab.jsx';
 import SlabShatter from '../gallery/SlabShatter.jsx';
 import PawPrints from '../gallery/PawPrints.jsx';
-import { WORLDS } from '../gallery/worlds/index.js';
+import { worldFor } from '../gallery/worlds/index.js';
 import { dollyAmount, openProject } from '../gallery/open.js';
 
 /**
@@ -133,7 +133,7 @@ function slabCamera(i, local, mobile, cam, aspect) {
     return;
   }
   if (dive && local < BEATS.cutOut) {
-    WORLDS[projects[i].slug].camera(window01(local, BEATS.cutIn, BEATS.cutOut), cam);
+    worldFor(projects[i].slug).camera(window01(local, BEATS.cutIn, BEATS.cutOut), cam);
     const origin = worldOrigin(i, vc);
     cam.position.add(origin);
     cam.target.add(origin);
@@ -184,7 +184,7 @@ function galleryFoxShot(progress, pose, input) {
     }
     return;
   }
-  WORLDS[projects[index].slug].fox(window01(local, BEATS.cutIn, BEATS.cutOut), pose, input);
+  worldFor(projects[index].slug).fox(window01(local, BEATS.cutIn, BEATS.cutOut), pose, input);
   const origin = worldOrigin(index, fc);
   pose.position.add(origin);
   if (input.look) {
@@ -320,7 +320,7 @@ export default function S06Gallery() {
 
     // The air is S06's only while it plays: mounted beside S05, it must not paint over the rooms.
     if (active) {
-      const air = inWorld ? worldAir.set(WORLDS[projects[index].slug].background) : NIGHT;
+      const air = inWorld ? worldAir.set(worldFor(projects[index].slug).background) : NIGHT;
       if (scene.background?.isColor) scene.background.copy(air);
       scene.fog?.color.copy(air);
     }
@@ -399,7 +399,7 @@ export default function S06Gallery() {
     }
   });
 
-  const world = worldIndex >= 0 ? WORLDS[projects[worldIndex].slug] : null;
+  const world = worldIndex >= 0 ? worldFor(projects[worldIndex].slug) : null;
   const World = world?.default ?? null;
   return (
     <>
