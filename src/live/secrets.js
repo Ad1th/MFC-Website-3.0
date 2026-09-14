@@ -1,5 +1,6 @@
 import { film } from '../film/store.js';
 import { getFox } from '../film/actors/foxShots.js';
+import { STAMPEDE_MS, stampede } from './stampede.js';
 
 /**
  * Secrets (living layer), listened for on the keyboard outside form fields:
@@ -9,7 +10,6 @@ import { getFox } from '../film/actors/foxShots.js';
  */
 
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-const KONAMI_MS = 3000;
 
 function typingInField(target) {
   return target instanceof Element && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
@@ -28,7 +28,8 @@ export function initSecrets() {
     konami = key === KONAMI[konami] ? konami + 1 : key === KONAMI[0] ? 1 : 0;
     if (konami === KONAMI.length) {
       konami = 0;
-      film.getState().setFoxSprites(performance.now() + KONAMI_MS);
+      film.getState().setFoxSprites(performance.now() + STAMPEDE_MS);
+      stampede();
     }
 
     if (key.length === 1) {

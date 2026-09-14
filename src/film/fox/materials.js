@@ -78,6 +78,7 @@ export function createParticleMaterial(mesh, { size = 1.6, life = 0.9, rise = 42
       uLife: { value: life },
       uSize: { value: size },
       uScale: { value: 500 },
+      uFoxSprite: { value: 0 },
       uRise: { value: rise },
       uSpread: { value: spread },
       uHeat: { value: 0 },

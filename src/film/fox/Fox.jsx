@@ -13,6 +13,7 @@ import Sparks from './Sparks.jsx';
 import { TIERS } from '../quality.js';
 import { reportParticles } from '../debug/stats.js';
 import { FOX_REGRESS } from './testHooks.js';
+import { film } from '../store.js';
 
 /**
  * The fox. Two rendering approaches share one rig, brain and behaviour engine:
@@ -175,6 +176,10 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       emitSparks(request) {
         const at = rig.root.localToWorld(LANDMARKS.bodyCentre.clone());
         sparksRef.current?.emit(at, request);
+      },
+      /** The skinned mesh, for a skeleton overlay (Director's Cut). */
+      get skinnedMesh() {
+        return rig.mesh;
       },
       reset() {
         engine.reset();
@@ -458,6 +463,9 @@ const Fox = forwardRef(function Fox({ approach = 'A', tier = 2, input, trail = t
       u.uEarL.value = out.ears.L;
       u.uEarR.value = out.ears.R;
       u.uWind.value.copy(windLocal);
+      // Konami code: embers become tiny foxes, easing in and back out (live/secrets.js).
+      const foxy = performance.now() < film.getState().foxSpritesUntil ? 1 : 0;
+      u.uFoxSprite.value += (foxy - u.uFoxSprite.value) * Math.min(1, delta * 10);
       u.uVelocity.value.set(0, 0, inp.speed ?? 0);
       // Ember size follows the fox's world scale, so a fox scaled down by a scene keeps the
       // same ember density instead of saturating to white.

@@ -12,6 +12,25 @@ uniform vec3 uGold;
 uniform float uWarm;
 uniform float uIntensity;
 uniform float uOpacity;
+// Konami code: every ember becomes a tiny fox head (0 = round embers, 1 = foxes).
+uniform float uFoxSprite;
+
+float insideTriangle(vec2 p, vec2 a, vec2 b, vec2 c) {
+  float d1 = (p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y);
+  float d2 = (p.x - c.x) * (b.y - c.y) - (b.x - c.x) * (p.y - c.y);
+  float d3 = (p.x - a.x) * (c.y - a.y) - (c.x - a.x) * (p.y - a.y);
+  bool negative = (d1 < 0.0) || (d2 < 0.0) || (d3 < 0.0);
+  bool positive = (d1 > 0.0) || (d2 > 0.0) || (d3 > 0.0);
+  return (negative && positive) ? 0.0 : 1.0;
+}
+
+/** A fox head in point space (x right, y up, -1 to 1): a face narrowing to the nose, two ears. */
+float foxHead(vec2 p) {
+  float face = insideTriangle(p, vec2(-0.78, 0.22), vec2(0.78, 0.22), vec2(0.0, -0.85));
+  float left = insideTriangle(p, vec2(-0.78, 0.22), vec2(-0.22, 0.22), vec2(-0.62, 0.92));
+  float right = insideTriangle(p, vec2(0.22, 0.22), vec2(0.78, 0.22), vec2(0.62, 0.92));
+  return max(face, max(left, right));
+}
 
 varying float vAge;
 varying float vKind;
@@ -20,7 +39,9 @@ varying float vHeat;
 
 void main() {
   float d = length(gl_PointCoord - 0.5);
-  float disc = smoothstep(0.5, 0.05, d);
+  float round = smoothstep(0.5, 0.05, d);
+  vec2 q = vec2(gl_PointCoord.x * 2.0 - 1.0, 1.0 - gl_PointCoord.y * 2.0);
+  float disc = mix(round, foxHead(q), uFoxSprite);
   if (disc <= 0.001) discard;
 
   vec3 color;

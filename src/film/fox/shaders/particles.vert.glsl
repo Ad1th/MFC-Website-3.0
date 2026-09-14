@@ -9,6 +9,7 @@ uniform float uTime;
 uniform float uLife;
 uniform float uSize;
 uniform float uScale;
+uniform float uFoxSprite;
 uniform float uRise;
 uniform float uSpread;
 uniform float uHeat;
@@ -60,6 +61,7 @@ void main() {
   vHeat = uHeat;
 
   vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
-  gl_PointSize = clamp(size * uScale / -mvPosition.z, 1.0, 64.0);
+  // Foxes need a few pixels to read as foxes (Konami code).
+  gl_PointSize = clamp(size * uScale / -mvPosition.z * (1.0 + 2.5 * uFoxSprite), 1.0 + 6.0 * uFoxSprite, 64.0);
   gl_Position = projectionMatrix * mvPosition;
 }
