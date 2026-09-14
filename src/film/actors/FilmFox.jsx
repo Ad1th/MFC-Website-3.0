@@ -73,6 +73,9 @@ export default function FilmFox() {
 
     const sampled = Boolean(scene) && sampleFoxShot(scene.id, sceneProgress, pose, inp, { camera: state.camera, aspect: state.size.width / state.size.height });
     if (FILM_FREEZE) inp.timeScale = 0;
+    // Back after a long absence: asleep until the next scroll (tab.js, scroll.js).
+    inp.forced = film.getState().foxAsleep ? 'sleep' : null;
+    inp.petting = performance.now() < film.getState().petUntil;
     if (foxRef.current) setFoxHandle(foxRef.current);
 
     // Light backgrounds flip the fox's blending; a React update, but only when it changes.

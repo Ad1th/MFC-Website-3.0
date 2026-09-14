@@ -116,6 +116,8 @@ function write(progress, velocity) {
   const { index, sceneProgress } = locate(scenes, progress * totalVh(scenes));
   const state = film.getState();
   const patch = { progress, sceneProgress, lastScrollAt: lastUpdate };
+  // A fox that fell asleep while the tab was away wakes when you scroll.
+  if (state.foxAsleep && Math.abs(velocity) > 1) patch.foxAsleep = false;
   if (index !== state.activeScene) patch.activeScene = index;
   state.setScroll(patch);
   if (titlesAreLive() && !document.hidden) {

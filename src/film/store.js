@@ -49,6 +49,16 @@ export const film = createStore((set) => ({
   teamYear: null,
   /** S09: the star the camera has flown to ('faculty', 'empty' or 'year:index'), or null. */
   skyFocus: null,
+  /** The tab is hidden: the film stops rendering. */
+  tabHidden: false,
+  /** Back after 30 s away: the fox sleeps until the next scroll. */
+  foxAsleep: false,
+  /** performance.now() until which the fox is being petted (console fox.pet()). */
+  petUntil: 0,
+  /** performance.now() until which the embers are tiny foxes (Konami code). */
+  foxSpritesUntil: 0,
+  /** Director's Cut mode (D). */
+  directorsCut: false,
 
   setScroll: (patch) => set(patch),
   setMode: (mode) => set({ mode }),
@@ -63,6 +73,11 @@ export const film = createStore((set) => ({
   dollyGallery: (galleryDolly) => set({ galleryDolly }),
   setTeamYear: (teamYear) => set({ teamYear }),
   setSkyFocus: (skyFocus) => set({ skyFocus }),
+  setTabHidden: (tabHidden) => set({ tabHidden }),
+  setFoxAsleep: (foxAsleep) => set({ foxAsleep }),
+  petFox: (petUntil) => set({ petUntil }),
+  setFoxSprites: (foxSpritesUntil) => set({ foxSpritesUntil }),
+  setDirectorsCut: (directorsCut) => set({ directorsCut }),
 }));
 
 /**

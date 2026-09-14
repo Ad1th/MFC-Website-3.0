@@ -1,3 +1,4 @@
+import './threeConsole.js';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Color } from 'three';
@@ -147,9 +148,12 @@ const BREAK_INDEX = SCENES.findIndex((scene) => scene.id === 'S02');
 
 export default function Film() {
   const tier = useFilm((s) => s.quality);
+  // Nothing renders while the tab is hidden (tab.js).
+  const hidden = useFilm((s) => s.tabHidden);
   return (
     <div className={styles.film} aria-hidden="true">
       <Canvas
+        frameloop={hidden ? 'never' : 'always'}
         className={styles.canvas}
         dpr={filmDpr(tier)}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
