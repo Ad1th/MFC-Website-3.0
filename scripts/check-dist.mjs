@@ -14,7 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dist = path.join(root, process.argv[2] ?? 'dist');
+const dist = path.resolve(root, process.argv[2] ?? 'dist');
 
 const FORBIDDEN = [
   { pattern: /get\(\s*["'`]regress["'`]\s*\)/, why: 'reads the ?regress= URL switch' },
@@ -39,6 +39,11 @@ if (!fs.existsSync(dist)) {
 }
 
 const hits = [];
+// Development tools must not be built into production at all.
+for (const file of files(dist)) {
+  const name = path.basename(file);
+  if (/^(Sandbox|DebugHud)-/.test(name)) hits.push(`${path.relative(root, file)} (development tool chunk: ?sandbox or ?debug)`);
+}
 for (const file of files(dist)) {
   const text = fs.readFileSync(file, 'utf8');
   for (const { pattern, why } of FORBIDDEN) {

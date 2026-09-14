@@ -11,8 +11,10 @@ import { initTab } from './live/tab.js';
 import { initSecrets } from './live/secrets.js';
 
 const FilmMode = lazy(() => import('./FilmMode.jsx'));
-// Development tool. Phase 8 strips it from production builds.
-const FoxSandbox = lazy(() => import('./film/fox/Sandbox.jsx'));
+// Development tools only in dev and test builds. Written inline (not imported) so the bundler sees a
+// literal false in production and never builds the sandbox chunk; scripts/check-dist.mjs fails if it does.
+const DEV_TOOLS = import.meta.env.DEV || import.meta.env.VITE_FOX_TEST_HOOKS === '1';
+const FoxSandbox = DEV_TOOLS ? lazy(() => import('./film/fox/Sandbox.jsx')) : null;
 
 const HOME_PATHS = new Set(['/', '/index.html']);
 
@@ -23,7 +25,7 @@ function prefersReducedMotion() {
 /** Decide the starting mode once, before first paint of the real UI. */
 function decideMode() {
   if (!HOME_PATHS.has(window.location.pathname)) return { mode: 'notFound', tier: 0 };
-  if (flags.sandbox === 'fox') return { mode: 'sandbox', tier: flags.tier ?? 2 };
+  if (DEV_TOOLS && flags.sandbox === 'fox') return { mode: 'sandbox', tier: flags.tier ?? 2 };
   const forced = flags.tier !== null && flags.tier >= 0 && flags.tier <= 3 ? flags.tier : null;
   // Still mode asked for: no WebGL probe before first paint (it is slow without a GPU). Whether
   // the film could play is probed after paint, for the "play the film" button (tier null = unknown).
@@ -114,7 +116,7 @@ export default function App() {
   }, []);
 
   if (mode === 'notFound') return <NotFound />;
-  if (mode === 'sandbox') {
+  if (mode === 'sandbox' && FoxSandbox) {
     return (
       <Suspense fallback={null}>
         <FoxSandbox />

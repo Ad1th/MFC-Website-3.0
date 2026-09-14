@@ -9,7 +9,7 @@ import { getScenes } from './scroll.js';
 import { registerRenderer, StatsProbe } from './debug/stats.js';
 import { flags } from '../live/flags.js';
 import { filmDpr } from './dpr.js';
-import { FILM_FREEZE } from './testHooks.js';
+import { FILM_FREEZE, FILM_TEST } from './testHooks.js';
 import S02Break from './scenes/S02Break.jsx';
 import S01ColdOpen from './scenes/S01ColdOpen.jsx';
 import CameraRig from './camera/CameraRig.jsx';
@@ -205,7 +205,7 @@ export default function Film() {
         <EndWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
-        {flags.debug || directorsCut ? <StatsProbe /> : null}
+        {(FILM_TEST && flags.debug) || directorsCut ? <StatsProbe /> : null}
         {directorsCut ? <DirectorsCut /> : null}
       </Canvas>
       <PlaceholderLabel />

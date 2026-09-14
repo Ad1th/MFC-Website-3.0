@@ -1,9 +1,9 @@
 /**
  * URL flags for testing every branch of live behaviour.
- *   ?debug                      debug HUD and window.__film.stats()
+ *   ?debug                      debug HUD and window.__film.stats() (dev and test builds only)
  *   ?tier=0|1|2|3               force a quality tier (tests, benchmarks)
  *   ?still=1                    force still (graphic novel) mode
- *   ?sandbox=fox                fox sandbox (Phase 2)
+ *   ?sandbox=fox                fox sandbox (dev and test builds only)
  *   ?weather=rain|storm|clear|fog|cloudy|drizzle
  *   ?tz=Europe/London           pretend timezone
  *   ?at=2026-06-21T12:00:00Z    pretend the current moment (sun position, clocks)

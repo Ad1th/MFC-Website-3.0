@@ -31,7 +31,8 @@ import { LABEL_FRAGMENT, PLANE_VERTEX, ease, textTexture, window01 } from './lab
  * frame, one column's characters rearrange into an ASCII fox.
  */
 
-const SOURCES = import.meta.glob('/src/film/**/*.{glsl,js,jsx}', { query: '?source', import: 'default', eager: false });
+// The film's own code, minus the development tools that production does not ship (check-dist).
+const SOURCES = import.meta.glob(['/src/film/**/*.{glsl,js,jsx}', '!/src/film/fox/Sandbox.jsx', '!/src/film/debug/DebugHud.jsx'], { query: '?source', import: 'default', eager: false });
 
 export const SOURCE_COLUMNS = 26;
 const COLUMN_HEIGHT = 26;
