@@ -29,7 +29,9 @@
   transition: color var(--dur-quick) var(--ease-film);
 }
 
-@media (max-width: 767px) {
+/* Phones and tablets: the dial goes above the ridge. Left of the rock needs a wide screen, and at
+   tablet width it sat on the fox (Gate 7 screenshot 768x1024). */
+@media (max-width: 1023px) {
   .dial {
     bottom: calc(var(--space-32) + 8rem);
   }
