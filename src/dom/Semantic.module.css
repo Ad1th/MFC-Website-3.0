@@ -131,6 +131,58 @@
   background: var(--paper);
 }
 
+/* Still mode: each frame is a captured moment of the film with the real text laid over it. */
+.frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.backdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A wash from the text side keeps the words readable over any frame. */
+.frame:has(.backdrop)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgb(10 8 7 / 0.88) 0%, rgb(10 8 7 / 0.62) 50%, rgb(10 8 7 / 0.18) 100%);
+}
+
+.frame[data-region="writing"]:has(.backdrop)::before {
+  background: linear-gradient(90deg, rgb(239 230 218 / 0.9) 0%, rgb(239 230 218 / 0.7) 55%, rgb(239 230 218 / 0.25) 100%);
+}
+
+.frameContent {
+  display: grid;
+  align-content: center;
+}
+
+/* The break and the dive have no words: picture only, a little shorter. */
+.interlude {
+  min-height: 80lvh;
+  padding: 0;
+}
+
+.interlude::before {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .frame:has(.backdrop)::before {
+    background: linear-gradient(180deg, rgb(10 8 7 / 0.35) 0%, rgb(10 8 7 / 0.8) 45%, rgb(10 8 7 / 0.9) 100%);
+  }
+}
+
 /* ---------- shared type ---------- */
 
 .sectionMark {

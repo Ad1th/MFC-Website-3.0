@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { site, domains, projects, events, team, years, blogs, credits, shortDate, longDate, avifOf } from '../content/index.js';
 import { loadNewsletters } from '../live/newsletters.js';
-import { layout, totalVh, MOBILE_QUERY } from '../film/timeline.js';
+import { layout, totalVh, MOBILE_QUERY, SCENES } from '../film/timeline.js';
 import { BUILT_SCENES, DOM_SCENES } from '../film/built.js';
 import { film, useFilm } from '../film/store.js';
 import Contact from './Contact.jsx';
@@ -343,6 +343,18 @@ function End() {
   );
 }
 
+/** A scene's still behind its text: a tall crop on narrow screens, hidden if the file is missing. */
+function StillBackdrop({ id, eager }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <picture className={styles.backdrop}>
+      <source media="(max-width: 767px)" srcSet={`/stills/${id}-tall.avif`} type="image/avif" />
+      <img src={`/stills/${id}.avif`} alt="" width="1600" height="1000" loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} />
+    </picture>
+  );
+}
+
 const REGIONS = {
   intro: Intro,
   about: About,
@@ -371,13 +383,29 @@ function useIsMobile() {
  */
 export default function Semantic({ variant, onRegionFocus, subscribe }) {
   if (variant === 'still') {
+    // Graphic-novel mode: the film's order, one captured frame per scene (public/stills, made by
+    // scripts/capture-stills.mjs) with the real HTML over it. Scenes without a region (the break,
+    // the dive) are picture-only interludes.
     return (
       <div className={styles.still}>
-        {Object.entries(REGIONS).map(([id, Region]) => (
-          <div key={id} className={styles.frame} data-region={id}>
-            <Region />
-          </div>
-        ))}
+        {SCENES.map((scene, index) => {
+          const Region = scene.region ? REGIONS[scene.region] : null;
+          if (!Region) {
+            return (
+              <div key={scene.id} className={`${styles.frame} ${styles.interlude}`} aria-hidden="true">
+                <StillBackdrop id={scene.id} eager={index === 0} />
+              </div>
+            );
+          }
+          return (
+            <div key={scene.id} className={styles.frame} data-region={scene.region} data-still={scene.id}>
+              <StillBackdrop id={scene.id} eager={index === 0} />
+              <div className={styles.frameContent}>
+                <Region />
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
