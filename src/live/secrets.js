@@ -39,7 +39,8 @@ export function initSecrets() {
         fox?.trigger('earsPerk', {}, { force: true });
         typed = '';
       }
-      if (key === 'd') {
+      // The Director's Cut needs the film.
+      if (key === 'd' && film.getState().mode === 'film') {
         film.getState().setDirectorsCut(!film.getState().directorsCut);
       }
     }

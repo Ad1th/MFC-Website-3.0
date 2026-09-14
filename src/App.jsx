@@ -7,6 +7,8 @@ import NotFound from './dom/NotFound.jsx';
 import Ignition from './dom/ignition/Ignition.jsx';
 import { initConsole } from './live/console.js';
 import { initCursor } from './live/cursor.js';
+import { initTab } from './live/tab.js';
+import { initSecrets } from './live/secrets.js';
 
 const FilmMode = lazy(() => import('./FilmMode.jsx'));
 // Development tool. Phase 8 strips it from production builds.
@@ -46,10 +48,18 @@ export default function App() {
     document.getElementById('boot')?.remove();
   }, []);
 
-  // The living layer that belongs to every mode: the console fox and the ember cursor.
+  // The living layer that belongs to every mode (the film and still mode): the console fox, the
+  // ember cursor, the tab and the keyboard secrets.
   useEffect(() => {
     initConsole();
-    return initCursor();
+    const offCursor = initCursor();
+    const offTab = initTab();
+    const offSecrets = initSecrets();
+    return () => {
+      offCursor();
+      offTab();
+      offSecrets();
+    };
   }, []);
 
   // The warm-up benchmark runs while Ignition covers the page, and can lower the tier before the

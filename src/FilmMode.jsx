@@ -10,8 +10,6 @@ import Semantic from './dom/Semantic.jsx';
 import HeroCanvas from './dom/hero/HeroCanvas.jsx';
 import GalleryHud from './dom/GalleryHud.jsx';
 import SkyOverlay from './dom/SkyOverlay.jsx';
-import { initTab } from './live/tab.js';
-import { initSecrets } from './live/secrets.js';
 import { initRace } from './live/race.js';
 import RaceResult from './dom/RaceResult.jsx';
 import DirectorsCutHud from './dom/DirectorsCutHud.jsx';
@@ -35,17 +33,8 @@ export default function FilmMode({ onSkip }) {
     return initScroll(trackRef.current);
   }, []);
 
-  // The tab and the keyboard secrets live with the film.
-  useEffect(() => {
-    const offTab = initTab();
-    const offSecrets = initSecrets();
-    const offRace = initRace();
-    return () => {
-      offTab();
-      offSecrets();
-      offRace();
-    };
-  }, []);
+  // The race home lives with the film (the tab and keyboard secrets live in App, for every mode).
+  useEffect(() => initRace(), []);
 
   const subscribeActive = useCallback((fn) => {
     let last = -1;
