@@ -1,7 +1,6 @@
 {
   "builders": {
-    "todo": "TODO_CONTENT: names of the MFC members who built this site, shown in Director's Cut mode.",
-    "people": []
+    "people": [{ "name": "Ad1th" }]
   },
   "assets": [
     {
