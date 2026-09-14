@@ -72,8 +72,21 @@ test('press and hold on the fox pets it in the film, and letting go stops', asyn
   test.setTimeout(120_000);
   await ready(page);
   await page.evaluate(() => window.__filmTest.scrollToScene('S01', 0.62));
-  await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress?.().screen ?? null), { timeout: 15_000 }).not.toBeNull();
-  const { screen } = await page.evaluate(() => window.__filmTest.foxPress());
+  // Wait for the jump to land and the head's screen position to settle (slower engines report the
+  // pre-scroll position for a few frames).
+  await expect.poll(() => page.evaluate(() => Math.abs(window.__filmTest.state().sceneProgress - 0.62) < 0.01)).toBe(true);
+  let screen = null;
+  await expect
+    .poll(
+      async () => {
+        const next = await page.evaluate(() => window.__filmTest.foxPress?.().screen ?? null);
+        const settled = Boolean(next && screen && Math.hypot(next.x - screen.x, next.y - screen.y) < 1);
+        screen = next;
+        return settled;
+      },
+      { timeout: 15_000, intervals: [250] },
+    )
+    .toBe(true);
   await page.mouse.move(screen.x, screen.y);
   await page.mouse.down();
   await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress().petting)).toBe(true);

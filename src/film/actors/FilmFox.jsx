@@ -58,12 +58,20 @@ export default function FilmFox() {
   useEffect(() => () => setFoxHandle(null), []);
 
   // Press and hold on the fox pets it; letting go ends the petting (the fox swishes its tail).
-  const press = useRef({ down: null, petting: false, screen: null });
+  const press = useRef({ down: null, petting: false, screen: null, rejected: null });
   useEffect(() => {
     const onDown = (event) => {
-      if (event.button !== 0 || (event.target instanceof Element && event.target.closest(INTERACTIVE))) return;
+      if (event.button !== 0) return;
+      if (event.target instanceof Element && event.target.closest(INTERACTIVE)) {
+        press.current.rejected = 'interactive';
+        return;
+      }
       const at = press.current.screen;
-      if (!at || Math.hypot(event.clientX - at.x, event.clientY - at.y) > HOLD_RADIUS_PX) return;
+      if (!at || Math.hypot(event.clientX - at.x, event.clientY - at.y) > HOLD_RADIUS_PX) {
+        press.current.rejected = at ? 'far' : 'no-head';
+        return;
+      }
+      press.current.rejected = null;
       press.current.down = { x: event.clientX, y: event.clientY, t: performance.now() };
     };
     const onMove = (event) => {
@@ -165,7 +173,7 @@ export default function FilmFox() {
     } else {
       press.current.screen = null;
     }
-    if (FILM_TEST) window.__filmTest.foxPress = () => ({ screen: press.current.screen, petting: press.current.petting, petUntil: film.getState().petUntil });
+    if (FILM_TEST) window.__filmTest.foxPress = () => ({ screen: press.current.screen, petting: press.current.petting, petUntil: film.getState().petUntil, down: Boolean(press.current.down), rejected: press.current.rejected });
   }, -2);
 
   return (
