@@ -3,7 +3,8 @@ import { Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber';
 import { film } from '../store.js';
 import Shatter from '../shatter/Shatter.jsx';
-import { FILM_TEST, shatterOverride } from '../testHooks.js';
+import { FILM_FREEZE, FILM_TEST, shatterOverride } from '../testHooks.js';
+import { shatter as shatterSound } from '../../live/sound.js';
 import { registerShot } from '../camera/shots.js';
 import { coldOpenFoxShot, coldOpenShot } from './S01ColdOpen.jsx';
 import { getFox, registerFoxShot } from '../actors/foxShots.js';
@@ -65,6 +66,8 @@ export default function S02Break({ index }) {
     const s = film.getState();
     // It hit the inside of the screen: shake the glass off, then look slightly offended. Once each way down.
     const local = s.activeScene > index ? 1 : s.activeScene < index ? 0 : s.sceneProgress;
+    // The glass breaks: once each way down through the impact (sound on only).
+    if (!FILM_FREEZE && lastProgress.current < IMPACT && local >= IMPACT) shatterSound();
     if (lastProgress.current < SHAKE_AT && local >= SHAKE_AT) getFox()?.trigger('shakeOff', {}, { force: true });
     if (lastProgress.current < OFFENDED_AT && local >= OFFENDED_AT) getFox()?.trigger('offended', {}, { force: true });
     lastProgress.current = local;

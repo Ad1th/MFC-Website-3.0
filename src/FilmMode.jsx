@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
 import { film } from './film/store.js';
 import { initScroll, jumpToScene } from './film/scroll.js';
 import { SCENES } from './film/timeline.js';
+import { initScore } from './live/score.js';
 import { flags } from './live/flags.js';
 import { isKeyboardFocus } from './live/inputModality.js';
 import Film from './film/Film.jsx';
@@ -18,7 +19,9 @@ import styles from './FilmMode.module.css';
 /** Where keyboard focus lands inside a scene: S10's form is only visible once the pane is whole. */
 const FOCUS_AT = { S10: 0.74 };
 
-const DebugHud = flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
+// Development tool: only in dev and test builds, gated inline like App.jsx's sandbox.
+const DEV_TOOLS = import.meta.env.DEV || import.meta.env.VITE_FOX_TEST_HOOKS === '1';
+const DebugHud = DEV_TOOLS && flags.debug ? lazy(() => import('./film/debug/DebugHud.jsx')) : null;
 
 /**
  * Film mode: the fixed canvas, the chrome, and one scroll track whose height is
@@ -35,6 +38,9 @@ export default function FilmMode({ onSkip }) {
 
   // The race home lives with the film (the tab and keyboard secrets live in App, for every mode).
   useEffect(() => initRace(), []);
+
+  // The score (sound on only) follows the film.
+  useEffect(() => initScore(), []);
 
   const subscribeActive = useCallback((fn) => {
     let last = -1;

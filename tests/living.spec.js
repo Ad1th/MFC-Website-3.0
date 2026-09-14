@@ -94,3 +94,23 @@ test('press and hold on the fox pets it in the film, and letting go stops', asyn
   await page.mouse.up();
   await expect.poll(() => page.evaluate(() => window.__filmTest.foxPress().petting)).toBe(false);
 });
+
+test('sound: the choice becomes an on/off toggle, and the score plays through the film without errors', async ({ page }) => {
+  test.setTimeout(120_000);
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await ready(page);
+  const choose = page.getByRole('button', { name: 'watch with sound' });
+  await expect(choose).toBeVisible();
+  await choose.click();
+  const toggle = page.getByRole('button', { name: /^sound (on|off)$/ });
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  for (const [id, p] of [['S01', 0.5], ['S02', 0.2], ['S03', 0.15], ['S04', 0.5], ['S08', 0.5], ['S09', 0.5]]) {
+    await page.evaluate(([scene, at]) => window.__filmTest.scrollToScene(scene, at), [id, p]);
+    await page.waitForTimeout(400);
+  }
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(toggle).toHaveText('sound off');
+  expect(errors).toEqual([]);
+});

@@ -4,6 +4,7 @@ import { TITLES } from '../../film/timeline.js';
 import { filmManifest, preload, watchScriptBytes } from '../../live/preload.js';
 import { darkPixel, startEmber } from '../../live/favicon.js';
 import { requestScrollLock, setTitlesLive } from '../../film/filmGate.js';
+import { matchStrike } from '../../live/sound.js';
 import styles from './Ignition.module.css';
 
 /**
@@ -153,6 +154,7 @@ export default function Ignition({ onReveal, onSkip }) {
       setPercent(100);
       film.getState().setLoaded(100);
       setPhase('strike');
+      matchStrike();
     }
   }, [assetsDone, filmReady]);
 

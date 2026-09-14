@@ -128,3 +128,20 @@
     display: none;
   }
 }
+
+/* Sound on/off, where the first choice was offered (bottom right), once a choice exists. */
+.soundToggle {
+  position: fixed;
+  right: calc(var(--gutter) + 3rem);
+  bottom: var(--gutter);
+  z-index: var(--z-chrome);
+  min-height: 24px;
+  padding: var(--space-2) 0;
+  color: var(--fg-dim);
+  transition: color var(--dur-quick) var(--ease-film);
+}
+
+.soundToggle:hover,
+.soundToggle[aria-pressed="true"] {
+  color: var(--fg);
+}

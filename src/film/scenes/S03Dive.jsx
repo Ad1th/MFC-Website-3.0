@@ -14,6 +14,7 @@ import SkyGround from '../sky/SkyGround.jsx';
 import CommitMeteors from '../sky/CommitMeteors.jsx';
 import HeatEdges from '../sky/HeatEdges.jsx';
 import { FILM_FREEZE } from '../testHooks.js';
+import { windRoar } from '../../live/sound.js';
 
 /**
  * S03 The Dive. The fox leaps past us toward Earth and the camera swings round behind its
@@ -269,6 +270,9 @@ export default function S03Dive() {
       state.scene.fog.far = inSky ? 460 : 60;
     }
     if (state.scene.background?.isColor) state.scene.background.copy(inSky ? SKY_BACKGROUND : SPACE_FOG);
+
+    // Re-entry: the wind roars as the fox starts to burn, once each way down (sound on only).
+    if (!FILM_FREEZE && lastProgress.current < 0.1 && p >= 0.1) windRoar();
 
     // The sneeze, once, on the way down through the last layer's underside.
     if (!FILM_FREEZE && lastProgress.current < SNEEZE_AT && p >= SNEEZE_AT) getFox()?.trigger('sneeze', {}, { force: true });

@@ -5,6 +5,7 @@ import { film } from '../store.js';
 import { registerShot } from '../camera/shots.js';
 import { registerFoxShot } from '../actors/foxShots.js';
 import { sceneProgressOf } from './progress.js';
+import { chirp } from '../../live/sound.js';
 import TextTunnel from '../tunnel/TextTunnel.jsx';
 import HopRings from '../tunnel/HopRings.jsx';
 import { whereAmI } from '../../live/whereami.js';
@@ -291,7 +292,12 @@ export default function S04Packet() {
     progress.current = p;
     const t = runT(p);
     // The text reveals just ahead of the packet, so letters light up as it arrives.
+    const previousReveal = reveal.current;
     reveal.current = Math.min(1, t + 0.01);
+    // A data chirp as the packet passes each hop, going forward (sound on only).
+    hopAt.forEach((at, i) => {
+      if (previousReveal < at && reveal.current >= at) chirp(i);
+    });
 
     const streak = streakRef.current;
     if (streak) {
