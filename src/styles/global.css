@@ -123,6 +123,12 @@ p {
   border: 0;
 }
 
+/* Director's Cut: the film's region panels step aside so the behind-the-scenes view reads. */
+html[data-directors-cut] [data-scene-index] > * {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* The ember cursor (cursor.js) replaces the pointer on fine pointers; fields keep their caret. */
 html[data-cursor="ember"],
 html[data-cursor="ember"] *:not(input, textarea) {

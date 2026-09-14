@@ -1,0 +1,71 @@
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-dom) + 2);
+  font-family: var(--font-mono);
+  font-size: var(--hud-size);
+  letter-spacing: var(--tracking-hud);
+  color: var(--ember);
+}
+
+.readout {
+  position: absolute;
+  top: calc(var(--space-16) + var(--space-4));
+  left: var(--gutter);
+  padding: var(--space-4);
+  background: rgb(10 8 7 / 0.72);
+  border: 1px solid rgb(255 109 0 / 0.4);
+}
+
+.title {
+  color: var(--fire);
+  margin-block-end: var(--space-2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+}
+
+.grid dt {
+  color: var(--fg-dim);
+}
+
+.grid dd {
+  margin: 0;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  margin-block-start: var(--space-3);
+  color: var(--fg-dim);
+}
+
+.inset {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 28vw;
+  border: 1px solid var(--fire);
+}
+
+.insetLabel {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  padding-block-end: var(--space-1);
+}
+
+.credits {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--space-8);
+  max-width: min(36rem, 60vw);
+  display: grid;
+  gap: var(--space-1);
+  color: var(--fg-dim);
+}

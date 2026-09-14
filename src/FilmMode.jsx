@@ -14,6 +14,7 @@ import { initTab } from './live/tab.js';
 import { initSecrets } from './live/secrets.js';
 import { initRace } from './live/race.js';
 import RaceResult from './dom/RaceResult.jsx';
+import DirectorsCutHud from './dom/DirectorsCutHud.jsx';
 import styles from './FilmMode.module.css';
 
 /** Where keyboard focus lands inside a scene: S10's form is only visible once the pane is whole. */
@@ -75,6 +76,7 @@ export default function FilmMode({ onSkip }) {
       <GalleryHud />
       <SkyOverlay />
       <RaceResult />
+      <DirectorsCutHud />
       <HeroCanvas />
       <main id="main" tabIndex={-1} className={styles.main}>
         <div ref={trackRef} className={styles.track}>

@@ -23,6 +23,7 @@ import S10Return from './scenes/S10Return.jsx';
 import S11EndCard from './scenes/S11EndCard.jsx';
 import { BUILT_SCENES as BUILT } from './built.js';
 import FilmFox from './actors/FilmFox.jsx';
+import DirectorsCut from './debug/DirectorsCut.jsx';
 import styles from './Film.module.css';
 
 /**
@@ -167,6 +168,7 @@ export default function Film() {
   const tier = useFilm((s) => s.quality);
   // Nothing renders while the tab is hidden (tab.js).
   const hidden = useFilm((s) => s.tabHidden);
+  const directorsCut = useFilm((s) => s.directorsCut);
   return (
     <div className={styles.film} aria-hidden="true">
       <Canvas
@@ -195,7 +197,8 @@ export default function Film() {
         <EndWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
-        {flags.debug ? <StatsProbe /> : null}
+        {flags.debug || directorsCut ? <StatsProbe /> : null}
+        {directorsCut ? <DirectorsCut /> : null}
       </Canvas>
       <PlaceholderLabel />
     </div>
