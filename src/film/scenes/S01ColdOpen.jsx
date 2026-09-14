@@ -9,6 +9,7 @@ import LensedTitle from '../globe/LensedTitle.jsx';
 import { registerShot } from '../camera/shots.js';
 import { registerFoxShot } from '../actors/foxShots.js';
 import { getScenes } from '../scroll.js';
+import { visits } from '../../live/visitor.js';
 
 /**
  * S01 Cold Open. Wide on the live globe turning in space, the title set huge behind the
@@ -18,6 +19,8 @@ import { getScenes } from '../scroll.js';
  * into the lens and jumps at it, into S02's impact.
  *
  * Every position is a pure function of sceneProgress, so scrolling back rewinds it.
+ *
+ * From the fifth visit the fox knows you have seen it: no bullet time, it just jumps.
  *
  * Beats by sceneProgress:
  *   0.00 to 0.35  wide, slow push; your arc draws 0.05 to 0.35; lap one
@@ -74,8 +77,11 @@ function bulletDirection(azimuth, out) {
   return out.copy(HOLD_TO_CAMERA).multiplyScalar(Math.cos(azimuth)).addScaledVector(HOLD_SIDE, Math.sin(azimuth));
 }
 
+/** Fifth visit or later: bullet time is skipped (the returning visitor, living layer). */
+const seenItAll = () => visits() >= 5;
+
 function bulletAzimuth(p) {
-  return ease(window01(p, 0.5, 0.8)) * Math.PI * 2;
+  return seenItAll() ? 0 : ease(window01(p, 0.5, 0.8)) * Math.PI * 2;
 }
 
 const shotWidePosition = new Vector3();
@@ -160,7 +166,7 @@ export function coldOpenFoxShot(progress, pose, input, context) {
   pose.scale = FOX_WORLD_SCALE;
 
   const curl = ease(window01(p, 0.36, 0.5)) * (1 - ease(window01(p, 0.8, 0.88)));
-  const bullet = p >= 0.5 && p < 0.8;
+  const bullet = p >= 0.5 && p < 0.8 && !seenItAll();
   input.timeScale = bullet ? 0 : 1;
   input.scenePose = curl > 0.001 ? { name: 'curl', weight: curl } : null;
   input.hint = bullet ? null : 'run';
