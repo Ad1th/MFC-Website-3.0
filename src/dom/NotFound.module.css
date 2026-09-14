@@ -18,3 +18,31 @@
   border-bottom: 1px solid var(--ash);
   text-decoration: none;
 }
+
+.page {
+  position: relative;
+  background: #030202;
+}
+
+/* The words sit above the scene. */
+.line,
+.home {
+  position: relative;
+  z-index: 2;
+}
+
+/* The cursor's own light: a warm pool that follows the pointer (fine pointers only). */
+.light {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle 11rem at var(--x, -50vw) var(--y, -50vh), rgb(255 179 107 / 0.14), rgb(255 109 0 / 0.05) 45%, transparent 70%);
+  mix-blend-mode: screen;
+}
+
+@media (pointer: coarse) {
+  .light {
+    display: none;
+  }
+}
