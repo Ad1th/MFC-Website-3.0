@@ -66,11 +66,16 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/three/')) return 'three';
-          if (id.includes('node_modules/@react-three/') || id.includes('node_modules/postprocessing/')) return 'r3f';
-          if (id.includes('node_modules/gsap/') || id.includes('node_modules/lenis/')) return 'scroll';
-          return undefined;
+        // Priority groups, not manualChunks: with manualChunks the bundler kept React and zustand's
+        // vanilla store inside the r3f group (r3f needs them too), so still mode's first load pulled
+        // the whole film library in. React and the store now win their own chunk.
+        advancedChunks: {
+          groups: [
+            { name: 'react', test: /node_modules[\\/](react|react-dom|scheduler|zustand|use-sync-external-store)[\\/]/, priority: 40 },
+            { name: 'three', test: /node_modules[\\/]three[\\/]/, priority: 30 },
+            { name: 'r3f', test: /node_modules[\\/](@react-three|postprocessing)[\\/]/, priority: 20 },
+            { name: 'scroll', test: /node_modules[\\/](gsap|lenis)[\\/]/, priority: 20 },
+          ],
         },
       },
     },
