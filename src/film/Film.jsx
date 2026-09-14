@@ -19,6 +19,8 @@ import S06Gallery from './scenes/S06Gallery.jsx';
 import S07Spiral from './scenes/S07Spiral.jsx';
 import S08Burn from './scenes/S08Burn.jsx';
 import S09Sky from './scenes/S09Sky.jsx';
+import S10Return from './scenes/S10Return.jsx';
+import S11EndCard from './scenes/S11EndCard.jsx';
 import { BUILT_SCENES as BUILT } from './built.js';
 import FilmFox from './actors/FilmFox.jsx';
 import styles from './Film.module.css';
@@ -115,6 +117,21 @@ function SkyWindow() {
   return Math.abs(active - SKY_INDEX) <= 1 ? <S09Sky /> : null;
 }
 
+const RETURN_INDEX = SCENES.findIndex((scene) => scene.id === 'S10');
+
+function ReturnWindow() {
+  const active = useFilm((s) => s.activeScene);
+  // Stays through S11: the end card's floor lies under the orbit set.
+  return active >= RETURN_INDEX - 1 && active <= RETURN_INDEX + 1 ? <S10Return /> : null;
+}
+
+const END_INDEX = SCENES.findIndex((scene) => scene.id === 'S11');
+
+function EndWindow() {
+  const active = useFilm((s) => s.activeScene);
+  return active >= END_INDEX - 1 ? <S11EndCard /> : null;
+}
+
 function PlaceholderLabel() {
   const idRef = useRef(null);
   const nameRef = useRef(null);
@@ -174,6 +191,8 @@ export default function Film() {
         <SpiralWindow />
         <BurnWindow />
         <SkyWindow />
+        <ReturnWindow />
+        <EndWindow />
         <FilmFox />
         <S02Break index={BREAK_INDEX} />
         {flags.debug ? <StatsProbe /> : null}

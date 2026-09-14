@@ -51,6 +51,43 @@
   opacity: var(--writing-opacity, 1);
 }
 
+/* S10: the form sits on the pane the page's shards reassemble into, below the planet and the
+   logo. It fades in once the pane is whole (--return-form, written by S10Return); keyboard focus
+   jumps into the hold, where it is already visible. */
+.panel[data-region="contact"] {
+  background: none;
+  align-content: end;
+  padding-block-end: clamp(var(--space-8), 8vh, var(--space-16));
+}
+
+.panel[data-region="contact"] h2 {
+  font-size: clamp(2.5rem, 1.5rem + 4vw, 6rem);
+}
+
+.slot[data-active="true"] .panel[data-region="contact"] {
+  opacity: var(--return-form, 1);
+  pointer-events: none;
+}
+
+.slot[data-active="true"] .panel[data-region="contact"] > * {
+  pointer-events: auto;
+}
+
+.slot .panel[data-region="contact"]:focus-within {
+  opacity: 1;
+}
+
+/* S11: the film burns FIREFOX into the floor; the socials, legal line and credits sit below it. */
+.panel[data-region="end"] {
+  background: none;
+  align-content: end;
+}
+
+.panel[data-region="end"] .wordmark {
+  visibility: hidden;
+  height: 0;
+}
+
 /* Built scenes tell their region in the film (the hero canvas paints the intro). The HTML stays
    real, selectable and focusable, just unpainted while the film plays, so the film is the only
    source of those pixels. Keyboard focus inside a region paints it again. */
