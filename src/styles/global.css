@@ -123,6 +123,12 @@ p {
   border: 0;
 }
 
+/* The ember cursor (cursor.js) replaces the pointer on fine pointers; fields keep their caret. */
+html[data-cursor="ember"],
+html[data-cursor="ember"] *:not(input, textarea) {
+  cursor: none !important;
+}
+
 .hud {
   font-family: var(--font-mono);
   font-size: var(--hud-size);
