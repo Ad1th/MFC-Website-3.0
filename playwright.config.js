@@ -22,5 +22,8 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    // Safari's engine, only with PW_WEBKIT=1 (the gate browser pass): WebGL in headless WebKit is
+    // software rendered, so it is not part of the everyday two-browser suite.
+    ...(process.env.PW_WEBKIT === '1' ? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }] : []),
   ],
 });
