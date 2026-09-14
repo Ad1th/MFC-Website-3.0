@@ -126,21 +126,21 @@ function write(progress, velocity) {
   }
 }
 
-/** Pixel offset of a scene start inside the document. */
-function sceneTop(index) {
+/** Pixel offset of a point inside a scene (its start by default) in the document. */
+function sceneTop(index, progress = 0) {
   if (!track) return 0;
   const s = scenes[index];
   const top = track.getBoundingClientRect().top + window.scrollY;
-  return top + (s.start / totalVh(scenes)) * track.offsetHeight + 1;
+  return top + ((s.start + s.length * progress) / totalVh(scenes)) * track.offsetHeight + 1;
 }
 
 /**
  * Chapter jump. The fox sprints while the jump runs (store.jumping).
  * @param {number} index scene index
- * @param {{ immediate?: boolean }} [options]
+ * @param {{ immediate?: boolean, progress?: number }} [options] progress: land partway into the scene
  */
-export function jumpToScene(index, { immediate = false } = {}) {
-  const target = sceneTop(index);
+export function jumpToScene(index, { immediate = false, progress = 0 } = {}) {
+  const target = sceneTop(index, progress);
   const state = film.getState();
   if (!lenis) {
     window.scrollTo({ top: target, behavior: 'instant' });

@@ -31,7 +31,7 @@ import { RainStreaks } from '../sky/DiveClouds.jsx';
  */
 
 const SKY_CUT = 50;
-const FOX_AT = new Vector3(0.55, 0.95, 7.0);
+export const FOX_AT = new Vector3(0.55, 0.95, 7.0);
 const SPIN_STIFFNESS = 3.2;
 const HOVER_PX = 26;
 

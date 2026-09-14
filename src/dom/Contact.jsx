@@ -2,11 +2,16 @@ import { useId, useRef, useState } from 'react';
 import { site } from '../content/index.js';
 import { apiBase } from '../live/newsletters.js';
 import { flags } from '../live/flags.js';
+import { FILM_TEST } from '../film/testHooks.js';
+import { formSignals } from '../live/formSignals.js';
+import { sparkAtCursor } from '../live/cursor.js';
 import styles from './Contact.module.css';
 
 /**
  * The one-line form. Enter moves to the next field and sends from the last one.
- * No red boxes, no alert(): one mono line says what needs fixing.
+ * No red boxes, no alert(): one mono line says what needs fixing. In the film the fox answers
+ * (formSignals.js): ears at each keystroke, eyes on the caret, a tilted head at a wrong field,
+ * and after a send it carries the message to Vellore before `received.` shows.
  */
 
 const SEND_TIMEOUT_MS = 6000;
@@ -31,7 +36,8 @@ function validate({ name, email, message }) {
 }
 
 async function send(payload) {
-  const base = apiBase();
+  // Test builds only (the constant is false in production): a page can point the form at a mock API.
+  const base = (FILM_TEST && window.__filmTest?.contactBase) || apiBase();
   if (!base || flags.backendDown) throw new Error('no backend');
   const res = await fetch(`${base}/api/contact`, {
     method: 'POST',
@@ -53,7 +59,7 @@ function mailtoFor({ name, message }) {
 export default function Contact() {
   const id = useId();
   const [values, setValues] = useState({ name: '', email: '', message: '', company: '' });
-  const [status, setStatus] = useState(/** @type {'idle'|'sending'|'sent'|'failed'} */ ('idle'));
+  const [status, setStatus] = useState(/** @type {'idle'|'sending'|'delivering'|'sent'|'failed'} */ ('idle'));
   const [error, setError] = useState(/** @type {{ field: string, text: string }|null} */ (null));
   const [copied, setCopied] = useState(false);
   const refs = useRef({});
@@ -61,16 +67,23 @@ export default function Contact() {
   const update = (field) => (event) => {
     setValues((v) => ({ ...v, [field]: event.target.value }));
     if (error?.field === field) setError(null);
+    if (field !== 'company') {
+      formSignals.keystroke();
+      formSignals.caret(event.target);
+    }
   };
+
+  const onCaret = (event) => formSignals.caret(event.target);
 
   const focusField = (field) => refs.current[field]?.focus();
 
   const submit = async () => {
-    if (status === 'sending') return;
+    if (status === 'sending' || status === 'delivering') return;
     const problem = validate(values);
     if (problem) {
       setError(problem);
       focusField(problem.field);
+      formSignals.invalid(problem.field, refs.current[problem.field] ?? null);
       return;
     }
     setError(null);
@@ -81,10 +94,14 @@ export default function Contact() {
     setStatus('sending');
     try {
       await send({ name: values.name.trim(), email: values.email.trim(), message: values.message.trim() });
-      setStatus('sent');
     } catch {
       setStatus('failed');
+      return;
     }
+    // The fox carries it first (film only; resolves at once elsewhere).
+    setStatus('delivering');
+    await formSignals.sent(values.message.trim());
+    setStatus('sent');
   };
 
   const onKeyDown = (index) => (event) => {
@@ -98,6 +115,7 @@ export default function Contact() {
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(site.email);
+      sparkAtCursor();
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -138,11 +156,15 @@ export default function Contact() {
             value: values[f.name],
             onChange: update(f.name),
             onKeyDown: onKeyDown(index),
+            onKeyUp: onCaret,
+            onClick: onCaret,
+            onFocus: onCaret,
+            onBlur: () => formSignals.blur(),
             autoComplete: f.autoComplete,
             'aria-invalid': invalid || undefined,
             'aria-describedby': invalid ? `${id}-status` : undefined,
             className: styles.input,
-            disabled: status === 'sending',
+            disabled: status === 'sending' || status === 'delivering',
           };
           return (
             <span key={f.name} className={styles.field} data-invalid={invalid || undefined}>
@@ -161,8 +183,8 @@ export default function Contact() {
           <label htmlFor={`${id}-company`}>company</label>
           <input id={`${id}-company`} name="company" tabIndex={-1} autoComplete="off" value={values.company} onChange={update('company')} />
         </span>
-        <button type="submit" className={styles.send} disabled={status === 'sending'} data-cursor="link">
-          {status === 'sending' ? 'sending' : 'send'}
+        <button type="submit" className={styles.send} disabled={status === 'sending' || status === 'delivering'} data-cursor="link">
+          {status === 'sending' ? 'sending' : status === 'delivering' ? 'on its way' : 'send'}
         </button>
       </form>
 
