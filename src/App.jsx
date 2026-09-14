@@ -5,6 +5,8 @@ import { flags } from './live/flags.js';
 import Still from './dom/Still.jsx';
 import NotFound from './dom/NotFound.jsx';
 import Ignition from './dom/ignition/Ignition.jsx';
+import { initConsole } from './live/console.js';
+import { initCursor } from './live/cursor.js';
 
 const FilmMode = lazy(() => import('./FilmMode.jsx'));
 // Development tool. Phase 8 strips it from production builds.
@@ -42,6 +44,12 @@ export default function App() {
   // mode Ignition's identical cover has painted in this same commit; elsewhere it just goes.
   useEffect(() => {
     document.getElementById('boot')?.remove();
+  }, []);
+
+  // The living layer that belongs to every mode: the console fox and the ember cursor.
+  useEffect(() => {
+    initConsole();
+    return initCursor();
   }, []);
 
   const toStill = useCallback(() => {
