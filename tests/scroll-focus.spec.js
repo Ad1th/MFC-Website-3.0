@@ -44,12 +44,13 @@ test('programmatic focus inside a far region does not move the film', async ({ p
   expect(await page.title()).toBe('mozilla firefox club');
 });
 
-test('tabbing into a region moves the film to its scene', async ({ page }) => {
+test('tabbing into a region moves the film to its scene', async ({ page, browserName }) => {
   await page.goto('/?tier=2');
   await waitForFilm(page);
   let region = null;
   for (let i = 0; i < 40 && !region; i += 1) {
-    await page.keyboard.press('Tab');
+    // Safari's Tab skips links unless full keyboard access is on; its users press Option+Tab.
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
     region = await page.evaluate(() => document.activeElement?.closest('[data-region]')?.getAttribute('data-region') ?? null);
   }
   expect(region).toBe('projects');

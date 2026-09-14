@@ -6,6 +6,9 @@ import { test, expect } from '@playwright/test';
  * without a pointer; the 404's link is reachable. Still mode is fully tabbable in reading order.
  */
 
+/** Safari's Tab skips links unless full keyboard access is on; Option+Tab is what its users press. */
+const tabKey = (browserName) => (browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
+
 async function film(page) {
   await page.goto('/?tier=2&freeze=1&weather=clear');
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.ignition ?? null), { timeout: 30_000 }).toBe('done');
@@ -17,21 +20,21 @@ const focused = (page) =>
     return { tag: el?.tagName ?? null, text: (el?.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 60), region: el?.closest('[data-region]')?.getAttribute('data-region') ?? null };
   });
 
-test('the first Tab stop is "skip the film"', async ({ page }) => {
+test('the first Tab stop is "skip the film"', async ({ page, browserName }) => {
   test.setTimeout(120_000);
   await film(page);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press(tabKey(browserName));
   const first = await focused(page);
   expect(first.text.toLowerCase()).toContain('skip the film');
 });
 
-test('keyboard focus inside a scene brings it on screen with its HTML painted', async ({ page }) => {
+test('keyboard focus inside a scene brings it on screen with its HTML painted', async ({ page, browserName }) => {
   test.setTimeout(120_000);
   await film(page);
   // Tab until focus lands inside the projects region.
   let at = null;
   for (let i = 0; i < 120; i += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey(browserName));
     at = await focused(page);
     if (at.region === 'projects') break;
   }
@@ -46,13 +49,13 @@ test('keyboard focus inside a scene brings it on screen with its HTML painted', 
   expect(box.bottom).toBeLessThanOrEqual(box.h);
 });
 
-test('the contact form works with the keyboard alone', async ({ page }) => {
+test('the contact form works with the keyboard alone', async ({ page, browserName }) => {
   test.setTimeout(120_000);
   await page.goto('/?still=1&backend=down');
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode ?? null)).toBe('still');
   let at = null;
   for (let i = 0; i < 400; i += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey(browserName));
     at = await page.evaluate(() => document.activeElement?.getAttribute('name'));
     if (at === 'name') break;
   }
@@ -68,7 +71,7 @@ test('the contact form works with the keyboard alone', async ({ page }) => {
   await expect(page.locator('#contact [role="status"]').first()).toContainText("couldn't send. email us instead:");
 });
 
-test('still mode tabs through every link and control in reading order without traps', async ({ page }) => {
+test('still mode tabs through every link and control in reading order without traps', async ({ page, browserName }) => {
   test.setTimeout(120_000);
   await page.goto('/?still=1');
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.mode ?? null)).toBe('still');
@@ -82,7 +85,7 @@ test('still mode tabs through every link and control in reading order without tr
   let previousTop = -Infinity;
   let backwards = 0;
   for (let i = 0; i < expected + 20; i += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey(browserName));
     const info = await page.evaluate(() => {
       const el = document.activeElement;
       if (!el || el === document.body) return null;
@@ -101,12 +104,12 @@ test('still mode tabs through every link and control in reading order without tr
   expect(backwards).toBe(0);
 });
 
-test('the 404 link is reachable by keyboard', async ({ page }) => {
+test('the 404 link is reachable by keyboard', async ({ page, browserName }) => {
   test.setTimeout(120_000);
   await page.goto('/no-such-page');
   let text = '';
   for (let i = 0; i < 10; i += 1) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(tabKey(browserName));
     text = await page.evaluate(() => document.activeElement?.textContent?.trim() ?? '');
     if (text === 'take me home') break;
   }

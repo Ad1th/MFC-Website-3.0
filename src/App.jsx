@@ -124,11 +124,13 @@ export default function App() {
   if (mode === 'still') return <Still canPlayFilm={canPlayFilm} onPlayFilm={toFilm} />;
   return (
     <>
-      {/* Outside the lazy film chunk: the counter shows at first paint and counts the chunk's bytes. */}
-      <Ignition onReveal={onReveal} onSkip={toStill} />
       <Suspense fallback={null}>
         <FilmMode onSkip={toStill} />
       </Suspense>
+      {/* Outside the lazy film chunk: the counter shows at first paint and counts the chunk's bytes.
+          After the film in the DOM, so the film's "skip the film" stays the first Tab stop once the
+          sound choice appears (Ignition is a fixed overlay, so order does not change what is seen). */}
+      <Ignition onReveal={onReveal} onSkip={toStill} />
     </>
   );
 }
