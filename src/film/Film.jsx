@@ -1,6 +1,7 @@
 import './threeConsole.js';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { PerformanceMonitor } from '@react-three/drei';
 import { Color } from 'three';
 import { film, useFilm } from './store.js';
 import { SCENES } from './timeline.js';
@@ -164,6 +165,11 @@ function PlaceholderLabel() {
 
 const BREAK_INDEX = SCENES.findIndex((scene) => scene.id === 'S02');
 
+function declineTier() {
+  const state = film.getState();
+  if (state.quality > 1) state.setQuality(state.quality - 1);
+}
+
 export default function Film() {
   const tier = useFilm((s) => s.quality);
   // Nothing renders while the tab is hidden (tab.js).
@@ -179,6 +185,8 @@ export default function Film() {
         camera={{ fov: 45, near: 0.1, far: 200, position: [0, 0, 9] }}
         onCreated={({ gl }) => registerRenderer(gl)}
       >
+        {/* Live downgrade: a frame rate that stays low for a while lowers the tier (never below 1). Off when a test forces a tier. */}
+        {flags.tier === null ? <PerformanceMonitor bounds={() => [45, 90]} flipflops={2} onDecline={declineTier} /> : null}
         <color attach="background" args={['#0a0807']} />
         <fog attach="fog" args={['#0a0807', 20, 60]} />
         <ambientLight intensity={0.35} />

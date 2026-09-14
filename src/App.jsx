@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
 import { film, useFilm } from './film/store.js';
-import { initialTier } from './film/quality.js';
+import { initialTier, tierAfterWarmUp, warmUpBenchmark } from './film/quality.js';
 import { flags } from './live/flags.js';
 import Still from './dom/Still.jsx';
 import NotFound from './dom/NotFound.jsx';
@@ -50,6 +50,23 @@ export default function App() {
   useEffect(() => {
     initConsole();
     return initCursor();
+  }, []);
+
+  // The warm-up benchmark runs while Ignition covers the page, and can lower the tier before the
+  // reveal. A forced tier (?tier=) skips it.
+  useEffect(() => {
+    if (initial.mode !== 'film' || flags.tier !== null) return;
+    let cancelled = false;
+    warmUpBenchmark().then((ms) => {
+      if (cancelled) return;
+      const state = film.getState();
+      const tier = tierAfterWarmUp(state.quality, ms);
+      if (tier < state.quality) state.setQuality(tier);
+      document.documentElement.dataset.warmUp = ms === null ? 'none' : String(Math.round(ms * 10) / 10);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const toStill = useCallback(() => {
